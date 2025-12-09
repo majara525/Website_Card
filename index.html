@@ -15,7 +15,7 @@
             --text-main: #111827;
             --text-muted: #6b7280;
             --card-bg: #ffffff;
-            --border-radius-lg: 12px;
+            --border-radius-lg: 0px;
             --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.18);
         }
 
@@ -136,7 +136,7 @@
 
         .btn {
             border: none;
-            border-radius: 999px;
+            border-radius: 0px;
             padding: 10px 8px;
             font-size: 0.8rem;
             font-weight: 600;
@@ -147,8 +147,7 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            transition: transform 0.1s ease, box-shadow 0.1s ease,
-                background 0.2s ease;
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
         }
 
         .btn span.icon {
@@ -193,7 +192,7 @@
         }
 
         .gallery-card {
-            border-radius: 1rem;
+            border-radius: 0px;
             overflow: hidden;
             background: #0f172a;
             position: relative;
@@ -207,9 +206,12 @@
         } */
         .gallery-image {
             width: 100%;
-            height: 220px;
-            object-fit: cover;
+            height: auto;         /* let the image decide height */
+            max-height: 450px;    /* optional: avoid gigantic images on huge screens */
+            object-fit: contain;  /* show whole image, don’t crop */
+            display: block;
         }
+
 
         /* Bigger gallery on larger screens */
         @media (min-width: 768px) {
@@ -242,7 +244,7 @@
             color: #fff;
             width: 32px;
             height: 32px;
-            border-radius: 12px;
+            border-radius: 0px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -263,7 +265,7 @@
         .gallery-dot {
             width: 7px;
             height: 7px;
-            border-radius: 12px;
+            border-radius: 0px;
             background: rgba(249, 250, 251, 0.5);
             cursor: pointer;
         }
@@ -277,7 +279,7 @@
         .who-section {
             margin-top: 20px;
             padding: 16px;
-            border-radius: 12px;
+            border-radius: 0px;
             background: #f9fafb;
             border: 1px solid #e5e7eb;
         }
@@ -313,7 +315,7 @@
             max-width: 420px;
             width: 90%;
             background: #ffffff;
-            border-radius: 12px;
+            border-radius: 0px;
             box-shadow: 0 24px 60px rgba(15, 23, 42, 0.4);
             padding: 18px 18px 16px;
             position: relative;
@@ -344,17 +346,50 @@
             margin-top: 8px;
         }
 
-        .location-item {
+        /* .location-item {
             padding: 10px 10px 9px;
-            border-radius: 12px;
+            border-radius: 0px;
             border: 1px solid #e5e7eb;
             background: #f9fafb;
+        } */
+        .location-item {
+            display: grid;                 /* turn item into a 2-column grid */
+            grid-template-columns: 1.4fr 1fr; /* right = info (bigger), left = image */
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .location-text {
+            text-align: right;             /* because you’re RTL */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .location-name {
             font-weight: 600;
             font-size: 0.92rem;
             margin-bottom: 4px;
+        }
+
+        .location-image-wrapper {
+            border-radius: 0px;
+            overflow: hidden;
+            background: #e5e7eb;
+        }
+
+        .location-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;             /* fill the box, crop if needed */
+            display: block;
+        }
+
+        /* On small screens, stack them (info on top, image below) */
+        @media (max-width: 480px) {
+            .location-item {
+                grid-template-columns: 1fr;
+            }
         }
 
         .location-hours {
@@ -374,6 +409,53 @@
             text-decoration: underline;
         }
 
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin: 18px 0 10px;
+        }
+
+        .social-item {
+            cursor: pointer;
+            padding: 10px 8px 12px;
+            border-radius: 10px;          /* rectangular look */
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
+        }
+
+        .social-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.15);
+            background: #eef2ff;
+        }
+
+        .social-item-primary {
+            background: var(--primary);
+            border-color: var(--primary-dark);
+        }
+
+        .social-item-primary .social-label {
+            color: #ffffff;
+        }
+
+        .social-icon {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;           /* don’t crop logos */
+        }
+
+        .social-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-main);
+            text-align: center;
+        }
         .modal-footer {
             margin-top: 10px;
             display: flex;
@@ -382,7 +464,7 @@
 
         .btn-outline {
             border: 1px solid #d1d5db;
-            border-radius: 12px;
+            border-radius: 0px;
             padding: 8px 14px;
             font-size: 0.8rem;
             background: #fff;
@@ -431,56 +513,116 @@
 
                 <!-- 4. SOCIAL + COMMUNICATION BUTTONS (9 buttons) -->
                 <div class="buttons-grid">
-                    <!-- Social media buttons - placeholder links -->
-                    <button class="btn" onclick="openInNewTab('https://www.instagram.com/almahad_alali/')">
-                        <span class="icon">📷</span>
-                        <span>Instagram</span>
-                    </button>
+                    <!-- Instagram -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://www.instagram.com/almahad_alali/')"
+                    >
+                        <img
+                            src="Icons/Instagram.png"
+                            alt="Instagram"
+                            class="social-icon"
+                        />
+                        <span class="social-label">انستجرام</span>
+                    </div>
 
-                    <button class="btn" onclick="openInNewTab('https://m.facebook.com/AlmahadAlaali/')">
-                        <span class="icon">📘</span>
-                        <span>Facebook</span>
-                    </button>
+                    <!-- Facebook -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab(' : https://m.facebook.com/AlmahadAlaali/')"
+                    >
+                        <img
+                            src="Icons/Facebook.png"
+                            alt="Facebook"
+                            class="social-icon"
+                        />
+                        <span class="social-label">Facebook</span>
+                    </div>
 
-                    <button class="btn" onclick="openInNewTab('https://www.tiktok.com/@alm3had_al3ali?_t=8paRr5PIFya&_r=1')">
-                        <span class="icon">🎵</span>
-                        <span>TikTok</span>
-                    </button>
+                    <!-- TikTok -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://www.tiktok.com/@alm3had_al3ali?_t=8paRr5PIFya&_r=1')"
+                    >
+                        <img
+                            src="Icons/Tiktok.png"
+                            alt="TikTok"
+                            class="social-icon"
+                        />
+                        <span class="social-label">تيك توك</span>
+                    </div>
 
-                    <button class="btn" onclick="openInNewTab('https://linkedin.com')">
-                        <span class="icon">💼</span>
-                        <span>LinkedIn</span>
-                    </button>
+                    <!-- LinkedIn -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://www.linkedin.com/company/almahad-alali/about/')"
+                    >
+                        <img
+                            src="Icons/Linkedin.png"
+                            alt="LinkedIn"
+                            class="social-icon"
+                        />
+                        <span class="social-label">لينكد ان</span>
+                    </div>
 
-                    <button class="btn" onclick="openInNewTab('https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw?si=QS M8L7mCb1wOke17')">
-                        <span class="icon">▶️</span>
-                        <span>YouTube</span>
-                    </button>
+                    <!-- YouTube -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw?si=QS M8L7mCb1wOke17')"
+                    >
+                        <img
+                            src="icons/youtube.png"
+                            alt="YouTube"
+                            class="social-icon"
+                        />
+                        <span class="social-label">يوتيوب</span>
+                    </div>
 
-                    <!-- Communication buttons -->
-                    <button class="btn" onclick="openInNewTab('https://www.almahad-alali.com/')">
-                        <span class="icon">🌐</span>
-                        <span>Website</span>
-                    </button>
+                    <!-- Website -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://almahad-alali.com')"
+                    >
+                        <img
+                            src="Icons/Website.png"
+                            alt="Website"
+                            class="social-icon"
+                        />
+                        <span class="social-label">موقعنا</span>
+                    </div>
 
-                    <button
-                        class="btn"
+                    <!-- WhatsApp -->
+                    <div
+                        class="social-item"
                         onclick="openInNewTab('https://api.whatsapp.com/send/?phone=972543618620&text&type=phone_number&app_absent=0')"
                     >
-                        <span class="icon">💬</span>
-                        <span>WhatsApp</span>
-                    </button>
+                        <img
+                            src="icons/Whatsapp.png"
+                            alt="WhatsApp"
+                            class="social-icon"
+                        />
+                        <span class="social-label">WhatsApp</span>
+                    </div>
 
-                    <button class="btn" onclick="callPhone()">
-                        <span class="icon">☎️</span>
-                        <span>Call</span>
-                    </button>
+                    <!-- Phone -->
+                    <div class="social-item" onclick="callPhone()">
+                        <img
+                            src="Icons/Phone.png"
+                            alt="Phone"
+                            class="social-icon"
+                        />
+                        <span class="social-label">اتصل بنا</span>
+                    </div>
 
-                    <!-- Button that opens popup with 4 locations + hours + maps links -->
-                    <button class="btn btn-primary" id="openLocationsBtn">
-                        <span class="icon">📍</span>
-                        <span>Locations</span>
-                    </button>
+                    <!-- Locations (opens popup) -->
+                    <div class="social-item social-item-primary" id="openLocationsBtn">
+                        <img
+                            src="Icons/Maps.png"
+                            alt="Branches"
+                            class="social-icon"
+                        />
+                        <span class="social-label">فروعنا</span>
+                    </div>
                 </div>
 
                 <!-- 5. SAVE CONTACT BUTTON -->
@@ -489,7 +631,7 @@
                         class="btn btn-primary btn-save-contact"
                         id="saveContactBtn"
                     >
-                        💾 Save Contact
+                        💾 احفظ جهة الاتصال
                     </button>
                 </div>
 
