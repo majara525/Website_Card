@@ -8,9 +8,9 @@
     <!-- Basic clean styling for the whole page -->
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-dark: #3730a3;
-            --accent: #f97316;
+            --primary: #B92B31;
+            --primary-dark: #B92B31;
+            --accent: #B92B31;
             --bg: #f4f4f5;
             --text-main: #111827;
             --text-muted: #6b7280;
@@ -37,10 +37,29 @@
         }
 
         /* Main centered card container */
+        /* .card-wrapper {
+            max-width: 480px;
+            width: 100%;
+            padding: 24px 16px 40px;
+        } */
         .card-wrapper {
             max-width: 480px;
             width: 100%;
             padding: 24px 16px 40px;
+        }
+
+        /* Tablets */
+        @media (min-width: 768px) {
+            .card-wrapper {
+                max-width: 720px;   /* use more width */
+            }
+        }
+
+        /* Desktop / large screens */
+        @media (min-width: 1024px) {
+            .card-wrapper {
+                max-width: 900px;
+            }
         }
 
         .card {
@@ -54,7 +73,7 @@
         /* 1. Top panel picture (hero) - from right to left */
         .header-panel {
             height: 170px;
-            background-image: url("https://via.placeholder.com/800x400?text=Panel+Image");
+            background-image: url("Upper_Back.jpg");
             background-size: cover;
             background-position: right center; /* focus on the right side (RTL feel) */
             position: relative;
@@ -180,11 +199,29 @@
             position: relative;
         }
 
-        .gallery-image {
+        /* .gallery-image {
             width: 100%;
             height: 220px;
             object-fit: cover;
             display: block;
+        } */
+        .gallery-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+
+        /* Bigger gallery on larger screens */
+        @media (min-width: 768px) {
+            .gallery-image {
+                height: 280px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .gallery-image {
+                height: 340px;
+            }
         }
 
         .gallery-controls {
@@ -376,7 +413,7 @@
                 <!-- 2. PROFILE PICTURE IN THE MIDDLE -->
                 <div class="profile-pic-wrapper">
                     <img
-                        src="https://via.placeholder.com/260x260?text=Profile"
+                        src="logo.jpg"
                         alt="Profile"
                         class="profile-pic"
                     />
@@ -395,17 +432,17 @@
                 <!-- 4. SOCIAL + COMMUNICATION BUTTONS (9 buttons) -->
                 <div class="buttons-grid">
                     <!-- Social media buttons - placeholder links -->
-                    <button class="btn" onclick="openInNewTab('https://instagram.com')">
+                    <button class="btn" onclick="openInNewTab('https://www.instagram.com/almahad_alali/')">
                         <span class="icon">📷</span>
                         <span>Instagram</span>
                     </button>
 
-                    <button class="btn" onclick="openInNewTab('https://facebook.com')">
+                    <button class="btn" onclick="openInNewTab('https://m.facebook.com/AlmahadAlaali/')">
                         <span class="icon">📘</span>
                         <span>Facebook</span>
                     </button>
 
-                    <button class="btn" onclick="openInNewTab('https://tiktok.com')">
+                    <button class="btn" onclick="openInNewTab('https://www.tiktok.com/@alm3had_al3ali?_t=8paRr5PIFya&_r=1')">
                         <span class="icon">🎵</span>
                         <span>TikTok</span>
                     </button>
@@ -415,20 +452,20 @@
                         <span>LinkedIn</span>
                     </button>
 
-                    <button class="btn" onclick="openInNewTab('https://youtube.com')">
+                    <button class="btn" onclick="openInNewTab('https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw?si=QS M8L7mCb1wOke17')">
                         <span class="icon">▶️</span>
                         <span>YouTube</span>
                     </button>
 
                     <!-- Communication buttons -->
-                    <button class="btn" onclick="openInNewTab('https://example.com')">
+                    <button class="btn" onclick="openInNewTab('https://www.almahad-alali.com/')">
                         <span class="icon">🌐</span>
                         <span>Website</span>
                     </button>
 
                     <button
                         class="btn"
-                        onclick="openInNewTab('https://wa.me/0000000000')"
+                        onclick="openInNewTab('https://api.whatsapp.com/send/?phone=972543618620&text&type=phone_number&app_absent=0')"
                     >
                         <span class="icon">💬</span>
                         <span>WhatsApp</span>
@@ -458,7 +495,7 @@
 
                 <!-- 6. GALLERY SECTION (8 images switching) -->
                 <div class="gallery-section">
-                    <div class="gallery-title">Gallery</div>
+                    <div class="gallery-title">مساقات المعهد</div>
                     <div class="gallery-card">
                         <img
                             id="galleryImage"
@@ -478,7 +515,7 @@
 
                 <!-- 7. "WHO ARE WE?" TEXT SECTION -->
                 <div class="who-section">
-                    <div class="who-title">Who are we?</div>
+                    <div class="who-title">من نحن</div>
                     <div class="who-body">
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
                         in aliquet lorem. Integer nec laoreet ipsum. Suspendisse
