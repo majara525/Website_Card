@@ -500,7 +500,7 @@
                         <img
                             id="galleryImage"
                             class="gallery-image"
-                            src="https://via.placeholder.com/800x600?text=Gallery+1"
+                            src="Panel_Pictures/1.jpg"
                             alt="Gallery image"
                         />
 
@@ -543,69 +543,71 @@
             <div class="location-list">
                 <!-- Location 1 -->
                 <div class="location-item">
-                    <div class="location-name">Main Branch</div>
+                    <div class="location-name">الناصرة - الفرع الرئيسي</div>
                     <div class="location-hours">
                         Sun–Thu: 09:00–18:00<br />
                         Fri: 09:00–13:00
                     </div>
                     <a
                         class="location-link"
-                        href="https://maps.google.com"
+                        href="https://share.google/Gl1Nsi9UFp3legJPb"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        View in Google Maps
+                        للذهاب الى الفرع
                     </a>
                 </div>
 
                 <!-- Location 2 -->
                 <div class="location-item">
-                    <div class="location-name">Downtown Studio</div>
+                    <div class="location-name">شفاعمرو</div>
                     <div class="location-hours">
-                        Sun–Thu: 10:00–20:00<br />
-                        Sat: 11:00–16:00
+                        الاثنين - الجمعه: 10:00 – 20:00<br />
+                        السبت: 10:00 – 14:00<br />
+                        الاحد: مغلق
                     </div>
                     <a
                         class="location-link"
-                        href="https://maps.google.com"
+                        href="https://maps.app.goo.gl/XSaB43xGiMdi8KQW9?g_st=aw"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        View in Google Maps
+                        للذهاب الى الفرع
                     </a>
                 </div>
 
                 <!-- Location 3 -->
                 <div class="location-item">
-                    <div class="location-name">North Office</div>
+                    <div class="location-name">دالية الكرمل</div>
                     <div class="location-hours">
                         Sun–Thu: 08:30–17:00<br />
-                        Closed Fri–Sat
+                        مع
                     </div>
                     <a
                         class="location-link"
-                        href="https://maps.google.com"
+                        href="https://maps.app.goo.gl/vBpv4VckYSahChS96?g_st=aw"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        View in Google Maps
+                        للذهاب الى الفرع
                     </a>
                 </div>
 
                 <!-- Location 4 -->
                 <div class="location-item">
-                    <div class="location-name">Showroom</div>
+                    <div class="location-name">ام الفحم</div>
                     <div class="location-hours">
-                        Sun–Thu: 10:00–19:00<br />
-                        Fri: 10:00–14:00
+                        الاثنين - الجمعه: 10:00 – 20:00<br />
+                        السبت: 10:00 – 14:00<br />
+                        الاحد: مغلق
                     </div>
                     <a
                         class="location-link"
-                        href="https://maps.google.com"
+                        href="https://maps.app.goo.gl/yr8mBnrJUtRhcKCP7"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        View in Google Maps
+                        للذهاب الى الفرع
                     </a>
                 </div>
             </div>
@@ -628,7 +630,7 @@
         /* Helper to trigger phone call */
         function callPhone() {
             // Replace with your real phone number later
-            const phoneNumber = "+0000000000";
+            const phoneNumber = "046000645";
             window.location.href = "tel:" + phoneNumber;
         }
 
@@ -640,13 +642,13 @@
             const vcard = [
                 "BEGIN:VCARD",
                 "VERSION:3.0",
-                "N:LastName;FirstName;;;",
-                "FN:FirstName LastName",
-                "ORG:Your Company Name",
-                "TITLE:Creative Director",
-                "TEL;TYPE=CELL:+0000000000",
-                "EMAIL;TYPE=WORK:you@example.com",
-                "URL:https://example.com",
+                "N:العالي;المعهد;;;",
+                "FN:المعهد العالي",
+                "ORG:المعهد العالي - شبكة كليات قطرية",
+                // "TITLE:Creative Director",
+                "TEL;TYPE=CELL:046000645",
+                "EMAIL;TYPE=WORK:info@almahad-alali.com",
+                "URL:https://almahad-alali.com",
                 "END:VCARD",
             ].join("\n");
 
@@ -695,14 +697,15 @@
 
         /* 6. Simple gallery with 8 images + arrows + dots + auto-play */
         const galleryImages = [
-            "https://via.placeholder.com/800x600?text=Gallery+1",
-            "https://via.placeholder.com/800x600?text=Gallery+2",
-            "https://via.placeholder.com/800x600?text=Gallery+3",
-            "https://via.placeholder.com/800x600?text=Gallery+4",
-            "https://via.placeholder.com/800x600?text=Gallery+5",
-            "https://via.placeholder.com/800x600?text=Gallery+6",
-            "https://via.placeholder.com/800x600?text=Gallery+7",
-            "https://via.placeholder.com/800x600?text=Gallery+8",
+            "Panel_Pictures/1.jpg",
+            "Panel_Pictures/2.jpg",
+            "Panel_Pictures/3.jpg",
+            "Panel_Pictures/4.jpg",
+            "Panel_Pictures/5.jpg",
+            "Panel_Pictures/6.jpg",
+            "Panel_Pictures/7.jpg",
+            "Panel_Pictures/8.jpg",
+            "Panel_Pictures/9.jpg",
         ];
 
         const galleryImageElement =
