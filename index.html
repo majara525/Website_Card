@@ -37,11 +37,6 @@
         }
 
         /* Main centered card container */
-        /* .card-wrapper {
-            max-width: 480px;
-            width: 100%;
-            padding: 24px 16px 40px;
-        } */
         .card-wrapper {
             max-width: 480px;
             width: 100%;
@@ -174,10 +169,26 @@
             margin: 8px 0 18px;
         }
 
+        /* .btn-save-contact {
+            width: 100%;
+            padding: 12px;
+            font-size: 0.9rem;
+        } */
+
         .btn-save-contact {
             width: 100%;
             padding: 12px;
             font-size: 0.9rem;
+            display: flex;                 /* put icon + text on one line */
+            align-items: center;
+            justify-content: center;       /* center them */
+            gap: 8px;                      /* space between icon and text */
+        }
+
+        .save-contact-icon {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
         }
 
         /* 6. Switching gallery area */
@@ -207,7 +218,7 @@
         .gallery-image {
             width: 100%;
             height: auto;         /* let the image decide height */
-            max-height: 450px;    /* optional: avoid gigantic images on huge screens */
+            max-height: 650px;    /* optional: avoid gigantic images on huge screens */
             object-fit: contain;  /* show whole image, don’t crop */
             display: block;
         }
@@ -252,14 +263,22 @@
             font-size: 1rem;
         }
 
+        /* Put dots under the image instead of floating on top */
+        .gallery-card {
+            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            background: #0f172a;
+            display: flex;
+            flex-direction: column;
+        }
+
         .gallery-dots {
-            position: absolute;
-            bottom: 8px;
-            left: 0;
-            right: 0;
+            position: static;               /* no absolute positioning */
             display: flex;
             justify-content: center;
             gap: 6px;
+            padding: 8px 0 4px;             /* space around the dots */
         }
 
         .gallery-dot {
@@ -272,7 +291,7 @@
 
         .gallery-dot.active {
             width: 18px;
-            background: #facc15;
+            background: #B92B31;
         }
 
         /* 7. "Who are we?" text block */
@@ -386,11 +405,11 @@
         }
 
         /* On small screens, stack them (info on top, image below) */
-        @media (max-width: 480px) {
+        /* @media (max-width: 480px) {
             .location-item {
                 grid-template-columns: 1fr;
             }
-        }
+        } */
 
         .location-hours {
             font-size: 0.8rem;
@@ -418,36 +437,32 @@
 
         .social-item {
             cursor: pointer;
-            padding: 10px 8px 12px;
-            border-radius: 10px;          /* rectangular look */
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
+            padding: 4px 0 8px;            /* smaller padding, no frame */
+            border-radius: 0;
+            background: transparent;
+            border: none;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
-            transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
+            gap: 4px;
+            transition: transform 0.1s ease;
         }
 
         .social-item:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.15);
-            background: #eef2ff;
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: none;              /* no fake frame on hover */
+            background: transparent;
         }
 
         .social-item-primary {
-            background: var(--primary);
-            border-color: var(--primary-dark);
-        }
-
-        .social-item-primary .social-label {
-            color: #ffffff;
+            background: transparent;
+            border: none;
         }
 
         .social-icon {
-            width: 36px;
-            height: 36px;
-            object-fit: contain;           /* don’t crop logos */
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
         }
 
         .social-label {
@@ -456,6 +471,7 @@
             color: var(--text-main);
             text-align: center;
         }
+
         .modal-footer {
             margin-top: 10px;
             display: flex;
@@ -571,7 +587,7 @@
                         onclick="openInNewTab('https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw?si=QS M8L7mCb1wOke17')"
                     >
                         <img
-                            src="icons/youtube.png"
+                            src="Icons/youtube.png"
                             alt="YouTube"
                             class="social-icon"
                         />
@@ -597,11 +613,11 @@
                         onclick="openInNewTab('https://api.whatsapp.com/send/?phone=972543618620&text&type=phone_number&app_absent=0')"
                     >
                         <img
-                            src="icons/Whatsapp.png"
+                            src="Icons/Whatsapp.png"
                             alt="WhatsApp"
                             class="social-icon"
                         />
-                        <span class="social-label">WhatsApp</span>
+                        <span class="social-label">واتس اب</span>
                     </div>
 
                     <!-- Phone -->
@@ -631,8 +647,14 @@
                         class="btn btn-primary btn-save-contact"
                         id="saveContactBtn"
                     >
-                        💾 احفظ جهة الاتصال
+                        <img
+                            src="Icons/Contacts.png"
+                            alt=""
+                            class="save-contact-icon"
+                        />
+                        <span>احفظ جهة الاتصال</span>
                     </button>
+
                 </div>
 
                 <!-- 6. GALLERY SECTION (8 images switching) -->
@@ -657,17 +679,29 @@
 
                 <!-- 7. "WHO ARE WE?" TEXT SECTION -->
                 <div class="who-section">
-                    <div class="who-title">من نحن</div>
+                    <div class="who-title">من نحن؟</div>
                     <div class="who-body">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
-                        in aliquet lorem. Integer nec laoreet ipsum. Suspendisse
-                        potenti. Aliquam sed placerat nunc. Praesent molestie, lectus
-                        vel consequat dapibus, lacus quam interdum lorem, sed tempor
-                        leo augue vel erat. <br /><br />
-                        Replace this text later with your real story: who you are, what
-                        your company does, your values and what makes you different.
+                        <p>
+                            كلية تعليمية تمنح الطالب مسارات محتلنة للحصول على شهادات مصدّقة من الوزارات المختصّة.
+                        </p>
+
+                        <p>
+                            كليتنا انفردت ولسنوات بطابعها المتميّز وركّزت جلّ اهتمامها على النقاط التالية:
+                        </p>
+
+                        <ul>
+                            <li>مستوى تعليمي عالٍ ومميّز</li>
+                            <li>شهادات رسمية تضمن لك التميّز والتفوّق</li>
+                            <li>فروع عديدة مجهّزة بكامل التقنيات الحديثة، قريبة من بيتك</li>
+                            <li>توجيه دراسي ومهني على أيدي خبراء في مجال التعليم والعمل</li>
+                        </ul>
+
+                        <p>
+                            اكثر من 30 سنة من الخبرة، المهنيّة، التجدّد والمرافقة من قبل خبراء ومختصين ذوي الكفاءات العالية.
+                        </p>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
