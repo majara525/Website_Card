@@ -28,7 +28,7 @@
             padding: 0;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
                 sans-serif;
-            background: radial-gradient(circle at top, #e0f2fe, #e5e7eb);
+            background: radial-gradient(circle at top, #ffb3b3, #ffe5e5);
             color: var(--text-main);
             display: flex;
             justify-content: center;
@@ -218,7 +218,7 @@
         .gallery-image {
             width: 100%;
             height: auto;         /* let the image decide height */
-            max-height: 650px;    /* optional: avoid gigantic images on huge screens */
+            max-height: 850px;    /* optional: avoid gigantic images on huge screens */
             object-fit: contain;  /* show whole image, don’t crop */
             display: block;
         }
@@ -251,7 +251,7 @@
         .gallery-arrow {
             pointer-events: auto;
             border: none;
-            background: rgba(15, 23, 42, 0.8);
+            background: #B92B31;
             color: #fff;
             width: 32px;
             height: 32px;
@@ -266,9 +266,9 @@
         /* Put dots under the image instead of floating on top */
         .gallery-card {
             position: relative;
-            border-radius: 1rem;
+            border-radius: 0px;
             overflow: hidden;
-            background: #0f172a;
+            background: #fff;
             display: flex;
             flex-direction: column;
         }
@@ -299,8 +299,8 @@
             margin-top: 20px;
             padding: 16px;
             border-radius: 0px;
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
+            background: #fff;
+            border: 1px solid #fff;
         }
 
         .who-title {
@@ -444,7 +444,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
             transition: transform 0.1s ease;
         }
 
@@ -460,8 +460,8 @@
         }
 
         .social-icon {
-            width: 48px;
-            height: 48px;
+            width: 64px;
+            height: 64px;
             object-fit: contain;
         }
 
@@ -545,7 +545,7 @@
                     <!-- Facebook -->
                     <div
                         class="social-item"
-                        onclick="openInNewTab(' : https://m.facebook.com/AlmahadAlaali/')"
+                        onclick="openInNewTab('https://facebook.com/AlmahadAlaali/')"
                     >
                         <img
                             src="Icons/Facebook.png"
@@ -587,7 +587,7 @@
                         onclick="openInNewTab('https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw?si=QS M8L7mCb1wOke17')"
                     >
                         <img
-                            src="Icons/youtube.png"
+                            src="Icons/Youtube.png"
                             alt="YouTube"
                             class="social-icon"
                         />
@@ -745,55 +745,82 @@
 
                 <!-- Location 2 -->
                 <div class="location-item">
-                    <div class="location-name">شفاعمرو</div>
-                    <div class="location-hours">
-                        الاثنين - الجمعه: 10:00 – 20:00<br />
-                        السبت: 10:00 – 14:00<br />
-                        الاحد: مغلق
+                    <div class="location-text">
+                        <div class="location-name">شفاعمرو</div>
+                        <div class="location-hours">
+                            الاثنين - الجمعه: 10:00 – 20:00<br />
+                            السبت: 10:00 – 14:00<br />
+                            الاحد: مغلق
+                        </div>
+                        <a
+                            class="location-link"
+                            href="https://maps.app.goo.gl/XSaB43xGiMdi8KQW9?g_st=aw"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            للذهاب الى الفرع
+                        </a>
                     </div>
-                    <a
-                        class="location-link"
-                        href="https://maps.app.goo.gl/XSaB43xGiMdi8KQW9?g_st=aw"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        للذهاب الى الفرع
-                    </a>
+                    <div class="location-image-wrapper">
+                        <img
+                            src="Branches/Sh.jpg"
+                            alt="Main Branch"
+                            class="location-image"
+                        />
+                    </div>
                 </div>
 
                 <!-- Location 3 -->
                 <div class="location-item">
-                    <div class="location-name">دالية الكرمل</div>
-                    <div class="location-hours">
-                        الاحد - الخميس: 8:00 – 20:00<br />
-                        الجمعه: 10:00 – 14:00<br />
-                        السبت: مغلق
+                    <div class="location-text">
+                        <div class="location-name">دالية الكرمل</div>
+                        <div class="location-hours">
+                            الاحد - الخميس: 8:00 – 20:00<br />
+                            الجمعه: 10:00 – 14:00<br />
+                            السبت: مغلق
+                        </div>
+                        <a
+                            class="location-link"
+                            href="https://maps.app.goo.gl/vBpv4VckYSahChS96?g_st=aw"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            للذهاب الى الفرع
+                        </a>
                     </div>
-                    <a
-                        class="location-link"
-                        href="https://maps.app.goo.gl/vBpv4VckYSahChS96?g_st=aw"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        للذهاب الى الفرع
-                    </a>
+                    <div class="location-image-wrapper">
+                        <img
+                            src="Branches/Carmel.jpg"
+                            alt="Main Branch"
+                            class="location-image"
+                        />
+                    </div>
                 </div>
 
                 <!-- Location 4 -->
                 <div class="location-item">
-                    <div class="location-name">ام الفحم</div>
-                    <div class="location-hours">
-                        السبت – الخميس: 8:00 – 15:00<br />
-                        الجمعه: مغلق
+                    <div class="location-text">
+                        <div class="location-name">ام الفحم</div>
+                        <div class="location-hours">
+                            السبت – الخميس: 8:00 – 15:00<br />
+                            الجمعه: مغلق
+                        </div>
+                        <a
+                            class="location-link"
+                            href="https://maps.app.goo.gl/yr8mBnrJUtRhcKCP7"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            للذهاب الى الفرع
+                        </a>
                     </div>
-                    <a
-                        class="location-link"
-                        href="https://maps.app.goo.gl/yr8mBnrJUtRhcKCP7"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        للذهاب الى الفرع
-                    </a>
+                    <div class="location-image-wrapper">
+                        <img
+                            src="Branches/Am.jpg"
+                            alt="Main Branch"
+                            class="location-image"
+                        />
+                    </div>
                 </div>
             </div>
 
