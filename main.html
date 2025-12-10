@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Digital Visit Card</title>
+
+    <!-- Basic clean styling for the whole page -->
+    <style>
+        :root {
+            --primary: #B92B31;
+            --primary-dark: #B92B31;
+            --accent: #B92B31;
+            --bg: #f4f4f5;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --card-bg: #ffffff;
+            --border-radius-lg: 0px;
+            --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.18);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                sans-serif;
+            /* background: radial-gradient(circle at top, #ffb3b3, #ffe5e5); */
+            background: radial-gradient(circle at top,
+                #B92B31 0%,     /* deep red at the center */
+                #FBC23A 50%,    /* yellow in the middle */
+                #F8CBCB 100%    /* soft light red on the edges */
+            );
+
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        /* Main centered card container */
+        .card-wrapper {
+            max-width: 480px;
+            width: 100%;
+            padding: 24px 16px 40px;
+        }
+
+        /* Tablets */
+        @media (min-width: 768px) {
+            .card-wrapper {
+                max-width: 720px;   /* use more width */
+            }
+        }
+
+        /* Desktop / large screens */
+        @media (min-width: 1024px) {
+            .card-wrapper {
+                max-width: 900px;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 1. Top panel picture (hero) - from right to left */
+        .header-panel {
+            height: 300px;
+            background-image: url("Upper_Back.jpg");
+            background-size: cover;
+            background-position: right center; /* focus on the right side (RTL feel) */
+            position: relative;
+        }
+
+        /* 2. Person picture in the middle (overlapping the panel) */
+        .profile-pic-wrapper {
+            position: absolute;
+            top: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .profile-pic {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 5px solid var(--card-bg);
+            object-fit: cover;
+            background: #e5e7eb;
+        }
+
+        /* Inner content padding (after the header) */
+        .card-content {
+            padding: 90px 24px 24px; /* top padding is big so it clears the profile image */
+        }
+
+        .name-block {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        /* 3. Title + name */
+        .name-title {
+            font-size: 1rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .name-main {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .name-sub {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* 4. Social + communication buttons grid */
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin: 18px 0 10px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 0px;
+            padding: 10px 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: #eef2ff;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
+        }
+
+        .btn span.icon {
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.18);
+            background: #e0e7ff;
+        }
+
+        .btn-primary {
+            background: #FBC23A;
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: #e0aa33;
+        }
+
+        /* 5. Save contact button */
+        .save-contact-wrapper {
+            margin: 8px 0 18px;
+        }
+
+        /* .btn-save-contact {
+            width: 100%;
+            padding: 12px;
+            font-size: 0.9rem;
+        } */
+
+        .btn-save-contact {
+            width: 100%;
+            padding: 12px;
+            font-size: 0.9rem;
+            display: flex;                 /* put icon + text on one line */
+            align-items: center;
+            justify-content: center;       /* center them */
+            gap: 8px;                      /* space between icon and text */
+        }
+
+        .save-contact-icon {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        /* 6. Switching gallery area */
+        .gallery-section {
+            margin-top: 12px;
+        }
+
+        .gallery-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .gallery-card {
+            border-radius: 0px;
+            overflow: hidden;
+            background: #0f172a;
+            position: relative;
+        }
+
+        /* .gallery-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        } */
+        .gallery-image {
+            width: 100%;
+            height: auto;         /* let the image decide height */
+            max-height: 1050px;    /* optional: avoid gigantic images on huge screens */
+            object-fit: contain;  /* show whole image, don’t crop */
+            display: block;
+        }
+
+
+        /* Bigger gallery on larger screens */
+        @media (min-width: 768px) {
+            .gallery-image {
+                height: 280px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .gallery-image {
+                height: 340px;
+            }
+        }
+
+        .gallery-controls {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            transform: translateY(-50%); /* center vertically */
+            pointer-events: none;        /* so the container doesn't block clicks */
+        }
+
+        .gallery-arrow {
+            pointer-events: auto;
+            border: none;
+            background: #B92B31;
+            color: #fff;
+            width: 20px;
+            height: 20px;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.2s ease;
+        }
+
+        /* Put dots under the image instead of floating on top */
+        .gallery-card {
+            position: relative;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gallery-dots {
+            position: static;               /* no absolute positioning */
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 0 4px;             /* space around the dots */
+        }
+
+        .gallery-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 0.5px;
+            background: rgba(121, 131, 147, 0.764);
+            cursor: pointer;
+        }
+
+        .gallery-dot.active {
+            width: 18px;
+            background: #B92B31;
+        }
+
+        /* 7. "Who are we?" text block */
+        .who-section {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 0px;
+            background: #fff;
+            border: 1px solid #fff;
+        }
+
+        .who-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .who-body {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        /* Popup modal for locations & hours */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            display: none; /* hidden by default */
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+        }
+
+        .modal {
+            max-width: 420px;
+            width: 90%;
+            background: #ffffff;
+            border-radius: 2px;
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.4);
+            padding: 18px 18px 16px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .modal-title {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            border: none;
+            background: transparent;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .location-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        /* .location-item {
+            padding: 10px 10px 9px;
+            border-radius: 0px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+        } */
+        .location-item {
+            display: grid;                 /* turn item into a 2-column grid */
+            grid-template-columns: 1.4fr 1fr; /* right = info (bigger), left = image */
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .location-text {
+            text-align: right;             /* because you’re RTL */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .location-name {
+            font-weight: 600;
+            font-size: 0.92rem;
+            margin-bottom: 4px;
+        }
+
+        .location-image-wrapper {
+            border-radius: 1px;
+            overflow: hidden;
+            background: #e5e7eb;
+        }
+
+        .location-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;             /* fill the box, crop if needed */
+            display: block;
+        }
+
+        /* On small screens, stack them (info on top, image below) */
+        /* @media (max-width: 480px) {
+            .location-item {
+                grid-template-columns: 1fr;
+            }
+        } */
+
+        .location-hours {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .location-link {
+            font-size: 0.8rem;
+            text-decoration: none;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .location-link:hover {
+            text-decoration: underline;
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin: 18px 0 10px;
+        }
+
+        .social-item {
+            cursor: pointer;
+            padding: 4px 0 8px;            /* smaller padding, no frame */
+            border-radius: 2;
+            background: transparent;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            transition: transform 0.1s ease;
+        }
+
+        .social-item:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: none;              /* no fake frame on hover */
+            background: transparent;
+        }
+
+        .social-item-primary {
+            background: transparent;
+            border: none;
+        }
+
+        .social-icon {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+        }
+
+        .social-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-main);
+            text-align: center;
+        }
+
+        .modal-footer {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            border-radius: 0px;
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .btn-outline:hover {
+            background: #f3f4f6;
+        }
+
+        @media (max-width: 480px) {
+            .card-content {
+                padding-inline: 18px;
+            }
+
+            .gallery-image {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- MAIN CARD WRAPPER -->
+    <div class="card-wrapper">
+        <div class="card">
+            <!-- 1. TOP PANEL PICTURE -->
+            <div class="header-panel">
+                <!-- 2. PROFILE PICTURE IN THE MIDDLE -->
+                <div class="profile-pic-wrapper">
+                    <img
+                        src="logo.jpg"
+                        alt="Profile"
+                        class="profile-pic"
+                    />
+                </div>
+            </div>
+
+            <!-- MAIN CONTENT -->
+            <div class="card-content">
+                <!-- 3. NAME + TITLE BLOCK -->
+                <div class="name-block">
+                    <!-- <div class="name-title">التعليم الع</div> -->
+                    <div class="name-main">المعهد العالي - شبكة كليات قطرية</div>
+                    <div class="name-sub">الفرع الرئيسي - الناصرة - عمارة بانوراما</div>
+                    <!-- <div class="name-sub">Brand • Strategy • Digital Presence</div> -->
+                </div>
+
+                <!-- 4. SOCIAL + COMMUNICATION BUTTONS (9 buttons) -->
+                <div class="buttons-grid">
+                    <!-- Instagram -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://www.instagram.com/almahad_alali/')"
+                    >
+                        <img
+                            src="Icons/Instagram.png"
+                            alt="Instagram"
+                            class="social-icon"
+                        />
+                        <span class="social-label">انستجرام</span>
+                    </div>
+
+                    <!-- Facebook -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://facebook.com/AlmahadAlaali/')"
+                    >
+                        <img
+                            src="Icons/Facebook.png"
+                            alt="Facebook"
+                            class="social-icon"
+                        />
+                        <span class="social-label">فيسبوك</span>
+                    </div>
+
+                    <!-- TikTok -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://www.tiktok.com/@alm3had_al3ali?_t=8paRr5PIFya&_r=1')"
+                    >
+                        <img
+                            src="Icons/Tiktok.png"
+                            alt="TikTok"
+                            class="social-icon"
+                        />
+                        <span class="social-label">تيك توك</span>
+                    </div>
+
+                    <!-- LinkedIn -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://www.linkedin.com/company/almahad-alali/about/')"
+                    >
+                        <img
+                            src="Icons/Linkedin.png"
+                            alt="LinkedIn"
+                            class="social-icon"
+                        />
+                        <span class="social-label">لينكد ان</span>
+                    </div>
+
+                    <!-- YouTube -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw?si=QS M8L7mCb1wOke17')"
+                    >
+                        <img
+                            src="Icons/Youtube.png"
+                            alt="YouTube"
+                            class="social-icon"
+                        />
+                        <span class="social-label">يوتيوب</span>
+                    </div>
+
+                    <!-- Website -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://almahad-alali.com')"
+                    >
+                        <img
+                            src="Icons/Website.png"
+                            alt="Website"
+                            class="social-icon"
+                        />
+                        <span class="social-label">موقعنا</span>
+                    </div>
+
+                    <!-- WhatsApp -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://api.whatsapp.com/send/?phone=972543618620&text&type=phone_number&app_absent=0')"
+                    >
+                        <img
+                            src="Icons/Whatsapp.png"
+                            alt="WhatsApp"
+                            class="social-icon"
+                        />
+                        <span class="social-label">واتس اب</span>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="social-item" onclick="callPhone()">
+                        <img
+                            src="Icons/Phone.png"
+                            alt="Phone"
+                            class="social-icon"
+                        />
+                        <span class="social-label">اتصل بنا</span>
+                    </div>
+
+                    <!-- Locations (opens popup) -->
+                    <div class="social-item social-item-primary" id="openLocationsBtn">
+                        <img
+                            src="Icons/Maps_New.png"
+                            alt="Branches"
+                            class="social-icon"
+                        />
+                        <span class="social-label">فروعنا</span>
+                    </div>
+                </div>
+
+                <!-- 5. SAVE CONTACT BUTTON -->
+                <div class="save-contact-wrapper">
+                    <button
+                        class="btn btn-primary btn-save-contact"
+                        id="saveContactBtn"
+                    >
+                        <img
+                            src="Icons/Contacts_Yellow.png"
+                            alt=""
+                            class="save-contact-icon"
+                        />
+                        <span>احفظ جهة الاتصال</span>
+                    </button>
+
+                </div>
+
+                <!-- 6. GALLERY SECTION (8 images switching) -->
+                <div class="gallery-section">
+                    <div class="gallery-title">مساقات المعهد</div>
+                    <div class="gallery-card">
+                        <img
+                            id="galleryImage"
+                            class="gallery-image"
+                            src="Panel_Pictures/1.jpg"
+                            alt="Gallery image"
+                        />
+
+                        <div class="gallery-controls">
+                            <button class="gallery-arrow" id="prevImageBtn">‹</button>
+                            <button class="gallery-arrow" id="nextImageBtn">›</button>
+                        </div>
+
+                        <div class="gallery-dots" id="galleryDots"></div>
+                    </div>
+                </div>
+
+                <!-- 7. "WHO ARE WE?" TEXT SECTION -->
+                <div class="who-section">
+                    <div class="who-title">من نحن؟</div>
+                    <div class="who-body">
+                        <p>
+                            كلية تعليمية تمنح الطالب مسارات محتلنة للحصول على شهادات مصدّقة من الوزارات المختصّة.
+                        </p>
+
+                        <p>
+                            كليتنا انفردت ولسنوات بطابعها المتميّز وركّزت جلّ اهتمامها على النقاط التالية:
+                        </p>
+
+                        <ul>
+                            <li>مستوى تعليمي عالٍ ومميّز</li>
+                            <li>شهادات رسمية تضمن لك التميّز والتفوّق</li>
+                            <li>فروع عديدة مجهّزة بكامل التقنيات الحديثة، قريبة من بيتك</li>
+                            <li>توجيه دراسي ومهني على أيدي خبراء في مجال التعليم والعمل</li>
+                        </ul>
+
+                        <p>
+                            اكثر من 30 سنة من الخبرة، المهنيّة، التجدّد والمرافقة من قبل خبراء ومختصين ذوي الكفاءات العالية.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP MODAL FOR 4 LOCATIONS & OPENING HOURS -->
+    <div class="modal-backdrop" id="locationsModalBackdrop">
+        <div class="modal" role="dialog" aria-modal="true">
+            <div class="modal-header">
+                <div class="modal-title">فروعنا وساعات العمل</div>
+                <button class="modal-close" id="closeLocationsBtn" aria-label="اغلف">
+                    ✕
+                </button>
+            </div>
+
+            <div class="location-list">
+                <!-- Location 1 -->
+                <div class="location-item">
+                    <div class="location-text">
+                        <div class="location-name">الناصرة - الفرع الرئيسي</div>
+                        <div class="location-hours">
+                            الاثنين - السبت: 8:00 – 20:00<br />
+                            الاحد: مغلق
+                        </div>
+                        <a
+                            class="location-link"
+                            href="https://share.google/Gl1Nsi9UFp3legJPb"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            للذهاب الى الفرع
+                        </a>
+                    </div>
+                    <div class="location-image-wrapper">
+                        <img
+                            src="Branches/Nazareth.jpg"
+                            alt="Main Branch"
+                            class="location-image"
+                        />
+                    </div>
+                </div>
+
+                <!-- Location 2 -->
+                <div class="location-item">
+                    <div class="location-text">
+                        <div class="location-name">شفاعمرو</div>
+                        <div class="location-hours">
+                            الاثنين - الجمعه: 10:00 – 20:00<br />
+                            السبت: 10:00 – 14:00<br />
+                            الاحد: مغلق
+                        </div>
+                        <a
+                            class="location-link"
+                            href="https://maps.app.goo.gl/XSaB43xGiMdi8KQW9?g_st=aw"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            للذهاب الى الفرع
+                        </a>
+                    </div>
+                    <div class="location-image-wrapper">
+                        <img
+                            src="Branches/Sh.jpg"
+                            alt="Main Branch"
+                            class="location-image"
+                        />
+                    </div>
+                </div>
+
+                <!-- Location 3 -->
+                <div class="location-item">
+                    <div class="location-text">
+                        <div class="location-name">دالية الكرمل</div>
+                        <div class="location-hours">
+                            الاحد - الخميس: 8:00 – 20:00<br />
+                            الجمعه: 10:00 – 14:00<br />
+                            السبت: مغلق
+                        </div>
+                        <a
+                            class="location-link"
+                            href="https://maps.app.goo.gl/vBpv4VckYSahChS96?g_st=aw"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            للذهاب الى الفرع
+                        </a>
+                    </div>
+                    <div class="location-image-wrapper">
+                        <img
+                            src="Branches/Carmel.jpg"
+                            alt="Main Branch"
+                            class="location-image"
+                        />
+                    </div>
+                </div>
+
+                <!-- Location 4 -->
+                <div class="location-item">
+                    <div class="location-text">
+                        <div class="location-name">ام الفحم</div>
+                        <div class="location-hours">
+                            السبت – الخميس: 8:00 – 15:00<br />
+                            الجمعه: مغلق
+                        </div>
+                        <a
+                            class="location-link"
+                            href="https://maps.app.goo.gl/yr8mBnrJUtRhcKCP7"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            للذهاب الى الفرع
+                        </a>
+                    </div>
+                    <div class="location-image-wrapper">
+                        <img
+                            src="Branches/Am.jpg"
+                            alt="Main Branch"
+                            class="location-image"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-outline" id="closeLocationsFooterBtn">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT FOR INTERACTIVITY -->
+    <script>
+        /* Helper to open links in a new tab */
+        function openInNewTab(url) {
+            window.open(url, "_blank", "noopener,noreferrer");
+        }
+
+        /* Helper to trigger phone call */
+        function callPhone() {
+            // Replace with your real phone number later
+            const phoneNumber = "046000645";
+            window.location.href = "tel:" + phoneNumber;
+        }
+
+        /* 5. Save contact as vCard download */
+        const saveContactBtn = document.getElementById("saveContactBtn");
+
+        saveContactBtn.addEventListener("click", () => {
+            // vCard content - replace with your real data later
+            const vcard = [
+                "BEGIN:VCARD",
+                "VERSION:3.0",
+                "N:العالي;المعهد;;;",
+                "FN:المعهد العالي",
+                "ORG:المعهد العالي - شبكة كليات قطرية",
+                // "TITLE:Creative Director",
+                "TEL;TYPE=CELL:046000645",
+                "EMAIL;TYPE=WORK:info@almahad-alali.com",
+                "URL:https://almahad-alali.com",
+                "END:VCARD",
+            ].join("\n");
+
+            const blob = new Blob([vcard], { type: "text/vcard" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "contact.vcf";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        /* Popup modal logic (locations button) */
+        const locationsModalBackdrop = document.getElementById(
+            "locationsModalBackdrop"
+        );
+        const openLocationsBtn =
+            document.getElementById("openLocationsBtn");
+        const closeLocationsBtn =
+            document.getElementById("closeLocationsBtn");
+        const closeLocationsFooterBtn = document.getElementById(
+            "closeLocationsFooterBtn"
+        );
+
+        function openLocationsModal() {
+            locationsModalBackdrop.classList.add("active");
+        }
+
+        function closeLocationsModal() {
+            locationsModalBackdrop.classList.remove("active");
+        }
+
+        openLocationsBtn.addEventListener("click", openLocationsModal);
+        closeLocationsBtn.addEventListener("click", closeLocationsModal);
+        closeLocationsFooterBtn.addEventListener("click", closeLocationsModal);
+
+        // Close modal when clicking outside the card
+        locationsModalBackdrop.addEventListener("click", (e) => {
+            if (e.target === locationsModalBackdrop) {
+                closeLocationsModal();
+            }
+        });
+
+        /* 6. Simple gallery with 8 images + arrows + dots + auto-play */
+        const galleryImages = [
+            "Panel_Pictures/1.jpg",
+            "Panel_Pictures/2.jpg",
+            "Panel_Pictures/3.jpg",
+            "Panel_Pictures/4.jpg",
+            "Panel_Pictures/5.jpg",
+            "Panel_Pictures/6.jpg",
+            "Panel_Pictures/7.jpg",
+            "Panel_Pictures/8.jpg",
+            "Panel_Pictures/9.jpg",
+        ];
+
+        const galleryImageElement =
+            document.getElementById("galleryImage");
+        const prevImageBtn = document.getElementById("prevImageBtn");
+        const nextImageBtn = document.getElementById("nextImageBtn");
+        const galleryDotsContainer =
+            document.getElementById("galleryDots");
+
+        let currentGalleryIndex = 0;
+        let autoPlayInterval = null;
+
+        // Create dots dynamically based on number of images
+        galleryImages.forEach((_, index) => {
+            const dot = document.createElement("div");
+            dot.classList.add("gallery-dot");
+            if (index === 0) dot.classList.add("active");
+
+            dot.addEventListener("click", () => {
+                setGalleryImage(index);
+                restartAutoPlay();
+            });
+
+            galleryDotsContainer.appendChild(dot);
+        });
+
+        const galleryDots = Array.from(
+            document.querySelectorAll(".gallery-dot")
+        );
+
+        function setGalleryImage(index) {
+            currentGalleryIndex = index;
+            galleryImageElement.src = galleryImages[index];
+
+            galleryDots.forEach((dot, i) => {
+                dot.classList.toggle("active", i === index);
+            });
+        }
+
+        function showNextImage() {
+            const nextIndex =
+                (currentGalleryIndex + 1) % galleryImages.length;
+            setGalleryImage(nextIndex);
+        }
+
+        function showPrevImage() {
+            const prevIndex =
+                (currentGalleryIndex - 1 + galleryImages.length) %
+                galleryImages.length;
+            setGalleryImage(prevIndex);
+        }
+
+        nextImageBtn.addEventListener("click", () => {
+            showNextImage();
+            restartAutoPlay();
+        });
+
+        prevImageBtn.addEventListener("click", () => {
+            showPrevImage();
+            restartAutoPlay();
+        });
+
+        // Auto-play logic (change image every 4 seconds)
+        function startAutoPlay() {
+            autoPlayInterval = setInterval(showNextImage, 4000);
+        }
+
+        function restartAutoPlay() {
+            clearInterval(autoPlayInterval);
+            startAutoPlay();
+        }
+
+        // Initialize gallery + autoplay at load
+        setGalleryImage(0);
+        startAutoPlay();
+    </script>
+</body>
+</html>
+
+
