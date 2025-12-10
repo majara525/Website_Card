@@ -73,7 +73,7 @@
 
         /* 1. Top panel picture (hero) - from right to left */
         .header-panel {
-            height: 170px;
+            height: 300px;
             background-image: url("Upper_Back.jpg");
             background-size: cover;
             background-position: right center; /* focus on the right side (RTL feel) */
@@ -162,12 +162,12 @@
         }
 
         .btn-primary {
-            background: var(--primary);
-            color: #ffffff;
+            background: #FBC23A;
+            color: #000;
         }
 
         .btn-primary:hover {
-            background: var(--primary-dark);
+            background: #e0aa33;
         }
 
         /* 5. Save contact button */
@@ -248,10 +248,13 @@
             top: 50%;
             left: 0;
             right: 0;
+
             display: flex;
             justify-content: space-between;
-            transform: translateY(-50%);
-            pointer-events: none;
+            align-items: center;
+
+            transform: translateY(-50%); /* center vertically */
+            pointer-events: none;        /* so the container doesn't block clicks */
         }
 
         .gallery-arrow {
@@ -259,20 +262,21 @@
             border: none;
             background: #B92B31;
             color: #fff;
-            width: 32px;
-            height: 32px;
-            border-radius: 0px;
+            width: 20px;
+            height: 20px;
+            border-radius: 2px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             font-size: 1rem;
+            transition: 0.2s ease;
         }
 
         /* Put dots under the image instead of floating on top */
         .gallery-card {
             position: relative;
-            border-radius: 0px;
+            border-radius: 4px;
             overflow: hidden;
             background: #fff;
             display: flex;
@@ -290,8 +294,8 @@
         .gallery-dot {
             width: 7px;
             height: 7px;
-            border-radius: 0px;
-            background: rgba(249, 250, 251, 0.5);
+            border-radius: 0.5px;
+            background: rgba(121, 131, 147, 0.764);
             cursor: pointer;
         }
 
@@ -340,7 +344,7 @@
             max-width: 420px;
             width: 90%;
             background: #ffffff;
-            border-radius: 0px;
+            border-radius: 2px;
             box-shadow: 0 24px 60px rgba(15, 23, 42, 0.4);
             padding: 18px 18px 16px;
             position: relative;
@@ -398,7 +402,7 @@
         }
 
         .location-image-wrapper {
-            border-radius: 0px;
+            border-radius: 1px;
             overflow: hidden;
             background: #e5e7eb;
         }
@@ -444,7 +448,7 @@
         .social-item {
             cursor: pointer;
             padding: 4px 0 8px;            /* smaller padding, no frame */
-            border-radius: 0;
+            border-radius: 2;
             background: transparent;
             border: none;
             display: flex;
@@ -466,8 +470,8 @@
         }
 
         .social-icon {
-            width: 64px;
-            height: 64px;
+            width: 70px;
+            height: 70px;
             object-fit: contain;
         }
 
@@ -530,6 +534,7 @@
                 <div class="name-block">
                     <!-- <div class="name-title">التعليم الع</div> -->
                     <div class="name-main">المعهد العالي - شبكة كليات قطرية</div>
+                    <div class="name-sub">الفرع الرئيسي - الناصرة - عمارة بانوراما</div>
                     <!-- <div class="name-sub">Brand • Strategy • Digital Presence</div> -->
                 </div>
 
@@ -639,7 +644,7 @@
                     <!-- Locations (opens popup) -->
                     <div class="social-item social-item-primary" id="openLocationsBtn">
                         <img
-                            src="Icons/Maps.png"
+                            src="Icons/Maps_New.png"
                             alt="Branches"
                             class="social-icon"
                         />
@@ -654,7 +659,7 @@
                         id="saveContactBtn"
                     >
                         <img
-                            src="Icons/Contacts.png"
+                            src="Icons/Contacts_Yellow.png"
                             alt=""
                             class="save-contact-icon"
                         />
