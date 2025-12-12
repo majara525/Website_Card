@@ -90,7 +90,8 @@
         /* Desktop / large screens – let the header be taller and show more */
         @media (min-width: 1024px) {
             .header-panel {
-                height: 300px;                 /* try 380–420 until you see all you want */
+                height: 300px;
+                width: auto;                 /* try 380–420 until you see all you want */
                 background-position: center top; /* show more of the top bubble */
             }
         }
@@ -113,7 +114,7 @@
             width: 130px;
             height: 130px;
             border-radius: 50%;
-            border: 5px solid var(--card-bg);
+            /* border: 5px solid var(--card-bg); */
             object-fit: cover;
             background: #e5e7eb;
         }
@@ -153,7 +154,8 @@
                 white-space: normal;       /* allow wrapping */
             }
 
-            .title-line-1,.title-line-2 {
+            .title-line-1,
+            .title-line-2 {
                 display: block;      /* each gets its own line */
             }
 
@@ -204,7 +206,7 @@
 
         .btn-primary {
             background: #FBC23A;
-            color: #000;
+            color: #fff;
         }
 
         .btn-primary:hover {
@@ -490,7 +492,7 @@
             width: 70px;
             height: 70px;
             object-fit: contain;
-            border-radius: 4px;
+            border-radius: 8px;
         }
 
         .social-label {
