@@ -78,7 +78,7 @@
 
         /* 1. Top panel picture (hero) */
         .header-panel {
-            height: 150px;
+            height: 120px;
             background-image: url("../Logo_Ar_Red.png");
             background-size: cover;
             background-position: center top;
@@ -88,8 +88,7 @@
 
         @media (min-width: 1024px) {
             .header-panel {
-                height: 300px;
-                width: auto;
+                height: 250px;
                 background-position: center top;
             }
         }
@@ -114,8 +113,8 @@
 
         .profile-info-image {
             order: 1;
-            width: 160px;
-            height: 160px;
+            width: 200px;
+            height: 200px;
             border-radius: 18px;
             overflow: hidden;
             background: #e5e7eb;
@@ -131,9 +130,16 @@
         .profile-photo {
             width: 100%;
             height: 100%;
+            top: 100px;
             object-fit: cover;   /* fill nicely without white bars */
             display: block;
             border-radius: inherit;
+        }
+        
+        @media (min-width: 1024px) {
+            .profile-photo {
+                top: 220px;
+            }
         }
 
         @media (max-width: 600px) {
@@ -523,10 +529,10 @@
                     <!-- LINKEDIN (UNCOMMENTED AND ACTIVE) -->
                     <div
                         class="social-item"
-                        onclick="openInNewTab('https://www.linkedin.com/company/almahad-alali/about/')"
+                        onclick="openInNewTab('https://www.linkedin.com/')"
                     >
                         <img
-                            src="Icons/Linkedin.png"
+                            src="../Icons/Linkedin.png"
                             alt="LinkedIn"
                             class="social-icon"
                         />
@@ -584,7 +590,7 @@
                     <div class="social-item" id="openWorkTimeBtn">
                         <!-- change icon path/name if needed -->
                         <img
-                            src="../Icons/WorkTime.png"
+                            src="../Icons/Clock.png"
                             alt="Work Time"
                             class="social-icon"
                         />
@@ -766,9 +772,12 @@
 
             <div class="worktime-list">
                 <!-- Edit these lines however you like -->
+                <!--
                 <div class="worktime-line">الاحد - الخميس: 08:00 – 16:00</div>
                 <div class="worktime-line">الجمعة: 08:00 – 13:00</div>
                 <div class="worktime-line">السبت: مغلق</div>
+                -->
+                كل يوم كل اليوم
             </div>
 
             <div class="modal-footer">
