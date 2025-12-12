@@ -85,6 +85,7 @@
             background-size: contain;
             background-position: center top; /* focus on the right side (RTL feel) */
             position: relative;
+            background-repeat: no-repeat;
         }
 
         /* Desktop / large screens – let the header be taller and show more */
@@ -111,12 +112,21 @@
         }
         
         .profile-pic {
-            width: 130px;
-            height: 130px;
+            width: 160px;
+            height: 160px;
             border-radius: 50%;
             /* border: 5px solid var(--card-bg); */
             object-fit: cover;
             background: #e5e7eb;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25); /* 🔹 floating shadow */
+        }
+
+        .profile-pic-wrapper {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .profile-pic-wrapper:hover {
+            transform: translateY(-4px);
         }
 
         /* Inner content padding (after the header) */
@@ -141,28 +151,28 @@
             font-size: 1.6rem;
             font-weight: 700;
             margin-top: 4px;
-            white-space: nowrap;           /* don't auto-wrap */
+            text-align: center;
         }
 
-        .name-main span {
-            display: inline;               /* same line by default */
+        /* default: desktop */
+        .title-desktop {
+            display: inline;
         }
 
-        /* Phone: put each part on its own line */
+        .title-mobile {
+            display: none;
+        }
+
+        /* phones & small tablets */
         @media (max-width: 900px) {
-            .name-main {
-                white-space: normal;       /* allow wrapping */
+            .title-desktop {
+                display: none;   /* hide long single line */
             }
-
-            .title-line-1,
-            .title-line-2 {
-                display: block;      /* each gets its own line */
+            .title-mobile {
+                display: block;  /* show 2-line version */
             }
-
-            .title-separator {
-                display: none;       /* hide the "-" */
-             }
         }
+
 
         .name-sub {
             font-size: 0.9rem;
@@ -176,6 +186,29 @@
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 10px;
             margin: 18px 0 10px;
+        }
+
+        .buttons-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* a row */
+        .buttons-row {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        /* rows with 2 icons: spread them wider */
+        .buttons-row.row-2 {
+            justify-content: space-between;
+        }
+
+        /* rows with 3 icons: center them with equal spacing */
+        .buttons-row.row-3 {
+            justify-content: space-between;
         }
 
         .btn {
@@ -271,7 +304,7 @@
 
         @media (min-width: 1024px) {
             .gallery-image {
-                height: 800px;
+                height: 300px;
             }
         }
 
@@ -574,9 +607,16 @@
                 <div class="name-block">
                     <!-- <div class="name-title">التعليم الع</div> -->
                     <div class="name-main">
+                        <!--
                         <span class="title-line-1">المعهد العالي</span>
                         <span class="title-separator"> - </span>
                         <span class="title-line-2">شبكة كليات قطرية</span>
+                        -->
+                        <span class="title-desktop">المعهد العالي - شبكة كليات قطرية</span>
+                        <span class="title-mobile">
+                            المعهد العالي<br>
+                            شبكة كليات قطرية
+                        </span>
                     </div>
                     <div class="name-sub">الفرع الرئيسي - الناصرة - عمارة بانوراما</div>
                     <!-- <div class="name-sub">Brand • Strategy • Digital Presence</div> -->
@@ -585,114 +625,133 @@
                 <!-- 4. SOCIAL + COMMUNICATION BUTTONS (9 buttons) -->
                 <div class="buttons-grid">
                     <!-- Instagram -->
-                    <div
-                        class="social-item"
-                        onclick="openInNewTab('https://www.instagram.com/almahad_alali/')"
-                    >
-                        <img
-                            src="Icons/Instagram.png"
-                            alt="Instagram"
-                            class="social-icon"
-                        />
-                        <span class="social-label">انستجرام</span>
+                    <div class="buttons-row row-2">
+                        <div
+                            class="social-item"
+                            onclick="openInNewTab('https://www.instagram.com/almahad_alali/')"
+                        >
+                            <img
+                                src="Icons/Instagram.png"
+                                alt="Instagram"
+                                class="social-icon"
+                            />
+                            <span class="social-label">انستجرام</span>
+                        </div>
+
+                        <!-- Facebook -->
+                        <div
+                            class="social-item"
+                            onclick="openInNewTab('https://facebook.com/AlmahadAlaali/')"
+                        >
+                            <img
+                                src="Icons/Facebook.png"
+                                alt="Facebook"
+                                class="social-icon"
+                            />
+                            <span class="social-label">فيسبوك</span>
+                        </div>
+                    </div>
+                    <div class="buttons-row row-3">
+                        <!-- TikTok -->
+                        <div
+                            class="social-item"
+                            onclick="openInNewTab('https://www.tiktok.com/@alm3had_al3ali?_t=8paRr5PIFya&_r=1')"
+                        >
+                            <img
+                                src="Icons/Tiktok.png"
+                                alt="TikTok"
+                                class="social-icon"
+                            />
+                            <span class="social-label">تيك توك</span>
+                        </div>
+
+                        <!-- LinkedIn -->
+                        <div
+                            class="social-item"
+                            onclick="openInNewTab('https://www.linkedin.com/company/almahad-alali/about/')"
+                        >
+                            <img
+                                src="Icons/Linkedin.png"
+                                alt="LinkedIn"
+                                class="social-icon"
+                            />
+                            <span class="social-label">لينكد ان</span>
+                        </div>
+
+                        <!-- YouTube -->
+                        <div
+                            class="social-item"
+                            onclick="openInNewTab('https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw?si=QS M8L7mCb1wOke17')"
+                        >
+                            <img
+                                src="Icons/Youtube.png"
+                                alt="YouTube"
+                                class="social-icon"
+                            />
+                            <span class="social-label">يوتيوب</span>
+                        </div>
                     </div>
 
-                    <!-- Facebook -->
-                    <div
-                        class="social-item"
-                        onclick="openInNewTab('https://facebook.com/AlmahadAlaali/')"
-                    >
-                        <img
-                            src="Icons/Facebook.png"
-                            alt="Facebook"
-                            class="social-icon"
-                        />
-                        <span class="social-label">فيسبوك</span>
-                    </div>
+                    <div class="buttons-row row-3">
+                        <!-- Website -->
+                        <div
+                            class="social-item"
+                            onclick="openInNewTab('https://almahad-alali.com')"
+                        >
+                            <img
+                                src="Icons/Website.png"
+                                alt="Website"
+                                class="social-icon"
+                            />
+                            <span class="social-label">موقعنا</span>
+                        </div>
 
-                    <!-- TikTok -->
-                    <div
-                        class="social-item"
-                        onclick="openInNewTab('https://www.tiktok.com/@alm3had_al3ali?_t=8paRr5PIFya&_r=1')"
-                    >
-                        <img
-                            src="Icons/Tiktok.png"
-                            alt="TikTok"
-                            class="social-icon"
-                        />
-                        <span class="social-label">تيك توك</span>
-                    </div>
+                        <!-- Email -->
+                        <div
+                            class="social-item"
+                            onclick="openInNewTab('mailto:info@almahad-alali.com')"
+                        >
+                            <img
+                                src="Icons/Mail.png"
+                                alt="البريد"
+                                class="social-icon"
+                            />
+                            <span class="social-label">بريدنا الالكتروني</span>
+                        </div>
 
-                    <!-- LinkedIn -->
-                    <div
-                        class="social-item"
-                        onclick="openInNewTab('https://www.linkedin.com/company/almahad-alali/about/')"
-                    >
-                        <img
-                            src="Icons/Linkedin.png"
-                            alt="LinkedIn"
-                            class="social-icon"
-                        />
-                        <span class="social-label">لينكد ان</span>
+                        <!-- WhatsApp -->
+                        <div
+                            class="social-item"
+                            onclick="openInNewTab('https://api.whatsapp.com/send/?phone=972543618620&text&type=phone_number&app_absent=0')"
+                        >
+                            <img
+                                src="Icons/Whatsapp.png"
+                                alt="WhatsApp"
+                                class="social-icon"
+                            />
+                            <span class="social-label">واتس اب</span>
+                        </div>
                     </div>
-
-                    <!-- YouTube -->
-                    <div
-                        class="social-item"
-                        onclick="openInNewTab('https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw?si=QS M8L7mCb1wOke17')"
-                    >
-                        <img
-                            src="Icons/Youtube.png"
-                            alt="YouTube"
-                            class="social-icon"
-                        />
-                        <span class="social-label">يوتيوب</span>
-                    </div>
-
-                    <!-- Website -->
-                    <div
-                        class="social-item"
-                        onclick="openInNewTab('https://almahad-alali.com')"
-                    >
-                        <img
-                            src="Icons/Website.png"
-                            alt="Website"
-                            class="social-icon"
-                        />
-                        <span class="social-label">موقعنا</span>
-                    </div>
-
-                    <!-- WhatsApp -->
-                    <div
-                        class="social-item"
-                        onclick="openInNewTab('https://api.whatsapp.com/send/?phone=972543618620&text&type=phone_number&app_absent=0')"
-                    >
-                        <img
-                            src="Icons/Whatsapp.png"
-                            alt="WhatsApp"
-                            class="social-icon"
-                        />
-                        <span class="social-label">واتس اب</span>
-                    </div>
-
+                    <div class="buttons-row row-2">
                     <!-- Phone -->
-                    <div class="social-item" onclick="callPhone()">
-                        <img
-                            src="Icons/Phone.png"
-                            alt="Phone"
-                            class="social-icon"
-                        />
-                        <span class="social-label">اتصل بنا</span>
-                    </div>
+                        <div class="social-item" onclick="callPhone()">
+                            <img
+                                src="Icons/Phone.png"
+                                alt="Phone"
+                                class="social-icon"
+                            />
+                            <span class="social-label">اتصل بنا</span>
+                        </div>
 
-                    <!-- Locations (opens popup) -->
-                    <div class="social-item social-item-primary" id="openLocationsBtn">
-                        <img
-                            src="Icons/Maps_New.png"
-                            alt="Branches"
-                            class="social-icon"
-                        />
-                        <span class="social-label">فروعنا</span>
+                        <!-- Locations (opens popup) -->
+                        <div class="social-item social-item-primary" id="openLocationsBtn">
+                            <img
+                                src="Icons/Maps_Time.png"
+                                alt="Branches"
+                                class="social-icon"
+                            />
+                            <span class="social-label">فروعنا</span>
+                        </div>
                     </div>
                 </div>
 
@@ -707,7 +766,7 @@
                             alt=""
                             class="save-contact-icon"
                         />
-                        <span>احفظ جهة الاتصال</span>
+                        <span>احفظنا في جهات الاتصال</span>
                     </button>
 
                 </div>
