@@ -73,17 +73,17 @@
 
         /* 1. Top panel picture (hero) - from right to left */
         .header-panel {
-            height: 300px;
+            height: 150px;
             background-image: url("Upper_Back.jpg");
             background-size: cover;
-            background-position: right center; /* focus on the right side (RTL feel) */
+            background-position: center top; /* focus on the right side (RTL feel) */
             position: relative;
         }
 
         /* Desktop / large screens – let the header be taller and show more */
         @media (min-width: 1024px) {
             .header-panel {
-                height: 380px;                 /* try 380–420 until you see all you want */
+                height: 300px;                 /* try 380–420 until you see all you want */
                 background-position: center top; /* show more of the top bubble */
             }
         }
@@ -96,6 +96,12 @@
             transform: translateX(-50%);
         }
 
+        @media (min-width: 1024px) {
+            .profile-pic-wrapper {
+                top: 270px;
+            }
+        }
+        c
         .profile-pic {
             width: 130px;
             height: 130px;
@@ -127,6 +133,26 @@
             font-size: 1.6rem;
             font-weight: 700;
             margin-top: 4px;
+            white-space: nowrap;           /* don't auto-wrap */
+        }
+
+        .name-main span {
+            display: inline;               /* same line by default */
+        }
+
+        /* Phone: put each part on its own line */
+        @media (max-width: 600px) {
+            .name-main {
+                white-space: normal;       /* allow wrapping */
+            }
+
+            .title-line-1,.title-line-2 {
+                display: block;      /* each gets its own line */
+            }
+
+            .title-separator {
+                display: none;       /* hide the "-" */
+             }
         }
 
         .name-sub {
@@ -183,12 +209,6 @@
             margin: 8px 0 18px;
         }
 
-        /* .btn-save-contact {
-            width: 100%;
-            padding: 12px;
-            font-size: 0.9rem;
-        } */
-
         .btn-save-contact {
             width: 100%;
             padding: 12px;
@@ -234,17 +254,17 @@
 
 
         /* Bigger gallery on larger screens */
-        /* @media (min-width: 768px) {
+        @media (min-width: 768px) {
             .gallery-image {
-                height: 280px;
+                height: 768px;
             }
         }
 
         @media (min-width: 1024px) {
             .gallery-image {
-                height: 340px;
+                height: 1024px;
             }
-        } */
+        }
 
         .gallery-controls {
             position: absolute;
@@ -378,12 +398,6 @@
             margin-top: 8px;
         }
 
-        /* .location-item {
-            padding: 10px 10px 9px;
-            border-radius: 0px;
-            border: 1px solid #e5e7eb;
-            background: #f9fafb;
-        } */
         .location-item {
             display: grid;                 /* turn item into a 2-column grid */
             grid-template-columns: 1.4fr 1fr; /* right = info (bigger), left = image */
@@ -417,13 +431,6 @@
             display: block;
         }
 
-        /* On small screens, stack them (info on top, image below) */
-        /* @media (max-width: 480px) {
-            .location-item {
-                grid-template-columns: 1fr;
-            }
-        } */
-
         .location-hours {
             font-size: 0.8rem;
             color: var(--text-muted);
@@ -451,7 +458,7 @@
         .social-item {
             cursor: pointer;
             padding: 4px 0 8px;            /* smaller padding, no frame */
-            border-radius: 2;
+            border-radius: 8px;
             background: transparent;
             border: none;
             display: flex;
@@ -556,7 +563,11 @@
                 <!-- 3. NAME + TITLE BLOCK -->
                 <div class="name-block">
                     <!-- <div class="name-title">التعليم الع</div> -->
-                    <div class="name-main">المعهد العالي - شبكة كليات قطرية</div>
+                    <div class="name-main">
+                        <span class="title-line-1">المعهد العالي</span>
+                        <span class="title-separator"> - </span>
+                        <span class="title-line-2">شبكة كليات قطرية</span>
+                    </div>
                     <div class="name-sub">الفرع الرئيسي - الناصرة - عمارة بانوراما</div>
                     <!-- <div class="name-sub">Brand • Strategy • Digital Presence</div> -->
                 </div>
@@ -860,7 +871,7 @@
 
             <div class="modal-footer">
                 <button class="btn-outline" id="closeLocationsFooterBtn">
-                    Close
+                    أغلق
                 </button>
             </div>
         </div>
