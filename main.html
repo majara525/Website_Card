@@ -115,7 +115,7 @@
             width: 160px;
             height: 160px;
             border-radius: 50%;
-            /* border: 5px solid var(--card-bg); */
+            border: 8px solid var(--card-bg);
             object-fit: cover;
             background: #e5e7eb;
             box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25); /* 🔹 floating shadow */
@@ -125,13 +125,13 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .profile-pic-wrapper:hover {
+        /* .profile-pic-wrapper:hover {
             transform: translateY(-4px);
-        }
+        } */
 
         /* Inner content padding (after the header) */
         .card-content {
-            padding: 90px 24px 24px; /* top padding is big so it clears the profile image */
+            padding: 120px 24px 24px; /* top padding is big so it clears the profile image */
         }
 
         .name-block {
@@ -181,12 +181,12 @@
         }
 
         /* 4. Social + communication buttons grid */
-        .buttons-grid {
+        /* .buttons-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 10px;
             margin: 18px 0 10px;
-        }
+        } */
 
         .buttons-grid {
             display: flex;
@@ -304,7 +304,7 @@
 
         @media (min-width: 1024px) {
             .gallery-image {
-                height: 300px;
+                height: 700px;
             }
         }
 
@@ -490,12 +490,12 @@
             text-decoration: underline;
         }
 
-        .buttons-grid {
+        /* .buttons-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 14px;
             margin: 18px 0 10px;
-        }
+        } */
 
         .social-item {
             cursor: pointer;
@@ -712,7 +712,7 @@
                             onclick="openInNewTab('mailto:info@almahad-alali.com')"
                         >
                             <img
-                                src="Icons/Mail.png"
+                                src="Icons/Mail_New.png"
                                 alt="البريد"
                                 class="social-icon"
                             />
