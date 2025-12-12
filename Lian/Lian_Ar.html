@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>المعهد العالي - شبكة كليات قطرية</title>
+    <link rel="icon" type="image/png" href="Favicon_Transparent.png">
+
+    <!-- Basic clean styling for the whole page -->
+    <style>
+        :root {
+            --primary: #B92B31;
+            --primary-dark: #B92B31;
+            --accent: #B92B31;
+            --bg: #f4f4f5;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --card-bg: #ffffff;
+            --border-radius-lg: 0px;
+            --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.18);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                sans-serif;
+            background: radial-gradient(circle at top,
+                #B92B31 0%,
+                #FBC23A 50%,
+                #F8CBCB 100%
+            );
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+
+            /* 🔒 disable text selection everywhere */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Main centered card container */
+        .card-wrapper {
+            max-width: 480px;
+            width: 100%;
+            padding: 24px 16px 40px;
+        }
+
+        /* Tablets */
+        @media (min-width: 768px) {
+            .card-wrapper {
+                max-width: 720px;
+            }
+        }
+
+        /* Desktop / large screens */
+        @media (min-width: 1024px) {
+            .card-wrapper {
+                max-width: 900px;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 1. Top panel picture (hero) */
+        .header-panel {
+            height: 150px;
+            background-image: url("Upper_Back.jpg");
+            background-size: cover;
+            background-position: center top;
+            position: relative;
+        }
+
+        @media (min-width: 1024px) {
+            .header-panel {
+                height: 300px;
+                width: auto;
+                background-position: center top;
+            }
+        }
+
+        /* Inner content padding (after the header) */
+        .card-content {
+            padding: 24px 24px 24px;
+        }
+
+        /* ==== NEW PROFILE + TEXT ROW UNDER HEADER ==== */
+        .profile-info-row {
+            display: flex;
+            flex-direction: row-reverse; /* RTL: image on the left, text on the right */
+            gap: 16px;
+            align-items: stretch;
+            margin-bottom: 20px;
+        }
+
+        .profile-info-text {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: right;
+        }
+
+        .profile-info-image {
+            flex: 0 0 160px;
+            display: flex;
+            align-items: center;   /* center image vertically if it’s shorter */
+            justify-content: center;
+        }
+
+        .profile-photo {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;   /* no cropping */
+            display: block;
+            border-radius: 0;      /* sharp edges */
+            background: #e5e7eb;
+        }
+
+        @media (max-width: 600px) {
+            .profile-info-row {
+                gap: 10px;
+            }
+            .profile-info-image {
+                flex: 0 0 120px;
+            }
+        }
+
+        .person-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .person-title {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .person-quote {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            font-style: italic;
+        }
+
+        /* 4. Social + communication buttons grid */
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin: 18px 0 10px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 4px;
+            padding: 10px 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: #eef2ff;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
+        }
+
+        .btn span.icon {
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.18);
+            background: #e0e7ff;
+        }
+
+        .btn-primary {
+            background: #FBC23A;
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: #e0aa33;
+        }
+
+        .btn-company {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-company:hover {
+            background: #991f24;
+        }
+
+        /* 5. Buttons row: save contact + company card */
+        .actions-row {
+            margin: 8px 0 18px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .actions-row .btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 0.9rem;
+        }
+
+        .btn-save-contact {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .save-contact-icon {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        /* Social items (icons) */
+        .social-item {
+            cursor: pointer;
+            padding: 4px 0 8px;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            transition: transform 0.1s ease;
+        }
+
+        .social-item:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: none;
+            background: transparent;
+        }
+
+        .social-icon {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .social-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-main);
+            text-align: center;
+        }
+
+        /* Popup modal for locations & hours */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+        }
+
+        .modal {
+            max-width: 420px;
+            width: 90%;
+            background: #ffffff;
+            border-radius: 2px;
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.4);
+            padding: 18px 18px 16px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .modal-title {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            border: none;
+            background: transparent;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .location-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .location-item {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .location-text {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .location-name {
+            font-weight: 600;
+            font-size: 0.92rem;
+            margin-bottom: 4px;
+        }
+
+        .location-image-wrapper {
+            border-radius: 1px;
+            overflow: hidden;
+            background: #e5e7eb;
+        }
+
+        .location-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .location-hours {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .location-link {
+            font-size: 0.8rem;
+            text-decoration: none;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .location-link:hover {
+            text-decoration: underline;
+        }
+
+        .modal-footer {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            border-radius: 0px;
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .btn-outline:hover {
+            background: #f3f4f6;
+        }
+
+        @media (max-width: 480px) {
+            .card-content {
+                padding-inline: 18px;
+            }
+        }
+
+        .lang-switch {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 200;
+            padding: 6px 12px;
+            background: #FBC23A;
+            color: #000;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+        }
+
+        .lang-switch:hover {
+            background: #e0aa33;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="main_he.html" class="lang-switch">עברית</a>
+
+    <div class="card-wrapper">
+        <div class="card">
+            <!-- 1. TOP PANEL PICTURE -->
+            <div class="header-panel"></div>
+
+            <!-- MAIN CONTENT -->
+            <div class="card-content">
+
+                <!-- NEW: PROFILE + TEXT ROW -->
+                <div class="profile-info-row">
+                    <div class="profile-info-text">
+                        <!-- TODO: change name, title, quote per employee -->
+                        <div class="person-name">ليان الجرايسي</div>
+                        <div class="person-title">الادارة كلها</div>
+                        <div class="person-quote">"هاي عشان لما مجد يسألني شو كنت تعملي بالشغل وليش مش مساوية هاي الشغلة 
+                        </div>  
+                    </div>
+                    <div class="profile-info-image">
+                        <!-- TODO: change profile picture source per employee -->
+                        <img
+                            src="Lian/Lian.jpeg"
+                            alt="Profile"
+                            class="profile-photo"
+                        />
+                    </div>
+                </div>
+
+                <!-- 4. SOCIAL + COMMUNICATION BUTTONS -->
+                <div class="buttons-grid">
+                    <!--
+                    ===== OPTIONAL SOCIALS (COMMENTED OUT FOR NOW) =====
+
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://www.instagram.com/almahad_alali/')"
+                    >
+                        <img
+                            src="Icons/Instagram.png"
+                            alt="Instagram"
+                            class="social-icon"
+                        />
+                        <span class="social-label">انستجرام</span>
+                    </div>
+
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://facebook.com/AlmahadAlaali/')"
+                    >
+                        <img
+                            src="Icons/Facebook.png"
+                            alt="Facebook"
+                            class="social-icon"
+                        />
+                        <span class="social-label">فيسبوك</span>
+                    </div>
+
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://www.tiktok.com/@alm3had_al3ali?_t=8paRr5PIFya&_r=1')"
+                    >
+                        <img
+                            src="Icons/Tiktok.png"
+                            alt="TikTok"
+                            class="social-icon"
+                        />
+                        <span class="social-label">تيك توك</span>
+                    </div>
+
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://www.linkedin.com/company/almahad-alali/about/')"
+                    >
+                        <img
+                            src="Icons/Linkedin.png"
+                            alt="LinkedIn"
+                            class="social-icon"
+                        />
+                        <span class="social-label">لينكد ان</span>
+                    </div>
+
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw?si=QS M8L7mCb1wOke17')"
+                    >
+                        <img
+                            src="Icons/Youtube.png"
+                            alt="YouTube"
+                            class="social-icon"
+                        />
+                        <span class="social-label">يوتيوب</span>
+                    </div>
+
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://almahad-alali.com')"
+                    >
+                        <img
+                            src="Icons/Website.png"
+                            alt="Website"
+                            class="social-icon"
+                        />
+                        <span class="social-label">موقعنا</span>
+                    </div>
+                    -->
+
+                    <!-- WhatsApp (KEEP) -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://api.whatsapp.com/send/?phone=972522051516&text&type=phone_number&app_absent=0')"
+                    >
+                        <img
+                            src="Icons/Whatsapp.png"
+                            alt="WhatsApp"
+                            class="social-icon"
+                        />
+                        <span class="social-label">واتس اب</span>
+                    </div>
+
+                    <!-- Phone (KEEP) -->
+                    <div class="social-item" onclick="callPhone()">
+                        <img
+                            src="Icons/Phone.png"
+                            alt="Phone"
+                            class="social-icon"
+                        />
+                        <span class="social-label">اتصل</span>
+                    </div>
+
+                    <!-- Locations (KEEP - POPUP) -->
+                    <div class="social-item" id="openLocationsBtn">
+                        <img
+                            src="Icons/Maps_New.png"
+                            alt="Branches"
+                            class="social-icon"
+                        />
+                        <span class="social-label">فروعنا</span>
+                    </div>
+
+                    <!-- NEW: MAIL ICON -->
+                    <div class="social-item" onclick="handleEmailClick()">
+                        <!-- TODO: point to your mail icon image -->
+                        <img
+                            src="Icons/Mail.png"
+                            alt="Mail"
+                            class="social-icon"
+                        />
+                        <span class="social-label">البريد الإلكتروني</span>
+                    </div>
+                </div>
+
+                <!-- 5. ACTIONS ROW: SAVE CONTACT + COMPANY CARD -->
+                <div class="actions-row">
+                    <button
+                        class="btn btn-primary btn-save-contact"
+                        id="saveContactBtn"
+                    >
+                        <img
+                            src="Icons/Contacts_Transparent.png"
+                            alt=""
+                            class="save-contact-icon"
+                        />
+                        <span>احفظ جهة الاتصال</span>
+                    </button>
+
+                    <!-- TODO: change href in openCompanyCard() JS -->
+                    <button
+                        class="btn btn-company"
+                        onclick="openCompanyCard()"
+                    >
+                        بطاقة الموظفة
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP MODAL FOR 4 LOCATIONS & OPENING HOURS -->
+    <div class="modal-backdrop" id="locationsModalBackdrop">
+        <div class="modal" role="dialog" aria-modal="true">
+            <div class="modal-header">
+                <div class="modal-title">فروعنا وساعات العمل</div>
+                <button class="modal-close" id="closeLocationsBtn" aria-label="اغلف">
+                    ✕
+                </button>
+            </div>
+
+            <div class="location-list">
+                <!-- Location 1 -->
+                <div class="location-item">
+                    <div class="location-text">
+                        <div class="location-name">الناصرة - الفرع الرئيسي</div>
+                        <div class="location-hours">
+                            الاثنين - السبت: 8:00 – 20:00<br />
+                            الاحد: مغلق
+                        </div>
+                        <a
+                            class="location-link"
+                            href="https://share.google/Gl1Nsi9UFp3legJPb"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            للذهاب الى الفرع
+                        </a>
+                    </div>
+                    <div class="location-image-wrapper">
+                        <img
+                            src="Branches/Nazareth.jpg"
+                            alt="Main Branch"
+                            class="location-image"
+                        />
+                    </div>
+                </div>
+
+                <!-- Location 2 -->
+                
+                <div class="location-item">
+                    <div class="location-text">
+                        <div class="location-name">شفاعمرو</div>
+                        <div class="location-hours">
+                            الاثنين - الجمعه: 10:00 – 20:00<br />
+                            السبت: 10:00 – 14:00<br />
+                            الاحد: مغلق
+                        </div>
+                        <a
+                            class="location-link"
+                            href="https://maps.app.goo.gl/XSaB43xGiMdi8KQW9?g_st=aw"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            للذهاب الى الفرع
+                        </a>
+                    </div>
+                    <div class="location-image-wrapper">
+                        <img
+                            src="Branches/Sh.jpg"
+                            alt="Main Branch"
+                            class="location-image"
+                        />
+                    </div>
+                </div>
+
+                <!-- Location 3 -->
+                <div class="location-item">
+                    <div class="location-text">
+                        <div class="location-name">دالية الكرمل</div>
+                        <div class="location-hours">
+                            الاحد - الخميس: 8:00 – 20:00<br />
+                            الجمعه: 10:00 – 14:00<br />
+                            السبت: مغلق
+                        </div>
+                        <a
+                            class="location-link"
+                            href="https://maps.app.goo.gl/vBpv4VckYSahChS96?g_st=aw"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            للذهاب الى الفرع
+                        </a>
+                    </div>
+                    <div class="location-image-wrapper">
+                        <img
+                            src="Branches/Carmel.jpg"
+                            alt="Main Branch"
+                            class="location-image"
+                        />
+                    </div>
+                </div>
+
+                <!-- Location 4 -->
+                <div class="location-item">
+                    <div class="location-text">
+                        <div class="location-name">ام الفحم</div>
+                        <div class="location-hours">
+                            السبت – الخميس: 8:00 – 15:00<br />
+                            الجمعه: مغلق
+                        </div>
+                        <a
+                            class="location-link"
+                            href="https://maps.app.goo.gl/yr8mBnrJUtRhcKCP7"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            للذهاب الى الفرع
+                        </a>
+                    </div>
+                    <div class="location-image-wrapper">
+                        <img
+                            src="Branches/Am.jpg"
+                            alt="Main Branch"
+                            class="location-image"
+                        />
+                    </div>
+                </div>
+                
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-outline" id="closeLocationsFooterBtn">
+                    أغلق
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT FOR INTERACTIVITY -->
+    <script>
+        /* Helper to open links in a new tab */
+        function openInNewTab(url) {
+            window.open(url, "_blank", "noopener,noreferrer");
+        }
+
+        /* Helper to trigger phone call */
+        function callPhone() {
+            // TODO: Replace with this employee's phone number if different
+            const phoneNumber = "+972522051516";
+            window.location.href = "tel:" + phoneNumber;
+        }
+
+        /* NEW: open company visit card URL (red button) */
+        function openCompanyCard() {
+            // TODO: change this to the main company visit-card URL
+            window.location.href = "https://almahad-alali.com"; 
+        }
+
+        /* NEW: mail icon logic – opens mail app + copies to clipboard */
+        function handleEmailClick() {
+            // TODO: change this to this employee's email
+            const email = "jaraysilian@gmail.com";
+
+            // Open default mail app
+            window.location.href = "mailto:" + email;
+
+            // Copy to clipboard
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(email).then(function () {
+                    alert("تم نسخ البريد الإلكتروني إلى الحافظة");
+                }).catch(function () {
+                    // If it fails, we just don't show anything
+                });
+            } else {
+                // Fallback for older browsers
+                const tempInput = document.createElement("input");
+                tempInput.value = email;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempInput);
+                alert("تم نسخ البريد الإلكتروني إلى الحافظة");
+            }
+        }
+
+        /* Save contact as vCard download */
+        const saveContactBtn = document.getElementById("saveContactBtn");
+
+        saveContactBtn.addEventListener("click", () => {
+            // TODO: edit vCard fields per employee
+            const vcard = [
+                "BEGIN:VCARD",
+                "VERSION:3.0",
+                "N:جرايسي;ليان;;;",
+                "FN:ليان جرايسي",
+                "ORG:المعهد العالي - شبكة كليات قطرية",
+                "TITLE:الادارة",
+                "TEL;TYPE=CELL:+972522051516",
+                "EMAIL;TYPE=WORK:jaraysilian@gmail.com",
+                "URL:https://almahad-alali.com",
+                "END:VCARD",
+            ].join("\n");
+
+            const blob = new Blob([vcard], { type: "text/vcard" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "contact.vcf";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        /* Popup modal logic (locations button) */
+        const locationsModalBackdrop = document.getElementById(
+            "locationsModalBackdrop"
+        );
+        const openLocationsBtn =
+            document.getElementById("openLocationsBtn");
+        const closeLocationsBtn =
+            document.getElementById("closeLocationsBtn");
+        const closeLocationsFooterBtn = document.getElementById(
+            "closeLocationsFooterBtn"
+        );
+
+        function openLocationsModal() {
+            locationsModalBackdrop.classList.add("active");
+        }
+
+        function closeLocationsModal() {
+            locationsModalBackdrop.classList.remove("active");
+        }
+
+        openLocationsBtn.addEventListener("click", openLocationsModal);
+        closeLocationsBtn.addEventListener("click", closeLocationsModal);
+        closeLocationsFooterBtn.addEventListener("click", closeLocationsModal);
+
+        // Close modal when clicking outside the card
+        locationsModalBackdrop.addEventListener("click", (e) => {
+            if (e.target === locationsModalBackdrop) {
+                closeLocationsModal();
+            }
+        });
+
+        // Disable right-click everywhere
+        document.addEventListener("contextmenu", function (event) {
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>
