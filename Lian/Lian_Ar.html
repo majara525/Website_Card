@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>المعهد العالي - شبكة كليات قطرية</title>
+    <title>ليان الجرايسي</title>
     <link rel="icon" type="image/png" href="..\Favicon_Transparent.png">
 
     <!-- Basic clean styling for the whole page -->
@@ -72,7 +72,7 @@
             background: var(--card-bg);
             border-radius: var(--border-radius-lg);
             box-shadow: var(--shadow-soft);
-            overflow: hidden;
+            overflow: visible; /* so the photo can “pop out” over the header */
             position: relative;
         }
 
@@ -83,6 +83,7 @@
             background-size: cover;
             background-position: center top;
             position: relative;
+            z-index: 1;
         }
 
         @media (min-width: 1024px) {
@@ -98,45 +99,50 @@
             padding: 24px 24px 24px;
         }
 
-        /* ==== NEW PROFILE + TEXT ROW UNDER HEADER ==== */
+        /* PROFILE IMAGE + TEXT (image centered, overlapping header) */
         .profile-info-row {
             display: flex;
-            flex-direction: row-reverse; /* RTL: image on the left, text on the right */
-            gap: 16px;
-            align-items: stretch;
+            flex-direction: column;    /* stack image then text */
+            align-items: center;
+            justify-content: flex-start;
+            text-align: center;
+            margin-top: -70px;         /* pull section up to overlap the header */
             margin-bottom: 20px;
-        }
-
-        .profile-info-text {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            text-align: right;
+            position: relative;
+            z-index: 2;                /* above header */
         }
 
         .profile-info-image {
-            flex: 0 0 160px;
-            display: flex;
-            align-items: center;   /* center image vertically if it’s shorter */
-            justify-content: center;
+            order: 1;
+            width: 160px;
+            height: 160px;
+            border-radius: 18px;
+            overflow: hidden;
+            background: #e5e7eb;
+            box-shadow: 0 22px 45px rgba(0, 0, 0, 0.45); /* strong shadow “out of screen” */
+        }
+
+        .profile-info-text {
+            order: 2;
+            margin-top: 14px;
+            max-width: 90%;
         }
 
         .profile-photo {
-            max-height: 100%;
-            max-width: 100%;
-            object-fit: contain;   /* no cropping */
+            width: 100%;
+            height: 100%;
+            object-fit: cover;   /* fill nicely without white bars */
             display: block;
-            border-radius: 0;      /* sharp edges */
-            background: #e5e7eb;
+            border-radius: inherit;
         }
 
         @media (max-width: 600px) {
             .profile-info-row {
-                gap: 10px;
+                margin-top: -60px;
             }
             .profile-info-image {
-                flex: 0 0 120px;
+                width: 140px;
+                height: 140px;
             }
         }
 
@@ -194,7 +200,7 @@
 
         .btn-primary {
             background: #FBC23A;
-            color: #000;
+            color: #fff;
         }
 
         .btn-primary:hover {
@@ -270,7 +276,7 @@
             text-align: center;
         }
 
-        /* Popup modal for locations & hours */
+        /* Popup modal for locations & work time */
         .modal-backdrop {
             position: fixed;
             inset: 0;
@@ -389,6 +395,20 @@
             background: #f3f4f6;
         }
 
+        /* Work time text-only layout */
+        .worktime-list {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .worktime-line {
+            line-height: 1.5;
+        }
+
         @media (max-width: 480px) {
             .card-content {
                 padding-inline: 18px;
@@ -402,7 +422,7 @@
             z-index: 200;
             padding: 6px 12px;
             background: #FBC23A;
-            color: #000;
+            color: #fff;
             border-radius: 999px;
             font-size: 0.8rem;
             font-weight: 600;
@@ -417,7 +437,7 @@
 </head>
 <body>
 
-    <a href="mycard.almahad-alali.com/Lian/Lian_He.html" class="lang-switch">עברית</a>
+    <a href="Lian_He.html" class="lang-switch">עברית</a>
 
     <div class="card-wrapper">
         <div class="card">
@@ -427,23 +447,22 @@
             <!-- MAIN CONTENT -->
             <div class="card-content">
 
-                <!-- NEW: PROFILE + TEXT ROW -->
+                <!-- PROFILE PICTURE OVER HEADER + TEXT UNDER IT -->
                 <div class="profile-info-row">
-                    <div class="profile-info-text">
-                        <!-- TODO: change name, title, quote per employee -->
-                        <div class="person-name">ليان الجرايسي</div>
-                        <div class="person-title">الادارة كلها</div>
-                        <div class="person-quote">"هاي عشان لما مجد يسألني شو كنت تعملي بالشغل وليش مش مساوية هاي الشغلة <br>
-                            انا: ولا اشي اياني متبطحة عالشط
-                        </div>  
-                    </div>
                     <div class="profile-info-image">
-                        <!-- TODO: change profile picture source per employee -->
                         <img
                             src="Lian.jpeg"
                             alt="Profile"
                             class="profile-photo"
                         />
+                    </div>
+                    <div class="profile-info-text">
+                        <div class="person-name">ليان الجرايسي</div>
+                        <div class="person-title">الادارة كلها</div>
+                        <div class="person-quote">
+                            "هاي عشان لما مجد يسألني شو كنت تعملي بالشغل وليش مش مساوية هاي الشغلة <br>
+                            انا: ولا اشي اياني متبطحة عالشط"
+                        </div>
                     </div>
                 </div>
 
@@ -490,6 +509,20 @@
 
                     <div
                         class="social-item"
+                        onclick="openInNewTab('https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw?si=QS M8L7mCb1wOke17')"
+                    >
+                        <img
+                            src="Icons/Youtube.png"
+                            alt="YouTube"
+                            class="social-icon"
+                        />
+                        <span class="social-label">يوتيوب</span>
+                    </div>
+                    -->
+
+                    <!-- LINKEDIN (UNCOMMENTED AND ACTIVE) -->
+                    <div
+                        class="social-item"
                         onclick="openInNewTab('https://www.linkedin.com/company/almahad-alali/about/')"
                     >
                         <img
@@ -500,18 +533,7 @@
                         <span class="social-label">لينكد ان</span>
                     </div>
 
-                    <div
-                        class="social-item"
-                        onclick="openInNewTab('https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw?si=QS M8L7mCb1wOke17')"
-                    >
-                        <img
-                            src="Icons/Youtube.png"
-                            alt="YouTube"
-                            class="social-icon"
-                        />
-                        <span class="social-label">يوتيوب</span>
-                    </div>
-
+                    <!-- WEBSITE (NOW COMMENTED OUT)
                     <div
                         class="social-item"
                         onclick="openInNewTab('https://almahad-alali.com')"
@@ -521,11 +543,11 @@
                             alt="Website"
                             class="social-icon"
                         />
-                        <span class="social-label">موقعنا</span>
+                        <span class="social-label">موقع المعهد</span>
                     </div>
                     -->
 
-                    <!-- WhatsApp (KEEP) -->
+                    <!-- WhatsApp -->
                     <div
                         class="social-item"
                         onclick="openInNewTab('https://api.whatsapp.com/send/?phone=972522051516&text&type=phone_number&app_absent=0')"
@@ -538,31 +560,41 @@
                         <span class="social-label">واتس اب</span>
                     </div>
 
-                    <!-- Phone (KEEP) -->
+                    <!-- Phone -->
                     <div class="social-item" onclick="callPhone()">
                         <img
                             src="../Icons/Phone.png"
                             alt="Phone"
                             class="social-icon"
                         />
-                        <span class="social-label">اتصل</span>
+                        <span class="social-label">رقم الهاتف</span>
                     </div>
 
-                    <!-- Locations (KEEP - POPUP) -->
+                    <!-- Locations (POPUP) -->
                     <div class="social-item" id="openLocationsBtn">
                         <img
                             src="../Icons/Maps_New.png"
                             alt="Branches"
                             class="social-icon"
                         />
-                        <span class="social-label">فروعنا</span>
+                        <span class="social-label">فروع المعهد</span>
                     </div>
 
-                    <!-- NEW: MAIL ICON -->
-                    <div class="social-item" onclick="handleEmailClick()">
-                        <!-- TODO: point to your mail icon image -->
+                    <!-- Work Time Table (TEXT-ONLY POPUP) -->
+                    <div class="social-item" id="openWorkTimeBtn">
+                        <!-- change icon path/name if needed -->
                         <img
-                            src="../Icons/Mail.png"
+                            src="../Icons/WorkTime.png"
+                            alt="Work Time"
+                            class="social-icon"
+                        />
+                        <span class="social-label">ساعات العمل</span>
+                    </div>
+
+                    <!-- MAIL ICON -->
+                    <div class="social-item" onclick="handleEmailClick()">
+                        <img
+                            src="../Icons/Mail_New.png"
                             alt="Mail"
                             class="social-icon"
                         />
@@ -584,12 +616,11 @@
                         <span>احفظ جهة الاتصال</span>
                     </button>
 
-                    <!-- TODO: change href in openCompanyCard() JS -->
                     <button
                         class="btn btn-company"
                         onclick="openCompanyCard()"
                     >
-                        بطاقة المعهد
+                        بطاقة المعهد الديجيتالية
                     </button>
                 </div>
 
@@ -635,7 +666,6 @@
                 </div>
 
                 <!-- Location 2 -->
-                
                 <div class="location-item">
                     <div class="location-text">
                         <div class="location-name">شفاعمرو</div>
@@ -714,11 +744,35 @@
                         />
                     </div>
                 </div>
-                
             </div>
 
             <div class="modal-footer">
                 <button class="btn-outline" id="closeLocationsFooterBtn">
+                    أغلق
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP MODAL FOR WORK TIME TABLE (TEXT ONLY) -->
+    <div class="modal-backdrop" id="workTimeModalBackdrop">
+        <div class="modal" role="dialog" aria-modal="true">
+            <div class="modal-header">
+                <div class="modal-title">ساعات العمل</div>
+                <button class="modal-close" id="closeWorkTimeBtn" aria-label="اغلق">
+                    ✕
+                </button>
+            </div>
+
+            <div class="worktime-list">
+                <!-- Edit these lines however you like -->
+                <div class="worktime-line">الاحد - الخميس: 08:00 – 16:00</div>
+                <div class="worktime-line">الجمعة: 08:00 – 13:00</div>
+                <div class="worktime-line">السبت: مغلق</div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-outline" id="closeWorkTimeFooterBtn">
                     أغلق
                 </button>
             </div>
@@ -734,20 +788,17 @@
 
         /* Helper to trigger phone call */
         function callPhone() {
-            // TODO: Replace with this employee's phone number if different
             const phoneNumber = "+972522051516";
             window.location.href = "tel:" + phoneNumber;
         }
 
-        /* NEW: open company visit card URL (red button) */
+        /* open company visit card URL (red button) */
         function openCompanyCard() {
-            // TODO: change this to the main company visit-card URL
-            window.location.href = "https://mycard.almahad-alali.com/main"; 
+            window.location.href = "https://mycard.almahad-alali.com/main";
         }
 
-        /* NEW: mail icon logic – opens mail app + copies to clipboard */
+        /* mail icon logic – opens mail app + copies to clipboard */
         function handleEmailClick() {
-            // TODO: change this to this employee's email
             const email = "jaraysilian@gmail.com";
 
             // Open default mail app
@@ -757,9 +808,7 @@
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(email).then(function () {
                     alert("تم نسخ البريد الإلكتروني إلى الحافظة");
-                }).catch(function () {
-                    // If it fails, we just don't show anything
-                });
+                }).catch(function () { });
             } else {
                 // Fallback for older browsers
                 const tempInput = document.createElement("input");
@@ -776,7 +825,6 @@
         const saveContactBtn = document.getElementById("saveContactBtn");
 
         saveContactBtn.addEventListener("click", () => {
-            // TODO: edit vCard fields per employee
             const vcard = [
                 "BEGIN:VCARD",
                 "VERSION:3.0",
@@ -803,16 +851,10 @@
         });
 
         /* Popup modal logic (locations button) */
-        const locationsModalBackdrop = document.getElementById(
-            "locationsModalBackdrop"
-        );
-        const openLocationsBtn =
-            document.getElementById("openLocationsBtn");
-        const closeLocationsBtn =
-            document.getElementById("closeLocationsBtn");
-        const closeLocationsFooterBtn = document.getElementById(
-            "closeLocationsFooterBtn"
-        );
+        const locationsModalBackdrop = document.getElementById("locationsModalBackdrop");
+        const openLocationsBtn = document.getElementById("openLocationsBtn");
+        const closeLocationsBtn = document.getElementById("closeLocationsBtn");
+        const closeLocationsFooterBtn = document.getElementById("closeLocationsFooterBtn");
 
         function openLocationsModal() {
             locationsModalBackdrop.classList.add("active");
@@ -826,10 +868,33 @@
         closeLocationsBtn.addEventListener("click", closeLocationsModal);
         closeLocationsFooterBtn.addEventListener("click", closeLocationsModal);
 
-        // Close modal when clicking outside the card
         locationsModalBackdrop.addEventListener("click", (e) => {
             if (e.target === locationsModalBackdrop) {
                 closeLocationsModal();
+            }
+        });
+
+        /* Popup modal logic (work time button) */
+        const workTimeModalBackdrop = document.getElementById("workTimeModalBackdrop");
+        const openWorkTimeBtn = document.getElementById("openWorkTimeBtn");
+        const closeWorkTimeBtn = document.getElementById("closeWorkTimeBtn");
+        const closeWorkTimeFooterBtn = document.getElementById("closeWorkTimeFooterBtn");
+
+        function openWorkTimeModal() {
+            workTimeModalBackdrop.classList.add("active");
+        }
+
+        function closeWorkTimeModal() {
+            workTimeModalBackdrop.classList.remove("active");
+        }
+
+        openWorkTimeBtn.addEventListener("click", openWorkTimeModal);
+        closeWorkTimeBtn.addEventListener("click", closeWorkTimeModal);
+        closeWorkTimeFooterBtn.addEventListener("click", closeWorkTimeModal);
+
+        workTimeModalBackdrop.addEventListener("click", (e) => {
+            if (e.target === workTimeModalBackdrop) {
+                closeWorkTimeModal();
             }
         });
 
