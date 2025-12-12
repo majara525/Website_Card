@@ -115,7 +115,8 @@
             width: 160px;
             height: 160px;
             border-radius: 50%;
-            border: 8px solid var(--card-bg);
+            outline: 8px solid white;    /* instead of border */
+            outline-offset: -8px;        /* pulls the outline tight to the image */
             object-fit: cover;
             background: #e5e7eb;
             box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25); /* 🔹 floating shadow */
@@ -134,6 +135,16 @@
             padding: 120px 24px 24px; /* top padding is big so it clears the profile image */
         }
 
+        @media (max-width: 480px) {
+            .card-content {
+                padding-inline: 18px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .card-content {
+                padding-inline:130px 24px 24px; /* more side padding on large screens */
+            }
+        }
         .name-block {
             text-align: center;
             margin-bottom: 16px;
@@ -203,7 +214,10 @@
 
         /* rows with 2 icons: spread them wider */
         .buttons-row.row-2 {
-            justify-content: space-between;
+            /* justify-content: space-between; */
+            display: flex;
+            justify-content: center;
+            gap: 20px;
         }
 
         /* rows with 3 icons: center them with equal spacing */
@@ -554,15 +568,7 @@
             background: #f3f4f6;
         }
 
-        @media (max-width: 480px) {
-            .card-content {
-                padding-inline: 18px;
-            }
-
-            /* .gallery-image {
-                height: 200px;
-            } */
-        }
+        
         .lang-switch {
             position: fixed;         /* stay on screen while scrolling */
             top: 12px;
