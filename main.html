@@ -112,8 +112,8 @@
         }
         
         .profile-pic {
-            width: 160px;
-            height: 160px;
+            width: 155px;
+            height: 155px;
             border-radius: 50%;
             outline: 8px solid white;    /* instead of border */
             outline-offset: -1px;        /* pulls the outline tight to the image */
@@ -125,10 +125,6 @@
         .profile-pic-wrapper {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-
-        /* .profile-pic-wrapper:hover {
-            transform: translateY(-4px);
-        } */
 
         /* Inner content padding (after the header) */
         .card-content {
@@ -142,7 +138,7 @@
         }
         @media (min-width: 1024px) {
             .card-content {
-                padding-inline:130px 24px 24px; /* more side padding on large screens */
+                padding-inline:140px 24px 24px; /* more side padding on large screens */
             }
         }
         .name-block {
@@ -206,30 +202,30 @@
         }
 
         /* a row */
-        .buttons-row {
+        /* .buttons-row {
             display: flex;
             justify-content: center;
             gap: 16px;
-        }
+        }*/
 
         /* rows with 2 icons: spread them wider */
-        .buttons-row.row-2 {
-            /* justify-content: space-between; */
+        /* .buttons-row.row-2 {
+            
             display: flex;
             justify-content: center;
             gap: 30px;
-        }
+        } */
 
-        @media (min-width: 1024px) {
+        /* @media (min-width: 1024px) {
             .buttons-row.row-2 {
                 gap: 240px;
             }
-        }
+        } */
 
         /* rows with 3 icons: center them with equal spacing */
-        .buttons-row.row-3 {
+        /* .buttons-row.row-3 {
             justify-content: space-between;
-        }
+        } */
 
         .btn {
             border: none;
@@ -271,14 +267,20 @@
             margin: 8px 0 18px;
         }
 
+        .save-buttons-row {
+            display: flex;
+            gap: 12px;          /* space between the two buttons */
+        }
+
         .btn-save-contact {
-            width: 100%;
+            /* width: 100%;   <-- remove this line */
+            flex: 1;             /* each button takes 50% of the row */
             padding: 12px;
             font-size: 0.9rem;
-            display: flex;                 /* put icon + text on one line */
+            display: flex;
             align-items: center;
-            justify-content: center;       /* center them */
-            gap: 8px;                      /* space between icon and text */
+            justify-content: center;
+            gap: 8px;
         }
 
         .save-contact-icon {
@@ -637,125 +639,138 @@
                 <!-- 4. SOCIAL + COMMUNICATION BUTTONS (9 buttons) -->
                 <div class="buttons-grid">
                     <!-- Instagram -->
-                    <div class="buttons-row row-2">
-                        <div
-                            class="social-item"
-                            onclick="openInNewTab('https://www.instagram.com/almahad_alali/')"
-                        >
-                            <img
-                                src="Icons/Instagram.png"
-                                alt="Instagram"
-                                class="social-icon"
-                            />
-                            <span class="social-label">انستجرام</span>
-                        </div>
-
-                        <!-- Facebook -->
-                        <div
-                            class="social-item"
-                            onclick="openInNewTab('https://facebook.com/AlmahadAlaali/')"
-                        >
-                            <img
-                                src="Icons/Facebook.png"
-                                alt="Facebook"
-                                class="social-icon"
-                            />
-                            <span class="social-label">فيسبوك</span>
-                        </div>
-                    </div>
-                    <div class="buttons-row row-3">
-                        <!-- TikTok -->
-                        <div
-                            class="social-item"
-                            onclick="openInNewTab('https://www.tiktok.com/@alm3had_al3ali?_t=8paRr5PIFya&_r=1')"
-                        >
-                            <img
-                                src="Icons/Tiktok.png"
-                                alt="TikTok"
-                                class="social-icon"
-                            />
-                            <span class="social-label">تيك توك</span>
-                        </div>
-
-                        <!-- LinkedIn -->
-                        <div
-                            class="social-item"
-                            onclick="openInNewTab('https://www.linkedin.com/company/almahad-alali/about/')"
-                        >
-                            <img
-                                src="Icons/Linkedin.png"
-                                alt="LinkedIn"
-                                class="social-icon"
-                            />
-                            <span class="social-label">لينكد ان</span>
-                        </div>
-
-                        <!-- YouTube -->
-                        <div
-                            class="social-item"
-                            onclick="openInNewTab('https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw?si=QS M8L7mCb1wOke17')"
-                        >
-                            <img
-                                src="Icons/Youtube.png"
-                                alt="YouTube"
-                                class="social-icon"
-                            />
-                            <span class="social-label">يوتيوب</span>
-                        </div>
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://www.instagram.com/almahad_alali/')"
+                    >
+                        <img
+                            src="Icons/Instagram.png"
+                            alt="Instagram"
+                            class="social-icon"
+                        />
+                        <span class="social-label">انستجرام</span>
                     </div>
 
-                    <div class="buttons-row row-3">
-                        <!-- Website -->
-                        <div
-                            class="social-item"
-                            onclick="openInNewTab('https://almahad-alali.com')"
-                        >
-                            <img
-                                src="Icons/Website.png"
-                                alt="Website"
-                                class="social-icon"
-                            />
-                            <span class="social-label">موقعنا</span>
-                        </div>
-
-                        <!-- Email -->
-                        <div
-                            class="social-item"
-                            onclick="openInNewTab('mailto:info@almahad-alali.com')"
-                        >
-                            <img
-                                src="Icons/Mail_New.png"
-                                alt="البريد"
-                                class="social-icon"
-                            />
-                            <span class="social-label">بريدنا الالكتروني</span>
-                        </div>
-
-                        <!-- WhatsApp -->
-                        <div
-                            class="social-item"
-                            onclick="openInNewTab('https://api.whatsapp.com/send/?phone=972543618620&text&type=phone_number&app_absent=0')"
-                        >
-                            <img
-                                src="Icons/Whatsapp.png"
-                                alt="WhatsApp"
-                                class="social-icon"
-                            />
-                            <span class="social-label">واتس اب</span>
-                        </div>
+                    <!-- Facebook -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://facebook.com/AlmahadAlaali/')"
+                    >
+                        <img
+                            src="Icons/Facebook.png"
+                            alt="Facebook"
+                            class="social-icon"
+                        />
+                        <span class="social-label">فيسبوك</span>
                     </div>
-                    <div class="buttons-row row-2">
+                
+                    <!-- TikTok -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://www.tiktok.com/@alm3had_al3ali?_t=8paRr5PIFya&_r=1')"
+                    >
+                        <img
+                            src="Icons/Tiktok.png"
+                            alt="TikTok"
+                            class="social-icon"
+                        />
+                        <span class="social-label">تيك توك</span>
+                    </div>
+
+                    <!-- LinkedIn -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://www.linkedin.com/company/almahad-alali/about/')"
+                    >
+                        <img
+                            src="Icons/Linkedin.png"
+                            alt="LinkedIn"
+                            class="social-icon"
+                        />
+                        <span class="social-label">لينكد ان</span>
+                    </div>
+
+                    <!-- YouTube -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw?si=QS M8L7mCb1wOke17')"
+                    >
+                        <img
+                            src="Icons/Youtube.png"
+                            alt="YouTube"
+                            class="social-icon"
+                        />
+                        <span class="social-label">يوتيوب</span>
+                    </div>
+                    
+                    <!-- Website -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://almahad-alali.com')"
+                    >
+                        <img
+                            src="Icons/Website.png"
+                            alt="Website"
+                            class="social-icon"
+                        />
+                        <span class="social-label">موقعنا</span>
+                    </div>
+
+                    <!-- Email -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('mailto:info@almahad-alali.com')"
+                    >
+                        <img
+                            src="Icons/Mail_New.png"
+                            alt="البريد"
+                            class="social-icon"
+                        />
+                        <span class="social-label">بريدنا الالكتروني</span>
+                    </div>
+
+                    <!-- WhatsApp -->
+                    <div
+                        class="social-item"
+                        onclick="openInNewTab('https://api.whatsapp.com/send/?phone=972543618620&text&type=phone_number&app_absent=0')"
+                    >
+                        <img
+                            src="Icons/Whatsapp.png"
+                            alt="WhatsApp"
+                            class="social-icon"
+                        />
+                        <span class="social-label">واتس اب</span>
+                    </div>
+                
                     <!-- Phone -->
-                        <div class="social-item" onclick="callPhone()">
-                            <img
-                                src="Icons/Phone.png"
-                                alt="Phone"
-                                class="social-icon"
-                            />
-                            <span class="social-label">اتصل بنا</span>
-                        </div>
+                    <div class="social-item" onclick="callPhone()">
+                        <img
+                            src="Icons/Phone.png"
+                            alt="Phone"
+                            class="social-icon"
+                        />
+                        <span class="social-label">اتصل بنا</span>
+                    </div>
 
-                        <!-- Locations (opens popup) -->
+                </div>
+
+                <!-- 5. SAVE CONTACT BUTTON -->
+                <div class="save-contact-wrapper">
+                    <!-- 
+                        <button
+                            class="btn btn-primary btn-save-contact"
+                            id="saveContactBtn"
+                        >
+                            <img
+                                src="Icons/Contacts_Transparent.png"
+                                alt=""
+                                class="save-contact-icon"
+                            />
+                            <span>احفظنا في جهات الاتصال</span>
+                        </button>
+                        <button>
+                    -->
+                    <!-- Locations (opens popup)
                         <div class="social-item social-item-primary" id="openLocationsBtn">
                             <img
                                 src="Icons/Maps_Time.png"
@@ -764,23 +779,35 @@
                             />
                             <span class="social-label">فروعنا</span>
                         </div>
+                        </button> 
+                    -->
+                    <div class="save-buttons-row">
+                        <!-- Save contact -->
+                        <button
+                            class="btn btn-primary btn-save-contact"
+                            id="saveContactBtn"
+                        >
+                            <img
+                                src="Icons/Contacts_Yellow.png"
+                                alt=""
+                                class="save-contact-icon"
+                            />
+                            <span>احفظ جهة الاتصال</span>
+                        </button>
+
+                        <!-- Locations (same id as before so JS still works) -->
+                        <button
+                            class="btn btn-primary btn-save-contact"
+                            id="openLocationsBtn"
+                        >
+                            <img
+                                src="Icons/Maps_New.png"
+                                alt=""
+                                class="save-contact-icon"
+                            />
+                            <span>فروعنا</span>
+                        </button>
                     </div>
-                </div>
-
-                <!-- 5. SAVE CONTACT BUTTON -->
-                <div class="save-contact-wrapper">
-                    <button
-                        class="btn btn-primary btn-save-contact"
-                        id="saveContactBtn"
-                    >
-                        <img
-                            src="Icons/Contacts_Transparent.png"
-                            alt=""
-                            class="save-contact-icon"
-                        />
-                        <span>احفظنا في جهات الاتصال</span>
-                    </button>
-
                 </div>
 
                 <!-- 6. GALLERY SECTION (8 images switching) -->
