@@ -111,20 +111,26 @@
             }
         }
         
-        .profile-pic {
-            width: 155px;
-            height: 155px;
+        .profile-circle {
+            width: 200px;              /* outer circle size */
+            height: 200px;
             border-radius: 50%;
-            outline: 8px solid white;    /* instead of border */
-            outline-offset: -1px;        /* pulls the outline tight to the image */
-            object-fit: cover;
-            background: #e5e7eb;
-            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25); /* 🔹 floating shadow */
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.25);
         }
 
-        .profile-pic-wrapper {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        .profile-pic {
+            width: 88%;                /* smaller image size fixes cropping */
+            height: 88%;
+            object-fit: contain;
         }
+
+        /* .profile-pic-wrapper {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        } */
 
         /* Inner content padding (after the header) */
         .card-content {
@@ -138,7 +144,7 @@
         }
         @media (min-width: 1024px) {
             .card-content {
-                padding-inline:140px 24px 24px; /* more side padding on large screens */
+                padding:140px 24px 24px; /* more side padding on large screens */
             }
         }
         .name-block {
@@ -188,18 +194,18 @@
         }
 
         /* 4. Social + communication buttons grid */
-        /* .buttons-grid {
+        .buttons-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 10px;
             margin: 18px 0 10px;
-        } */
+        }
 
-        .buttons-grid {
+        /* .buttons-grid {
             display: flex;
             flex-direction: column;
             gap: 12px;
-        }
+        } */
 
         /* a row */
         /* .buttons-row {
@@ -607,11 +613,13 @@
             <div class="header-panel">
                 <!-- 2. PROFILE PICTURE IN THE MIDDLE -->
                 <div class="profile-pic-wrapper">
-                    <img
-                        src="logo.jpg"
-                        alt="Profile"
-                        class="profile-pic"
-                    />
+                    <div class="profile-circle">
+                        <img
+                            src="logo.jpg"
+                            alt="Profile"
+                            class="profile-pic"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -788,11 +796,11 @@
                             id="saveContactBtn"
                         >
                             <img
-                                src="Icons/Contacts_Yellow.png"
+                                src="Icons/Contacts_Transparent.png"
                                 alt=""
                                 class="save-contact-icon"
                             />
-                            <span>احفظ جهة الاتصال</span>
+                            <span>احفظنا في جهات الاتصال</span>
                         </button>
 
                         <!-- Locations (same id as before so JS still works) -->
@@ -801,7 +809,7 @@
                             id="openLocationsBtn"
                         >
                             <img
-                                src="Icons/Maps_New.png"
+                                src="Icons/Maps_Time_Transparent.png"
                                 alt=""
                                 class="save-contact-icon"
                             />
