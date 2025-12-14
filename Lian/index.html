@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="Ar" dir="rtl">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -30,9 +30,10 @@
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
                 sans-serif;
             background: radial-gradient(circle at top,
-                #B92B31 0%,
-                #FBC23A 50%,
-                #F8CBCB 100%
+                #B92B31 10%,
+                #3E2428 33%,
+                #353739 67%,
+                #000 100%
             );
             color: var(--text-main);
             display: flex;
@@ -78,9 +79,10 @@
 
         /* 1. Top panel picture (hero) */
         .header-panel {
-            height: 120px;
+            height: 100px;
             background-image: url("../Logo_Ar_Red.png");
-            background-size: cover;
+            background-size: contain;
+            background-repeat: no-repeat;
             background-position: center top;
             position: relative;
             z-index: 1;
@@ -88,24 +90,24 @@
 
         @media (min-width: 1024px) {
             .header-panel {
-                height: 250px;
+                height: 200px;
                 background-position: center top;
             }
         }
 
         /* Inner content padding (after the header) */
         .card-content {
-            padding: 24px 24px 24px;
+            padding: 0px 24px 24px;
         }
 
-        /* PROFILE IMAGE + TEXT (image centered, overlapping header) */
+        /* PROFILE IMAGE + TEXT */
         .profile-info-row {
             display: flex;
             flex-direction: column;    /* stack image then text */
             align-items: center;
             justify-content: flex-start;
             text-align: center;
-            margin-top: -70px;         /* pull section up to overlap the header */
+            margin-top: 0px;
             margin-bottom: 20px;
             position: relative;
             z-index: 2;                /* above header */
@@ -130,21 +132,14 @@
         .profile-photo {
             width: 100%;
             height: 100%;
-            top: 100px;
             object-fit: cover;   /* fill nicely without white bars */
             display: block;
             border-radius: inherit;
         }
-        
-        @media (min-width: 1024px) {
-            .profile-photo {
-                top: 220px;
-            }
-        }
 
         @media (max-width: 600px) {
             .profile-info-row {
-                margin-top: -60px;
+                margin-top: 16px;
             }
             .profile-info-image {
                 width: 140px;
@@ -205,16 +200,16 @@
         }
 
         .btn-primary {
-            background: #FBC23A;
+            background: #353739;
             color: #fff;
         }
 
         .btn-primary:hover {
-            background: #e0aa33;
+            background: #353739;
         }
 
         .btn-company {
-            background: var(--primary);
+            background: #B92B31;
             color: #fff;
         }
 
@@ -243,8 +238,8 @@
         }
 
         .save-contact-icon {
-            width: 20px;
-            height: 20px;
+            width: 34px;
+            height: 34px;
             object-fit: contain;
         }
 
@@ -300,7 +295,7 @@
         .modal {
             max-width: 420px;
             width: 90%;
-            background: #ffffff;
+            background: #ffff;
             border-radius: 2px;
             box-shadow: 0 24px 60px rgba(15, 23, 42, 0.4);
             padding: 18px 18px 16px;
@@ -427,7 +422,7 @@
             left: 12px;
             z-index: 200;
             padding: 6px 12px;
-            background: #FBC23A;
+            background: #353739;
             color: #fff;
             border-radius: 999px;
             font-size: 0.8rem;
@@ -437,13 +432,20 @@
         }
 
         .lang-switch:hover {
-            background: #e0aa33;
+            background: #353739;
         }
+
+        @media (min-width: 1024px) {
+            .lang-switch {
+                background: #B92B31;
+            }
+        }
+
     </style>
 </head>
 <body>
 
-    <a href="Lian_He.html" class="lang-switch">עברית</a>
+    <a href="He.html" class="lang-switch">עברית</a>
 
     <div class="card-wrapper">
         <div class="card">
@@ -453,84 +455,26 @@
             <!-- MAIN CONTENT -->
             <div class="card-content">
 
-                <!-- PROFILE PICTURE OVER HEADER + TEXT UNDER IT -->
+                <!-- PROFILE PICTURE + TEXT -->
                 <div class="profile-info-row">
                     <div class="profile-info-image">
                         <img
-                            src="Lian.jpeg"
+                            id="profilePhoto"
                             alt="Profile"
                             class="profile-photo"
                         />
                     </div>
                     <div class="profile-info-text">
-                        <div class="person-name">ليان الجرايسي</div>
-                        <div class="person-title">الادارة كلها</div>
-                        <div class="person-quote">
-                            "هاي عشان لما مجد يسألني شو كنت تعملي بالشغل وليش مش مساوية هاي الشغلة <br>
-                            انا: ولا اشي اياني متبطحة عالشط"
-                        </div>
+                        <div class="person-name" id="personName"></div>
+                        <div class="person-title" id="personTitle"></div>
+                        <div class="person-quote" id="personQuote"></div>
                     </div>
                 </div>
 
                 <!-- 4. SOCIAL + COMMUNICATION BUTTONS -->
                 <div class="buttons-grid">
-                    <!--
-                    ===== OPTIONAL SOCIALS (COMMENTED OUT FOR NOW) =====
-
-                    <div
-                        class="social-item"
-                        onclick="openInNewTab('https://www.instagram.com/almahad_alali/')"
-                    >
-                        <img
-                            src="Icons/Instagram.png"
-                            alt="Instagram"
-                            class="social-icon"
-                        />
-                        <span class="social-label">انستجرام</span>
-                    </div>
-
-                    <div
-                        class="social-item"
-                        onclick="openInNewTab('https://facebook.com/AlmahadAlaali/')"
-                    >
-                        <img
-                            src="Icons/Facebook.png"
-                            alt="Facebook"
-                            class="social-icon"
-                        />
-                        <span class="social-label">فيسبوك</span>
-                    </div>
-
-                    <div
-                        class="social-item"
-                        onclick="openInNewTab('https://www.tiktok.com/@alm3had_al3ali?_t=8paRr5PIFya&_r=1')"
-                    >
-                        <img
-                            src="Icons/Tiktok.png"
-                            alt="TikTok"
-                            class="social-icon"
-                        />
-                        <span class="social-label">تيك توك</span>
-                    </div>
-
-                    <div
-                        class="social-item"
-                        onclick="openInNewTab('https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw?si=QS M8L7mCb1wOke17')"
-                    >
-                        <img
-                            src="Icons/Youtube.png"
-                            alt="YouTube"
-                            class="social-icon"
-                        />
-                        <span class="social-label">يوتيوب</span>
-                    </div>
-                    -->
-
-                    <!-- LINKEDIN (UNCOMMENTED AND ACTIVE) -->
-                    <div
-                        class="social-item"
-                        onclick="openInNewTab('https://www.linkedin.com/')"
-                    >
+                    <!-- LINKEDIN -->
+                    <div class="social-item" onclick="openLinkedIn()">
                         <img
                             src="../Icons/Linkedin.png"
                             alt="LinkedIn"
@@ -539,7 +483,7 @@
                         <span class="social-label">لينكد ان</span>
                     </div>
 
-                    <!-- WEBSITE (NOW COMMENTED OUT)
+                    <!-- WEBSITE (still commented out if you want later)
                     <div
                         class="social-item"
                         onclick="openInNewTab('https://almahad-alali.com')"
@@ -554,10 +498,7 @@
                     -->
 
                     <!-- WhatsApp -->
-                    <div
-                        class="social-item"
-                        onclick="openInNewTab('https://api.whatsapp.com/send/?phone=972522051516&text&type=phone_number&app_absent=0')"
-                    >
+                    <div class="social-item" onclick="openWhatsApp()">
                         <img
                             src="../Icons/Whatsapp.png"
                             alt="WhatsApp"
@@ -588,7 +529,6 @@
 
                     <!-- Work Time Table (TEXT-ONLY POPUP) -->
                     <div class="social-item" id="openWorkTimeBtn">
-                        <!-- change icon path/name if needed -->
                         <img
                             src="../Icons/Clock.png"
                             alt="Work Time"
@@ -775,14 +715,8 @@
                 </button>
             </div>
 
-            <div class="worktime-list">
-                <!-- Edit these lines however you like -->
-                <!--
-                <div class="worktime-line">الاحد - الخميس: 08:00 – 16:00</div>
-                <div class="worktime-line">الجمعة: 08:00 – 13:00</div>
-                <div class="worktime-line">السبت: مغلق</div>
-                -->
-                كل يوم كل اليوم
+            <div class="worktime-list" id="worktimeList">
+                <!-- Filled by JS from EMPLOYEE.workTime -->
             </div>
 
             <div class="modal-footer">
@@ -793,27 +727,88 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT FOR INTERACTIVITY -->
+    <!-- JAVASCRIPT FOR INTERACTIVITY + TEMPLATE LOGIC -->
     <script>
+        /* ========= EMPLOYEE TEMPLATE DATA ========= */
+        const EMPLOYEE = {
+            name: "ليان جرايسي",
+            familyName: "",
+            title: " مديرة البرامج والتجربة التعليمية",
+            quoteHtml: `لا تنتظر الفرص، بل إصنعها ..`,
+            profileImage: "Lian.jpeg",
+
+            phoneDisplay: "+972522051516",
+            phoneDial: "+972522051516",
+            whatsappNumber: "972522051516",
+            email: "jaraysilian@gmail.com",
+            linkedInUrl: "https://www.linkedin.com/in/lian-jaraysi-018706399/",
+
+            // You can use multiple lines here if you want
+            workTime: [
+                "كل يوم .. كل اليوم .."
+                // "الاحد - الخميس: 08:00 – 16:00",
+                // "الجمعة: 08:00 – 13:00",
+                // "السبت: مغلق"
+            ]
+        };
+
+        const COMPANY_CARD_URL = "https://mycard.almahad-alali.com/main";
+        const COMPANY_SITE_URL = "https://almahad-alali.com";
+
+        /* ========= FILL PAGE CONTENT FROM EMPLOYEE ========= */
+        document.addEventListener("DOMContentLoaded", () => {
+            // Profile
+            document.getElementById("personName").textContent = EMPLOYEE.name;
+            document.getElementById("personTitle").textContent = EMPLOYEE.title;
+            document.getElementById("personQuote").innerHTML = `"${EMPLOYEE.quoteHtml}"`;
+
+            const photo = document.getElementById("profilePhoto");
+            photo.src = EMPLOYEE.profileImage;
+            photo.alt = EMPLOYEE.name;
+
+            // Work time
+            const workList = document.getElementById("worktimeList");
+            workList.innerHTML = "";
+            EMPLOYEE.workTime.forEach(line => {
+                const div = document.createElement("div");
+                div.className = "worktime-line";
+                div.textContent = line;
+                workList.appendChild(div);
+            });
+        });
+
         /* Helper to open links in a new tab */
         function openInNewTab(url) {
             window.open(url, "_blank", "noopener,noreferrer");
         }
 
-        /* Helper to trigger phone call */
+        /* WhatsApp using EMPLOYEE data */
+        function openWhatsApp() {
+            openInNewTab(
+                "https://api.whatsapp.com/send/?phone=" +
+                EMPLOYEE.whatsappNumber +
+                "&text&type=phone_number&app_absent=0"
+            );
+        }
+
+        /* Phone using EMPLOYEE data */
         function callPhone() {
-            const phoneNumber = "+972522051516";
-            window.location.href = "tel:" + phoneNumber;
+            window.location.href = "tel:" + EMPLOYEE.phoneDial;
         }
 
-        /* open company visit card URL (red button) */
+        /* Company visit card URL (red button) */
         function openCompanyCard() {
-            window.location.href = "https://mycard.almahad-alali.com/main";
+            window.location.href = COMPANY_CARD_URL;
         }
 
-        /* mail icon logic – opens mail app + copies to clipboard */
+        /* LinkedIn using EMPLOYEE data */
+        function openLinkedIn() {
+            openInNewTab(EMPLOYEE.linkedInUrl);
+        }
+
+        /* Mail icon logic – opens mail app + copies to clipboard */
         function handleEmailClick() {
-            const email = "jaraysilian@gmail.com";
+            const email = EMPLOYEE.email;
 
             // Open default mail app
             window.location.href = "mailto:" + email;
@@ -835,20 +830,20 @@
             }
         }
 
-        /* Save contact as vCard download */
+        /* Save contact as vCard download (using EMPLOYEE data) */
         const saveContactBtn = document.getElementById("saveContactBtn");
 
         saveContactBtn.addEventListener("click", () => {
             const vcard = [
                 "BEGIN:VCARD",
                 "VERSION:3.0",
-                "N:جرايسي;ليان;;;",
-                "FN:ليان جرايسي",
+                "N:" + EMPLOYEE.familyName + ";" + EMPLOYEE.name + ";;;",
+                "FN:" + EMPLOYEE.name + " " + EMPLOYEE.familyName,
                 "ORG:المعهد العالي - شبكة كليات قطرية",
-                "TITLE:الادارة",
-                "TEL;TYPE=CELL:+972522051516",
-                "EMAIL;TYPE=WORK:jaraysilian@gmail.com",
-                "URL:https://almahad-alali.com",
+                "TITLE:" + EMPLOYEE.title,
+                "TEL;TYPE=CELL:" + EMPLOYEE.phoneDial,
+                "EMAIL;TYPE=WORK:" + EMPLOYEE.email,
+                "URL:" + COMPANY_SITE_URL,
                 "END:VCARD",
             ].join("\n");
 
