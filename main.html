@@ -264,6 +264,11 @@
             background: #FBC23A;
             color: #fff;
         }
+        
+        .btn-primary-location {
+            background: #B92B31;
+            color: #fff;
+        }
 
         .btn-primary:hover {
             background: #e0aa33;
@@ -293,6 +298,12 @@
         .save-contact-icon {
             width: 36px;
             height: 36px;
+            object-fit: contain;
+        }
+
+        .btn-location-icon {
+            width: 40px;
+            height: 40px;
             object-fit: contain;
         }
 
@@ -806,15 +817,15 @@
 
                         <!-- Locations (same id as before so JS still works) -->
                         <button
-                            class="btn btn-primary btn-save-contact"
+                            class="btn btn-primary-location btn-save-contact"
                             id="openLocationsBtn"
                         >
                             <img
                                 src="Icons/Maps_Time_Transparent.png"
                                 alt=""
-                                class="save-contact-icon"
+                                class="btn-location-icon"
                             />
-                            <span>فروعنا</span>
+                            <span>فروعنا وساعات العمل</span>
                         </button>
                     </div>
                 </div>
