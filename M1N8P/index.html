@@ -734,7 +734,7 @@
             name: "فادي",
             familyName: "زعبي",
             title: " مدير فرع ام الفحم  ",
-            //quoteHtml: ,
+            quoteHtml: `الحلم الكبير يبدأ بخطوة...`,
             profileImage: "Fadi.jpeg",
 
             phoneDisplay: "+972526646964",
@@ -759,7 +759,7 @@
             // Profile
             document.getElementById("personName").textContent = EMPLOYEE.name+" "+EMPLOYEE.familyName;
             document.getElementById("personTitle").textContent = EMPLOYEE.title;
-            document.getElementById("personQuote").innerHTML = `"${EMPLOYEE.quoteHtml}"`;
+            // document.getElementById("personQuote").innerHTML = `"${EMPLOYEE.quoteHtml}"`;
 
             const photo = document.getElementById("profilePhoto");
             photo.src = EMPLOYEE.profileImage;
