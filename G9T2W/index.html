@@ -84,17 +84,15 @@
 
     .card-content { padding: 0px 24px 24px; }
 
-    /* ✅ TWO EMPLOYEES COLUMNS */
     .profile-info-row {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 28px;                 /* ✅ spacing between the two employees */
-      justify-items: center;     /* ✅ center each employee column */
+      gap: 28px;
+      justify-items: center;
       text-align: center;
       margin-top: 16px;
     }
 
-    /* ✅ STACK IMAGE ABOVE TEXT */
     .employee {
       display: flex;
       flex-direction: column;
@@ -104,7 +102,6 @@
     }
     .quote-both {
       margin-top: 14px;
-      /*max-width: 90%;*/
       text-align: center;
     }
 
@@ -132,7 +129,7 @@
 
     @media (max-width: 600px) {
       .profile-info-row {
-        grid-template-columns: 1fr;   /* ✅ stack employees vertically on mobile */
+        grid-template-columns: 1fr;
       }
       .profile-info-image {
         width: 140px;
@@ -407,7 +404,6 @@
 
       <div class="card-content">
 
-        <!-- ✅ 2 EMPLOYEES (IMAGE ABOVE TEXT) -->
         <div class="profile-info-row">
           <div class="employee">
             <div class="profile-info-image">
@@ -431,15 +427,18 @@
             </div>
           </div>
         </div>
-        <div class ="quote-both">
-              <div class="person-title" id="personTitle1"></div>
-              <div class="person-quote" id="personQuote1"></div>
+
+        <!-- ✅ FIX: removed duplicate IDs (was personTitle1/personQuote1 again) -->
+        <div class="quote-both">
+          <div class="person-title" id="bothTitle"></div>
+          <div class="person-quote" id="bothQuote"></div>
         </div>
-        <!-- 4. SOCIAL + COMMUNICATION BUTTONS -->
+
         <div class="buttons-grid">
-          <div class="social-item" onclick="openLinkedIn()">
-            <img src="../Icons/Linkedin.png" alt="LinkedIn" class="social-icon" />
-            <span class="social-label">لينكد ان</span>
+          <!-- ✅ FIX: give it an id, remove broken onclick -->
+          <div class="social-item" id="openLinksBtn">
+            <img src="../Icons/Linkedin.png" alt="Links" class="social-icon" />
+            <span class="social-label">روابط</span>
           </div>
 
           <div class="social-item" onclick="openWhatsApp()">
@@ -468,7 +467,6 @@
           </div>
         </div>
 
-        <!-- 5. ACTIONS ROW -->
         <div class="actions-row">
           <button class="btn btn-primary btn-save-contact" id="saveContactBtn">
             <img src="../Icons/Contacts_Transparent.png" alt="" class="save-contact-icon" />
@@ -513,6 +511,46 @@
 
       <div class="modal-footer">
         <button class="btn-outline" id="closeLocationsFooterBtn">أغلق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Links MODAL -->
+  <div class="modal-backdrop" id="linksModalBackdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div class="modal-title">روابط</div>
+        <button class="modal-close" id="closeLinksBtn" aria-label="اغلف">✕</button>
+      </div>
+
+      <div class="location-list">
+        <div class="location-item">
+          <div class="location-text">
+            <a class="location-link" href="https://portal.almahad-alali.com/forms/show/he?logo=1" target="_blank" rel="noopener noreferrer">
+              استمارة تسجيل          
+            </a>
+            <br>
+            <a class="location-link" href="https://hcollege.ravpage.co.il/scholarship.students" target="_blank" rel="noopener noreferrer">
+              رابط طلب منحة
+            </a>
+            <br>
+            <a class="location-link" href="https://www.almahad-alali.com/pay/" target="_blank" rel="noopener noreferrer">
+              دفعة اولى
+            </a>
+            <br>
+            <a class="location-link" href="https://www.mgd-naz.com/services/" target="_blank" rel="noopener noreferrer">
+              دفعة امتحانات
+            </a>
+            <br>
+            <a class="location-link" href="https://hcollege.ravpage.co.il/notification.form" target="_blank" rel="noopener noreferrer">
+              استمارة تغيير مسار او ايقاف التعليم    
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-outline" id="closeLinksFooterBtn">أغلق</button>
       </div>
     </div>
   </div>
@@ -582,6 +620,10 @@
 
       fillEmployee(1, EMPLOYEE);
       fillEmployee(2, EMPLOYEE2);
+
+      // ✅ Fill shared/both quote area (change if you want different content)
+      document.getElementById("bothTitle").textContent = EMPLOYEE.title;
+      document.getElementById("bothQuote").textContent = "";
 
       const workList = document.getElementById("worktimeList");
       workList.innerHTML = "";
@@ -663,6 +705,24 @@
       URL.revokeObjectURL(url);
     });
 
+    /** Links LOGIC */
+    const linksModalBackdrop = document.getElementById("linksModalBackdrop");
+    const openLinksBtn = document.getElementById("openLinksBtn");
+    const closeLinksBtn = document.getElementById("closeLinksBtn");
+    const closeLinksFooterBtn = document.getElementById("closeLinksFooterBtn");
+
+    function openLinksModal() { linksModalBackdrop.classList.add("active"); }
+    function closeLinksModal() { linksModalBackdrop.classList.remove("active"); }
+
+    openLinksBtn.addEventListener("click", openLinksModal);
+    closeLinksBtn.addEventListener("click", closeLinksModal);
+    closeLinksFooterBtn.addEventListener("click", closeLinksModal);
+
+    linksModalBackdrop.addEventListener("click", (e) => {
+      if (e.target === linksModalBackdrop) closeLinksModal();
+    });
+
+    /** Locations LOGIC */
     const locationsModalBackdrop = document.getElementById("locationsModalBackdrop");
     const openLocationsBtn = document.getElementById("openLocationsBtn");
     const closeLocationsBtn = document.getElementById("closeLocationsBtn");
@@ -679,6 +739,7 @@
       if (e.target === locationsModalBackdrop) closeLocationsModal();
     });
 
+    /** Work Time LOGIC */
     const workTimeModalBackdrop = document.getElementById("workTimeModalBackdrop");
     const openWorkTimeBtn = document.getElementById("openWorkTimeBtn");
     const closeWorkTimeBtn = document.getElementById("closeWorkTimeBtn");
