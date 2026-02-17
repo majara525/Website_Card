@@ -437,9 +437,14 @@
         </div>
         <!-- 4. SOCIAL + COMMUNICATION BUTTONS -->
         <div class="buttons-grid">
-          <div class="social-item" onclick="openLinkedIn()">
+          <!-- <div class="social-item" onclick="openLinkedIn()">
             <img src="../Icons/Linkedin.png" alt="LinkedIn" class="social-icon" />
             <span class="social-label">لينكد ان</span>
+          </div> -->
+          
+          <div class="social-item" id="openLinksBtn">
+            <img src="../Icons/Link.png" alt="Links" class="social-icon" />
+            <span class="social-label">روابط</span>
           </div>
 
           <div class="social-item" onclick="openWhatsApp()">
@@ -496,6 +501,34 @@
       <div class="location-list">
         <div class="location-item">
           <div class="location-text">
+            <div class="location-name">شفاعمرو</div>
+            <div class="location-hours">
+                    الاثنين - الجمعه: 10:00 – 20:00<br />
+                    السبت: 10:00 – 14:00<br />
+                    الاحد: مغلق
+            </div>
+                  <a
+                    class="location-link"
+                    href="https://maps.app.goo.gl/XSaB43xGiMdi8KQW9?g_st=aw"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >
+                        للذهاب الى الفرع
+                  </a>
+            </div>
+            <div class="location-image-wrapper">
+              <img
+                  src="../Branches/Sh.jpg"
+                  alt="Main Branch"
+                  class="location-image"
+              />
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="location-list">
+        <div class="location-item">
+          <div class="location-text">
             <div class="location-name">الناصرة - الفرع الرئيسي</div>
             <div class="location-hours">
               الاثنين - السبت: 8:00 – 20:00<br />
@@ -509,7 +542,7 @@
             <img src="../Branches/Nazareth.jpg" alt="Main Branch" class="location-image" />
           </div>
         </div>
-      </div>
+      </div> -->
 
       <div class="modal-footer">
         <button class="btn-outline" id="closeLocationsFooterBtn">أغلق</button>
@@ -529,6 +562,46 @@
 
       <div class="modal-footer">
         <button class="btn-outline" id="closeWorkTimeFooterBtn">أغلق</button>
+      </div>
+    </div>
+  </div>
+
+    <!-- Links MODAL -->
+  <div class="modal-backdrop" id="linksModalBackdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div class="modal-title">روابط</div>
+        <button class="modal-close" id="closeLinksBtn" aria-label="اغلف">✕</button>
+      </div>
+
+      <div class="location-list">
+        <div class="location-item">
+          <div class="location-text">
+            <a class="location-link" href="https://portal.almahad-alali.com/forms/show/he?logo=1" target="_blank" rel="noopener noreferrer">
+              إستمارة تسجيل          
+            </a>
+            <br>
+            <a class="location-link" href="https://hcollege.ravpage.co.il/scholarship.students" target="_blank" rel="noopener noreferrer">
+              إستمارة طلب منحة
+            </a>
+            <br>
+            <a class="location-link" href="https://www.almahad-alali.com/pay/" target="_blank" rel="noopener noreferrer">
+              دفعة أولى
+            </a>
+            <br>
+            <a class="location-link" href="https://www.mgd-naz.com/services/" target="_blank" rel="noopener noreferrer">
+              دفعة إمتحانات
+            </a>
+            <br>
+            <a class="location-link" href="https://hcollege.ravpage.co.il/notification.form" target="_blank" rel="noopener noreferrer">
+              إستمارة تغيير مسار أو إيقاف التعليم    
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-outline" id="closeLinksFooterBtn">أغلق</button>
       </div>
     </div>
   </div>
@@ -681,6 +754,25 @@
       if (e.target === locationsModalBackdrop) closeLocationsModal();
     });
 
+
+    /** Links LOGIC */
+    const linksModalBackdrop = document.getElementById("linksModalBackdrop");
+    const openLinksBtn = document.getElementById("openLinksBtn");
+    const closeLinksBtn = document.getElementById("closeLinksBtn");
+    const closeLinksFooterBtn = document.getElementById("closeLinksFooterBtn");
+
+    function openLinksModal() { linksModalBackdrop.classList.add("active"); }
+    function closeLinksModal() { linksModalBackdrop.classList.remove("active"); }
+
+    openLinksBtn.addEventListener("click", openLinksModal);
+    closeLinksBtn.addEventListener("click", closeLinksModal);
+    closeLinksFooterBtn.addEventListener("click", closeLinksModal);
+
+    linksModalBackdrop.addEventListener("click", (e) => {
+      if (e.target === linksModalBackdrop) closeLinksModal();
+    });
+
+    
     const workTimeModalBackdrop = document.getElementById("workTimeModalBackdrop");
     const openWorkTimeBtn = document.getElementById("openWorkTimeBtn");
     const closeWorkTimeBtn = document.getElementById("closeWorkTimeBtn");
