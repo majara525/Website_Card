@@ -619,6 +619,92 @@
         .lang-switch:hover {
             background: #e0aa33;
         }
+        .ai-floating-btn {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #808080;
+            color: white;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            z-index: 9999;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .ai-floating-btn:hover {
+            transform: scale(1.06);
+            opacity: 0.92;
+        }
+        
+        /* New AI chat button with icon and text */
+        .ai-chat-btn {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            z-index: 9999;
+
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6em;
+
+            padding: 0.9em 1.2em;
+            border-radius: 999px;
+
+            background: #FBC23A;
+            color: #fff;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            font-weight: 600;
+
+            font-size: clamp(14px, 1.8vw, 18px);
+            line-height: 1;
+
+            box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+            transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .ai-chat-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.22);
+        }
+
+        .chat-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.4em;
+            height: 1.4em;
+            flex-shrink: 0;
+        }
+
+        .chat-icon svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .chat-text {
+            white-space: nowrap;
+            font-size: 1em;
+        }
+
+        @media (max-width: 480px) {
+            .ai-chat-btn {
+            bottom: 16px;
+            left: 16px;
+            padding: 0.85em 1em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1176,6 +1262,16 @@
         });
 
     </script>
+    <!--<a href="chat.html" class="ai-floating-btn" aria-label="Open AI chat">
+        المساعدة الذكية
+    </a> -->
+    <a href="chat.html" class="ai-chat-btn" aria-label="Open AI chat">
+        <span class="chat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 4H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3v3l4.2-3H20a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z"/>                </svg>
+        </span>
+        <span class="chat-text">المساعدة الذكية</span>
+    </a>
 </body>
 </html>
 
