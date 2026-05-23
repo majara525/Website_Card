@@ -427,114 +427,123 @@
     </div>
   </div>
 
-  <script>
-    const WORKER_URL = "https://chat-api.almahad-alali.com";
+<script>
+  const WORKER_URL = "https://chat-api.almahad-alali.com";
 
-    const chatBox = document.getElementById("chatBox");
-    const messageInput = document.getElementById("messageInput");
-    const sendBtn = document.getElementById("sendBtn");
-    const statusEl = document.getElementById("status");
+  const chatBox = document.getElementById("chatBox");
+  const messageInput = document.getElementById("messageInput");
+  const sendBtn = document.getElementById("sendBtn");
+  const statusEl = document.getElementById("status");
 
-    function addMessage(text, sender) {
-      const msg = document.createElement("div");
-      msg.className = `message ${sender}`;
+  function getSessionId() {
+    let sessionId = localStorage.getItem("college_ai_session_id");
 
-      const bubble = document.createElement("div");
-      bubble.className = "bubble";
-      bubble.textContent = text;
+    if (!sessionId) {
+      if (crypto && crypto.randomUUID) {
+        sessionId = crypto.randomUUID();
+      } else {
+        sessionId = "session-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+      }
 
-      msg.appendChild(bubble);
-      chatBox.appendChild(msg);
-      chatBox.scrollTop = chatBox.scrollHeight;
+      localStorage.setItem("college_ai_session_id", sessionId);
     }
 
-    async function sendMessage() {
-      const text = messageInput.value.trim();
-      if (!text) return;
+    return sessionId;
+  }
 
-      addMessage(text, "user");
-      messageInput.value = "";
-      statusEl.textContent = "جارٍ كتابة الرد...";
-      sendBtn.disabled = true;
-      messageInput.disabled = true;
+  function addMessage(text, sender) {
+    const msg = document.createElement("div");
+    msg.className = `message ${sender}`;
 
-      try {
-        const response = await fetch(WORKER_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ question: text, user_type: "student", session_id: getSessionId() })
-        });
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = text;
 
-        const textResponse = await response.text();
-        console.log("RAW RESPONSE:", textResponse);
+    msg.appendChild(bubble);
+    chatBox.appendChild(msg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${textResponse}`);
-        }
+  function getArabicErrorMessage(errorCode) {
+    const messages = {
+      EMPTY_QUESTION: "يرجى كتابة السؤال قبل الإرسال.",
+      CORRUPTED_TEXT: "يبدو أن السؤال وصل بشكل غير صحيح. يرجى إعادة كتابته وإرساله مرة أخرى.",
+      UNAUTHORIZED: "تعذر إرسال الطلب حالياً.",
+      METHOD_NOT_ALLOWED: "طريقة الطلب غير صحيحة.",
+      INVALID_JSON: "حدث خطأ في صيغة الطلب.",
+      SERVICE_UNAVAILABLE: "الخدمة غير متاحة حالياً. يرجى المحاولة لاحقاً.",
+      UNKNOWN_ERROR: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."
+    };
 
-        let data;
-        try {
-          data = JSON.parse(textResponse);
-        } catch (e) {
-          throw new Error("Invalid JSON from server");
-        }
+    return messages[errorCode] || messages.UNKNOWN_ERROR;
+  }
 
-        console.log("Full response data:", data);
+  async function sendMessage() {
+    const text = messageInput.value.trim();
 
-        let reply = "";
+    if (!text) {
+      addMessage("يرجى كتابة السؤال قبل الإرسال.", "bot");
+      return;
+    }
 
-        if (typeof data.reply === "string" && data.reply.trim()) {
-          reply = data.reply.trim();
-        } else if (typeof data.output === "string" && data.output.trim()) {
-          reply = data.output.trim();
-        } else if (typeof data.text === "string" && data.text.trim()) {
-          reply = data.text.trim();
-        } else if (typeof data.n8n_text === "string" && data.n8n_text.trim()) {
-          try {
-            const nested = JSON.parse(data.n8n_text);
-            if (typeof nested.reply === "string" && nested.reply.trim()) {
-              reply = nested.reply.trim();
-            } else if (typeof nested.output === "string" && nested.output.trim()) {
-              reply = nested.output.trim();
-            } else if (typeof nested.text === "string" && nested.text.trim()) {
-              reply = nested.text.trim();
-            }
-          } catch (err) {
-            reply = data.n8n_text.trim();
-          }
-        }
+    addMessage(text, "user");
+    messageInput.value = "";
+    statusEl.textContent = "جارٍ كتابة الرد...";
+    sendBtn.disabled = true;
+    messageInput.disabled = true;
 
-        if (reply) {
-          addMessage(reply, "bot");
-        } else {
-          addMessage("لم يتم استلام رد صالح من الخادم.", "bot");
-        }
+    try {
+      const response = await fetch(WORKER_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          question: text,
+          user_type: "student",
+          session_id: getSessionId()
+        })
+      });
 
+      const data = await response.json();
+
+      if (!response.ok) {
+        const errorMessage = data.answer || data.message || getArabicErrorMessage(data.error_code);
+        addMessage(errorMessage, "bot");
         statusEl.textContent = "";
-      } catch (error) {
-        console.error(error);
-        addMessage("حدث خطأ أثناء الاتصال. يرجى المحاولة مرة أخرى.", "bot");
-        statusEl.textContent = "تعذر الاتصال حالياً.";
-      } finally {
-        sendBtn.disabled = false;
-        messageInput.disabled = false;
-        messageInput.focus();
+        return;
       }
+
+      if (typeof data.answer === "string" && data.answer.trim()) {
+        addMessage(data.answer.trim(), "bot");
+      } else {
+        addMessage("لم يتم استلام رد صالح من الخادم.", "bot");
+      }
+
+      statusEl.textContent = "";
+
+    } catch (error) {
+      console.error("Chat connection error:", error);
+      addMessage("حدث خطأ أثناء الاتصال. يرجى المحاولة مرة أخرى.", "bot");
+      statusEl.textContent = "تعذر الاتصال حالياً.";
+    } finally {
+      sendBtn.disabled = false;
+      messageInput.disabled = false;
+      messageInput.focus();
     }
+  }
 
-    sendBtn.addEventListener("click", sendMessage);
+  sendBtn.addEventListener("click", sendMessage);
 
-    messageInput.addEventListener("keydown", function(e) {
-      if (e.key === "Enter" && !sendBtn.disabled) {
-        sendMessage();
-      }
-    });
+  messageInput.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && !sendBtn.disabled) {
+      sendMessage();
+    }
+  });
 
-    document.addEventListener("contextmenu", function(event) {
-      event.preventDefault();
-    });
-  </script>
+  document.addEventListener("contextmenu", function(event) {
+    event.preventDefault();
+  });
+</script>
 </body>
 </html>
