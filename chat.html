@@ -464,7 +464,7 @@
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ message: text })
+          body: JSON.stringify({ question: text, user_type: "student", session_id: getSessionId() })
         });
 
         const textResponse = await response.text();
