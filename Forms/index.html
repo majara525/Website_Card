@@ -1,1 +1,105 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>טופס הודעה על הפסקת /שינוי /הקפאת לימוד</title>
+  <link rel="icon" type="image/png" href="../Favicon_Transparent.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="form-panel" aria-labelledby="form-title">
+      <div class="logo-strip">
+        <img src="../Logo_Ar_Red.png" alt="المعهد العالي" class="logo">
+      </div>
 
+      <header class="form-header">
+        <p class="eyebrow">טופס מקוון</p>
+        <h1 id="form-title">טופס הודעה על הפסקת /שינוי /הקפאת לימוד</h1>
+        <div class="notice-text" aria-label="תנאים והצהרה">
+          <p>אני הרשום/מה מטה מבקש/ת להודיע על הפסקת /שינוי / הקפאת לימודים תחת הפרטים והתנאים הבאים:</p>
+
+          <h2>הקפאת לימודים :</h2>
+          <ul>
+            <li>סטודנט רשאי להגיש הקפאת לימודים בתנאי שעמד בתנאי התשלום .</li>
+            <li>תקופת הקפאת הלימודים לא תעלה על שנתיים מיום ההודעה</li>
+          </ul>
+
+          <h2>שינוי מסלול הלימודים :</h2>
+          <ul>
+            <li>סטודנט רשאי לבקש שינוי או החלפת  מסלול הלימוד בכפוף למגמת הלימודים וזמן הלמידה במסלול.</li>
+          </ul>
+
+          <h2>בהפסקת לימודים יחולו התנאים הבאים:</h2>
+          <ul>
+            <li>הפסקת הלימוד חייבת להיות בכתב.</li>
+            <li>הפסקה ו/או ביטול קורס לפני תחילת          הלימודים מחייב בדמי הרשמה בלבד.</li>
+            <li>הפסקת לימוד בקורס עד 60 שעות            לימוד מחייב בשכר לימוד מלא.</li>
+            <li>הפסקת לימוד בקורס של 60 עד 120        שעות לימוד מחייב ב 25% במהלך חודש    ראשון ומחודש שני ואילך שכר לימוד מלא.</li>
+            <li>הפסקת לימוד בקורס או מסלול שנמשך      יותר מ- 120 שעות לימוד מחייב ב- 25%    באם הלימודים הופסקו בחודש הראשון,      50% בהפסקת לימודים במהלך החודש      השני והשלישי וחיוב 100%בהפסקת          לימוד בחודש הרביעי ואילך.</li>
+          </ul>
+        </div>
+      </header>
+
+      <form class="notice-form" action="https://formspree.io/f/mgojyqyl" method="POST">
+        <input type="hidden" name="_subject" value="טופס הודעה חדש - المعهد العالي">
+        <input type="hidden" name="_language" value="he">
+
+        <div class="field">
+          <label for="full-name">שם מלא</label>
+          <input id="full-name" name="שם מלא" type="text" autocomplete="name" required>
+        </div>
+
+        <div class="field">
+          <label for="phone">טלפון</label>
+          <input id="phone" name="טלפון" type="tel" autocomplete="tel" inputmode="tel" required>
+        </div>
+
+        <div class="field">
+          <label for="email">מייל</label>
+          <input id="email" name="מייל" type="email" autocomplete="email" required>
+        </div>
+
+        <div class="field">
+          <label for="id-number">תעודת זהות</label>
+          <input id="id-number" name="תעודת זהות" type="text" inputmode="numeric" autocomplete="off">
+        </div>
+
+        <div class="field">
+          <label for="branch">סניף</label>
+          <select id="branch" name="סניף" required>
+            <option value="" selected disabled>בחירה</option>
+            <option value="חיפה">חיפה</option>
+            <option value="נצרת">נצרת</option>
+            <option value="כרמל">כרמל</option>
+            <option value="אום אל-פחם">אום אל-פחם</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="course">קורס</label>
+          <input id="course" name="קורס" type="text" autocomplete="off">
+        </div>
+
+        <div class="field full-width">
+          <label for="subject">נושא ההודעה</label>
+          <input id="subject" name="נושא ההודעה" type="text" required>
+        </div>
+
+        <div class="field full-width">
+          <label for="message">הודעה</label>
+          <textarea id="message" name="הודעה" rows="5" required></textarea>
+        </div>
+
+        <label class="checkbox-field full-width" for="confirm">
+          <input id="confirm" name="אישור" type="checkbox" value="מאשר/ת" required>
+          <span>אני מאשר/ת שהפרטים שמסרתי נכונים</span>
+        </label>
+
+        <button class="submit-button" type="submit">שליחה</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>
