@@ -1,0 +1,27 @@
+{
+  "name": "ماسح المستندات",
+  "short_name": "ماسح",
+  "description": "ماسح مستندات يعمل بدون اتصال ويحوّل الصور إلى PDF.",
+  "dir": "rtl",
+  "lang": "ar",
+  "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "/PDF/",
+  "scope": "/PDF/",
+  "theme_color": "#b92b31",
+  "background_color": "#f6f2ef",
+  "icons": [
+    {
+      "src": "/PDF/logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/PDF/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
