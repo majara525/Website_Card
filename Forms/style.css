@@ -136,8 +136,50 @@ h1 {
   gap: 8px;
 }
 
+.conditional-section {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 20px;
+  margin: 8px 0 2px;
+  padding: 22px;
+  border: 1px solid rgba(185, 43, 49, 0.2);
+  border-radius: 8px;
+  background: rgba(251, 194, 58, 0.08);
+}
+
+.conditional-section[hidden] {
+  display: none;
+}
+
+.conditional-section legend {
+  padding: 0 10px;
+  color: var(--red);
+  font-size: 1.12rem;
+  font-weight: 800;
+}
+
+.rules-box {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px;
+  border-right: 4px solid var(--yellow);
+  background: #fff9e8;
+  color: #3f3430;
+  line-height: 1.7;
+}
+
+.rules-box p {
+  margin: 0;
+}
+
+.rules-email-field {
+  display: none;
+}
+
 .full-width,
-.submit-button {
+.submit-button,
+.form-status {
   grid-column: 1 / -1;
 }
 
@@ -209,9 +251,31 @@ textarea:focus {
   transform: translateY(-1px);
 }
 
+.submit-button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+}
+
 .submit-button:focus-visible {
   outline: 4px solid var(--focus);
   outline-offset: 3px;
+}
+
+.form-status {
+  min-height: 24px;
+  margin: -6px 0 0;
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.form-status.success {
+  color: #138a36;
+}
+
+.form-status.error {
+  color: var(--red);
 }
 
 @media (max-width: 680px) {
@@ -226,6 +290,11 @@ textarea:focus {
 
   .notice-form {
     grid-template-columns: 1fr;
+  }
+
+  .conditional-section {
+    grid-template-columns: 1fr;
+    padding: 18px;
   }
 
   .notice-text {

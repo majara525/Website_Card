@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>טופס הודעה על הפסקת /שינוי /הקפאת לימוד</title>
+  <title>טופס שינוי/ הפסקה/ הקפאה</title>
   <link rel="icon" type="image/png" href="../Favicon_Transparent.png">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -11,7 +11,7 @@
   <main class="page-shell">
     <section class="form-panel" aria-labelledby="form-title">
       <div class="logo-strip">
-        <img src="../Logo_Ar_Red.png" alt="المعهد العالي" class="logo">
+        <img src="Logo_red_ar_he.jpg" alt="אלמעהד אלעאלי" class="logo">
       </div>
 
       <header class="form-header">
@@ -37,18 +37,33 @@
             <li>הפסקה ו/או ביטול קורס לפני תחילת          הלימודים מחייב בדמי הרשמה בלבד.</li>
             <li>הפסקת לימוד בקורס עד 60 שעות            לימוד מחייב בשכר לימוד מלא.</li>
             <li>הפסקת לימוד בקורס של 60 עד 120        שעות לימוד מחייב ב 25% במהלך חודש    ראשון ומחודש שני ואילך שכר לימוד מלא.</li>
-            <li>הפסקת לימוד בקורס או מסלול שנמשך      יותר מ- 120 שעות לימוד מחייב ב- 25%    באם הלימודים הופסקו בחודש הראשון,      50% בהפסקת לימודים במהלך החודש      השני והשלישי וחיוב 100%בהפסקת          לימוד בחודש הרביעי ואילך.</li>
+            <li>הפסקת לימוד בקורס או מסלול שנמשך      יותר מ- 120 שעות לימוד מחייב ב- 25%    באם הלימודים הופסקו בחודש הראשון,      50% בהפסקת לימודים במהלך החודש השני והשלישי, וחיוב 100% בהפסקת לימוד בחודש הרביעי ואילך.</li>
           </ul>
         </div>
       </header>
 
-      <form class="notice-form" action="https://formspree.io/f/mgojyqyl" method="POST">
+      <form class="notice-form" action="https://formspree.io/f/mgojyqyl" method="POST" novalidate>
         <input type="hidden" name="_subject" value="טופס הודעה חדש - المعهد العالي">
         <input type="hidden" name="_language" value="he">
 
+        <div class="field full-width">
+          <label for="request-type">סוג הבקשה</label>
+          <select id="request-type" name="סוג הבקשה" required>
+            <option value="" selected disabled>בחירה</option>
+            <option value="שינוי מסלול">שינוי מסלול</option>
+            <option value="הקפאת לימודים">הקפאת לימודים</option>
+            <option value="הפסקת לימודים">הפסקת לימודים</option>
+          </select>
+        </div>
+
         <div class="field">
-          <label for="full-name">שם מלא</label>
-          <input id="full-name" name="שם מלא" type="text" autocomplete="name" required>
+          <label for="first-name">שם פרטי</label>
+          <input id="first-name" name="שם פרטי" type="text" autocomplete="given-name" required>
+        </div>
+
+        <div class="field">
+          <label for="last-name">שם משפחה</label>
+          <input id="last-name" name="שם משפחה" type="text" autocomplete="family-name" required>
         </div>
 
         <div class="field">
@@ -63,43 +78,238 @@
 
         <div class="field">
           <label for="id-number">תעודת זהות</label>
-          <input id="id-number" name="תעודת זהות" type="text" inputmode="numeric" autocomplete="off">
+          <input id="id-number" name="תעודת זהות" type="text" inputmode="numeric" autocomplete="off" pattern="[0-9]{9}" required>
+        </div>
+
+        <div class="field">
+          <label for="course">תיאור מסלול</label>
+          <input id="course" name="תיאור מסלול" type="text" autocomplete="off" required>
         </div>
 
         <div class="field">
           <label for="branch">סניף</label>
           <select id="branch" name="סניף" required>
             <option value="" selected disabled>בחירה</option>
-            <option value="חיפה">חיפה</option>
             <option value="נצרת">נצרת</option>
-            <option value="כרמל">כרמל</option>
+            <option value="שפרעם">שפרעם</option>
+            <option value="דאלית אל-כרמל">דאלית אל-כרמל</option>
             <option value="אום אל-פחם">אום אל-פחם</option>
           </select>
         </div>
 
         <div class="field">
-          <label for="course">קורס</label>
-          <input id="course" name="קורס" type="text" autocomplete="off">
+          <label for="staff-guide">שם איש הצוות שליווה את התהליך</label>
+          <input id="staff-guide" name="שם איש הצוות שליווה את התהליך" type="text" autocomplete="off" required>
         </div>
 
-        <div class="field full-width">
-          <label for="subject">נושא ההודעה</label>
-          <input id="subject" name="נושא ההודעה" type="text" required>
-        </div>
+        <fieldset class="conditional-section" data-request-section="שינוי מסלול" hidden disabled>
+          <legend>שינוי מסלול</legend>
 
-        <div class="field full-width">
-          <label for="message">הודעה</label>
-          <textarea id="message" name="הודעה" rows="5" required></textarea>
-        </div>
+          <div class="field">
+            <label for="switch-subject">לאיזה נושא / מסלול תרצה/י לעבור</label>
+            <input id="switch-subject" name="לאיזה נושא / מסלול תרצה/י לעבור" type="text" autocomplete="off" required>
+          </div>
+
+          <div class="field">
+            <label for="switch-reason-short">תיאור הסיבה</label>
+            <input id="switch-reason-short" name="תיאור הסיבה" type="text" autocomplete="off" required>
+          </div>
+
+          <div class="field full-width">
+            <label for="switch-details">פירוט</label>
+            <textarea id="switch-details" name="פירוט" rows="5" required></textarea>
+          </div>
+
+          <label class="checkbox-field full-width" for="switch-consultant">
+            <input id="switch-consultant" name="בקשה לחזרת יועץ/ת" type="checkbox" value="כן">
+            <span>אני מעוניין/ת שיועץ/ת יחזור/תחזור אליי</span>
+          </label>
+
+          <div class="rules-box full-width">
+            <p>שינוי מסלול הלימודים :</p>
+            <p>סטודנט רשאי לבקש שינוי או החלפת  מסלול הלימוד בכפוף למגמת הלימודים וזמן הלמידה במסלול.</p>
+          </div>
+          <textarea class="rules-email-field" name="תנאי שינוי מסלול הלימודים" readonly>שינוי מסלול הלימודים :
+
+סטודנט רשאי לבקש שינוי או החלפת  מסלול הלימוד בכפוף למגמת הלימודים וזמן הלמידה במסלול.</textarea>
+
+          <label class="checkbox-field full-width" for="switch-rules-confirm">
+            <input id="switch-rules-confirm" name="אישור קריאת תנאי שינוי מסלול" type="checkbox" value="קראתי והבנתי" required>
+            <span>קראתי והבנתי את התנאי הזה</span>
+          </label>
+        </fieldset>
+
+        <fieldset class="conditional-section" data-request-section="הקפאת לימודים" hidden disabled>
+          <legend>הקפאת לימודים</legend>
+
+          <div class="field full-width">
+            <label for="freeze-period">תקופת ההקפאה / דחיית הלימודים המבוקשת</label>
+            <input id="freeze-period" name="תקופת ההקפאה / דחיית הלימודים המבוקשת" type="text" autocomplete="off" required>
+          </div>
+
+          <label class="checkbox-field full-width" for="freeze-consultant">
+            <input id="freeze-consultant" name="בקשה לחזרת יועץ/ת" type="checkbox" value="כן">
+            <span>אני מעוניין/ת שיועץ/ת יחזור/תחזור אליי</span>
+          </label>
+
+          <div class="rules-box full-width">
+            <p>הקפאת לימודים :</p>
+            <p>- סטודנט רשאי להגיש הקפאת לימודים בתנאי שעמד בתנאי התשלום.</p>
+            <p>- תקופת הקפאת הלימודים לא תעלה על שנתיים מיום ההודעה.</p>
+            <p>- התאריך הקובע להקפאת הלימודים הוא תאריך שידור בקשת ההקפאה בטופס זה.</p>
+          </div>
+          <textarea class="rules-email-field" name="תנאי הקפאת לימודים" readonly>הקפאת לימודים :
+
+- סטודנט רשאי להגיש הקפאת לימודים בתנאי שעמד בתנאי התשלום.
+
+- תקופת הקפאת הלימודים לא תעלה על שנתיים מיום ההודעה.
+
+- התאריך הקובע להקפאת הלימודים הוא תאריך שידור בקשת ההקפאה בטופס זה.</textarea>
+
+          <label class="checkbox-field full-width" for="freeze-rules-confirm">
+            <input id="freeze-rules-confirm" name="אישור קריאת תנאי הקפאת לימודים" type="checkbox" value="קראתי והבנתי" required>
+            <span>קראתי והבנתי את התנאי הזה</span>
+          </label>
+        </fieldset>
+
+        <fieldset class="conditional-section" data-request-section="הפסקת לימודים" hidden disabled>
+          <legend>הפסקת לימודים</legend>
+
+          <div class="field full-width">
+            <label for="dropout-reason">סיבת הפסקת הלימודים</label>
+            <textarea id="dropout-reason" name="סיבת הפסקת הלימודים" rows="6" required></textarea>
+          </div>
+
+          <label class="checkbox-field full-width" for="dropout-consultant">
+            <input id="dropout-consultant" name="בקשה לחזרת יועץ/ת" type="checkbox" value="כן">
+            <span>אני מעוניין/ת שיועץ/ת יחזור/תחזור אליי</span>
+          </label>
+
+          <div class="rules-box full-width">
+            <p>בהפסקת לימודים יחולו התנאים הבאים:</p>
+            <p>- הפסקת הלימוד חייבת להיות בכתב.</p>
+            <p>- הפסקה ו/או ביטול קורס לפני תחילת          הלימודים מחייב בדמי הרשמה בלבד.</p>
+            <p>- הפסקת לימוד בקורס עד 60 שעות            לימוד מחייב בשכר לימוד מלא.</p>
+            <p>- הפסקת לימוד בקורס של 60 עד 120        שעות לימוד מחייב ב 25% במהלך חודש    ראשון ומחודש שני ואילך שכר לימוד מלא.</p>
+            <p>- הפסקת לימוד בקורס או מסלול שנמשך      יותר מ- 120 שעות לימוד מחייב ב- 25%    באם הלימודים הופסקו בחודש הראשון,      50% בהפסקת לימודים במהלך החודש      השני והשלישי, וחיוב 100% בהפסקת          לימוד בחודש הרביעי ואילך.</p>
+            <p>- התאריך הקובע להפסקת הלימודים הוא תאריך שידור בקשת ההפסקה בטופס זה.</p>
+          </div>
+          <textarea class="rules-email-field" name="תנאי הפסקת לימודים" readonly>בהפסקת לימודים יחולו התנאים הבאים:
+
+- הפסקת הלימוד חייבת להיות בכתב.
+
+- הפסקה ו/או ביטול קורס לפני תחילת          הלימודים מחייב בדמי הרשמה בלבד.
+
+- הפסקת לימוד בקורס עד 60 שעות            לימוד מחייב בשכר לימוד מלא.
+
+- הפסקת לימוד בקורס של 60 עד 120        שעות לימוד מחייב ב 25% במהלך חודש    ראשון ומחודש שני ואילך שכר לימוד מלא.
+
+- הפסקת לימוד בקורס או מסלול שנמשך      יותר מ- 120 שעות לימוד מחייב ב- 25%    באם הלימודים הופסקו בחודש הראשון,      50% בהפסקת לימודים במהלך החודש      השני והשלישי, וחיוב 100% בהפסקת          לימוד בחודש הרביעי ואילך.
+
+התאריך הקובע להפסקת הלימודים הוא תאריך שידור בקשת ההפסקה בטופס זה.</textarea>
+
+          <label class="checkbox-field full-width" for="dropout-rules-confirm">
+            <input id="dropout-rules-confirm" name="אישור קריאת תנאי הפסקת לימודים" type="checkbox" value="קראתי והבנתי" required>
+            <span>קראתי והבנתי את התנאים</span>
+          </label>
+        </fieldset>
 
         <label class="checkbox-field full-width" for="confirm">
-          <input id="confirm" name="אישור" type="checkbox" value="מאשר/ת" required>
+          <input id="confirm" name="אישור נכונות הפרטים" type="checkbox" value="מאשר/ת שהפרטים נכונים" required>
           <span>אני מאשר/ת שהפרטים שמסרתי נכונים</span>
         </label>
 
         <button class="submit-button" type="submit">שליחה</button>
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
       </form>
     </section>
   </main>
+
+  <script>
+    const form = document.querySelector(".notice-form");
+    const submitButton = form.querySelector(".submit-button");
+    const statusMessage = document.getElementById("form-status");
+    const requestType = document.getElementById("request-type");
+    const requestSections = document.querySelectorAll("[data-request-section]");
+    const idNumber = document.getElementById("id-number");
+    const phone = document.getElementById("phone");
+    const email = document.getElementById("email");
+
+    function updateRequestSection() {
+      requestSections.forEach((section) => {
+        const isActive = section.dataset.requestSection === requestType.value;
+        section.hidden = !isActive;
+        section.disabled = !isActive;
+      });
+    }
+
+    function validateIdNumber() {
+      const isValid = /^[0-9]{9}$/.test(idNumber.value.trim());
+      idNumber.setCustomValidity(isValid ? "" : "number needs to be 9 numbers.");
+      return isValid;
+    }
+
+    function validateEmail() {
+      const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim());
+      email.setCustomValidity(isValid ? "" : "Please enter a valid email address.");
+      return isValid;
+    }
+
+    function validatePhone() {
+      const value = phone.value.trim();
+      const hasOnlyAllowedCharacters = /^[0-9\s-]+$/.test(value);
+      const digitCount = value.replace(/\D/g, "").length;
+      const isValid = hasOnlyAllowedCharacters && digitCount === 10;
+      phone.setCustomValidity(isValid ? "" : "phone number needs to be 10 numbers.");
+      return isValid;
+    }
+
+    idNumber.addEventListener("input", validateIdNumber);
+    phone.addEventListener("input", validatePhone);
+    email.addEventListener("input", validateEmail);
+    requestType.addEventListener("change", updateRequestSection);
+    updateRequestSection();
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      statusMessage.textContent = "";
+      statusMessage.className = "form-status";
+
+      validateIdNumber();
+      validatePhone();
+      validateEmail();
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      submitButton.disabled = true;
+
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: {
+            Accept: "application/json"
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("Formspree submission failed");
+        }
+
+        form.reset();
+        updateRequestSection();
+        statusMessage.textContent = "form submited";
+        statusMessage.classList.add("success");
+      } catch (error) {
+        statusMessage.textContent = "שליחת הטופס נכשלה. נסה/י שוב.";
+        statusMessage.classList.add("error");
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
