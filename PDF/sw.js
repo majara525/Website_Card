@@ -1,9 +1,10 @@
-const CACHE_NAME = "document-scanner-v4";
+const CACHE_NAME = "document-scanner-v7";
 const APP_SHELL = [
   "/PDF/",
   "/PDF/index.html",
   "/PDF/manifest.webmanifest",
-  "/PDF/logo.png"
+  "/Favicon_Transparent.png",
+  "/Logo_Ar_Red.png"
 ];
 
 self.addEventListener("install", (event) => {
