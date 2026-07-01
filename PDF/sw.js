@@ -1,4 +1,4 @@
-const CACHE_NAME = "document-scanner-v9";
+const CACHE_NAME = "document-scanner-v10";
 const APP_SHELL = [
   "/PDF/",
   "/PDF/index.html",
