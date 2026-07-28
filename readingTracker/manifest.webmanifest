@@ -1,0 +1,20 @@
+{
+  "name": "مِداد — متتبّع القراءة",
+  "short_name": "مِداد",
+  "description": "متتبّع قراءة عربي يحفظ جلساتك واقتباساتك على جهازك.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f2ef",
+  "theme_color": "#b92b31",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

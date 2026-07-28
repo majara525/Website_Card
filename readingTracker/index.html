@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#b92b31">
+  <meta name="description" content="مِداد — متتبّع قراءة عربي يحفظ جلساتك واقتباساتك على جهازك.">
+  <title>مِداد | متتبّع القراءة</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="التنقّل الرئيسي">
+      <a class="brand" href="#home" aria-label="مِداد، الصفحة الرئيسية">
+        <span class="brand-mark" aria-hidden="true">م</span>
+        <span>
+          <strong>مِداد</strong>
+          <small>رفيق القراءة</small>
+        </span>
+      </a>
+
+      <nav class="main-nav">
+        <button class="nav-item active" data-page="home">
+          <span class="nav-icon" aria-hidden="true">⌂</span>
+          <span>الرئيسية</span>
+        </button>
+        <button class="nav-item" data-page="timer">
+          <span class="nav-icon" aria-hidden="true">◷</span>
+          <span>جلسة القراءة</span>
+          <span class="live-dot hidden" id="navLiveDot" title="جلسة جارية"></span>
+        </button>
+        <button class="nav-item" data-page="library">
+          <span class="nav-icon" aria-hidden="true">▥</span>
+          <span>مكتبتي</span>
+        </button>
+        <button class="nav-item" data-page="quotes">
+          <span class="nav-icon quote-glyph" aria-hidden="true">”</span>
+          <span>اقتباساتي</span>
+        </button>
+        <button class="nav-item" data-page="reports">
+          <span class="nav-icon" aria-hidden="true">⌁</span>
+          <span>التحليل والتقارير</span>
+        </button>
+        <button class="nav-item" data-page="study">
+          <span class="nav-icon" aria-hidden="true">◉</span>
+          <span>تركيز الدراسة</span>
+        </button>
+        <button class="nav-item" data-page="articles">
+          <span class="nav-icon" aria-hidden="true">✦</span>
+          <span>دليل القارئ</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-icon">◎</div>
+        <strong>هدف اليوم</strong>
+        <span id="sidebarGoalText">0 من 30 دقيقة</span>
+        <div class="mini-progress" aria-hidden="true">
+          <span id="sidebarGoalBar"></span>
+        </div>
+        <button class="text-button" data-page-jump="settings">تعديل الهدف</button>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="nav-item" data-page="settings">
+          <span class="nav-icon" aria-hidden="true">⚙</span>
+          <span>الإعدادات والبيانات</span>
+        </button>
+        <span class="storage-note"><span class="status-dot"></span> بياناتك على هذا الجهاز</span>
+      </div>
+    </aside>
+
+    <div class="main-column">
+      <header class="topbar">
+        <button class="icon-button mobile-only" id="menuButton" aria-label="فتح القائمة">☰</button>
+        <div class="topbar-date">
+          <span id="hijriDate"></span>
+          <small id="gregorianDate"></small>
+        </div>
+        <div class="topbar-actions">
+          <span class="connection-pill" id="connectionStatus"><i></i><b>جاهز دون اتصال</b></span>
+          <button class="button button-ghost compact" id="installButton">
+            <span aria-hidden="true">⇩</span>
+            تثبيت التطبيق
+          </button>
+          <button class="icon-button" id="notificationButton" aria-label="إعداد الإشعارات" title="الإشعارات">♢</button>
+          <div class="avatar" aria-hidden="true">ق</div>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="page active" id="page-home">
+          <div class="welcome-row">
+            <div>
+              <p class="eyebrow">مساء القراءة</p>
+              <h1>أهلًا بك، أي صفحة تنتظرك اليوم؟</h1>
+              <p class="lead">ابدأ جلسة هادئة، واترك لمِداد مهمة حفظ الوقت والتقدّم.</p>
+            </div>
+            <button class="button button-primary start-session-cta" data-page-jump="timer">
+              <span class="play-icon" aria-hidden="true">▶</span>
+              ابدأ جلسة قراءة
+            </button>
+          </div>
+
+          <div class="stats-grid">
+            <article class="stat-card accent">
+              <span class="stat-icon">◷</span>
+              <div>
+                <small>قراءة اليوم</small>
+                <strong><span id="todayMinutes">0</span> <em>دقيقة</em></strong>
+                <span class="stat-caption" id="todayGoalCaption">ابدأ أول جلسة اليوم</span>
+              </div>
+            </article>
+            <article class="stat-card">
+              <span class="stat-icon warm">♨</span>
+              <div>
+                <small>سلسلة القراءة</small>
+                <strong><span id="streakDays">0</span> <em>أيام</em></strong>
+                <span class="stat-caption" id="streakCaption">ابدأ السلسلة اليوم</span>
+              </div>
+            </article>
+            <article class="stat-card">
+              <span class="stat-icon blue">▥</span>
+              <div>
+                <small>الكتب النشطة</small>
+                <strong><span id="activeBooksCount">0</span> <em>كتب</em></strong>
+                <span class="stat-caption" id="completedBooksCaption">لم تُضف كتبًا بعد</span>
+              </div>
+            </article>
+            <article class="stat-card">
+              <span class="stat-icon plum">”</span>
+              <div>
+                <small>الاقتباسات</small>
+                <strong><span id="quotesCount">0</span> <em>اقتباس</em></strong>
+                <span class="stat-caption">أفكار تستحق العودة</span>
+              </div>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <section class="panel current-book-panel">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">على طاولة القراءة</span>
+                  <h2>الكتاب الحالي</h2>
+                </div>
+                <button class="text-button" data-page-jump="library">عرض المكتبة ←</button>
+              </div>
+              <div id="currentBookContent" class="empty-inline">
+                <div class="empty-illustration">＋</div>
+                <div>
+                  <strong>مكتبتك بانتظار أول كتاب</strong>
+                  <p>أضف اسم الكتاب وعدد صفحاته لتبدأ قياس تقدّمك.</p>
+                </div>
+                <button class="button button-secondary" data-action="open-book-modal">إضافة كتاب</button>
+              </div>
+            </section>
+
+            <section class="panel goal-panel">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">خطوة صغيرة كل يوم</span>
+                  <h2>هدفك اليومي</h2>
+                </div>
+                <button class="icon-button subtle" data-page-jump="settings" aria-label="تعديل الهدف">✎</button>
+              </div>
+              <div class="goal-visual">
+                <div class="goal-ring" id="goalRing">
+                  <div>
+                    <strong id="goalPercent">0%</strong>
+                    <span>مكتمل</span>
+                  </div>
+                </div>
+                <div class="goal-details">
+                  <strong><span id="goalReadMinutes">0</span> / <span id="goalTargetMinutes">30</span> دقيقة</strong>
+                  <p id="goalMotivation">كل دقيقة تقرّبك من هدفك.</p>
+                  <div class="goal-legend">
+                    <span><i class="legend-dot read"></i> قرأت</span>
+                    <span><i class="legend-dot remaining"></i> متبقّي</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <section class="panel activity-panel">
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">أثر الوقت</span>
+                <h2>آخر جلساتك</h2>
+              </div>
+              <button class="text-button" id="exportQuickButton">تحميل السجل CSV ↓</button>
+            </div>
+            <div id="recentSessions" class="session-list"></div>
+          </section>
+        </section>
+
+        <section class="page" id="page-timer">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">مساحتك الهادئة</p>
+              <h1>جلسة القراءة</h1>
+              <p>اختر كتابًا، ابدأ المؤقّت، ودع الباقي علينا.</p>
+            </div>
+            <span class="session-status" id="sessionStatus"><i></i> جاهز للبدء</span>
+          </div>
+
+          <div class="timer-layout">
+            <section class="panel timer-card">
+              <div class="timer-book-picker">
+                <label for="timerBookSelect">ماذا تقرأ الآن؟</label>
+                <div class="select-row">
+                  <select id="timerBookSelect">
+                    <option value="">اختر كتابًا</option>
+                  </select>
+                  <button class="icon-button bordered" data-action="open-book-modal" aria-label="إضافة كتاب">＋</button>
+                </div>
+              </div>
+              <div class="timer-display" id="timerDisplay" aria-live="polite">00:00:00</div>
+              <p class="timer-message" id="timerMessage">وقت هادئ لك وللكتاب.</p>
+              <div class="timer-controls">
+                <button class="control-button secondary-control" id="resetTimerButton" disabled>
+                  <span>↺</span>
+                  إلغاء
+                </button>
+                <button class="control-button primary-control" id="startPauseButton">
+                  <span id="startPauseIcon">▶</span>
+                  <b id="startPauseText">ابدأ</b>
+                </button>
+                <button class="control-button stop-control" id="stopTimerButton" disabled>
+                  <span>■</span>
+                  إنهاء
+                </button>
+              </div>
+              <div class="timer-milestones">
+                <span>سيصلك تذكير لطيف كل <strong id="timerReminderValue">15 دقيقة</strong></span>
+                <button class="text-button" data-page-jump="settings">تغيير</button>
+              </div>
+            </section>
+
+            <aside class="timer-side">
+              <section class="panel compact-panel">
+                <div class="section-heading">
+                  <h2>ملاحظة سريعة</h2>
+                  <span class="tiny-label">تُحفظ مع الجلسة</span>
+                </div>
+                <textarea id="sessionQuickNote" rows="5" placeholder="فكرة، سؤال، أو شيء تود تذكّره..."></textarea>
+              </section>
+              <section class="panel compact-panel">
+                <div class="section-heading">
+                  <h2>اقتباس أثناء القراءة</h2>
+                  <span class="tiny-label">دون إيقاف المؤقّت</span>
+                </div>
+                <textarea id="quickQuoteText" rows="4" placeholder="اكتب العبارة هنا..."></textarea>
+                <div class="inline-fields">
+                  <input id="quickQuotePage" type="number" min="1" placeholder="الصفحة">
+                  <button class="button button-secondary" id="saveQuickQuoteButton">حفظ الاقتباس</button>
+                </div>
+              </section>
+              <section class="focus-tip">
+                <span>✦</span>
+                <div>
+                  <strong>تلميح للتركيز</strong>
+                  <p>ضع هاتفك بعيدًا وحدّد فكرة واحدة تريد اكتشافها في هذه الجلسة.</p>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </section>
+
+        <section class="page" id="page-library">
+          <div class="page-heading split">
+            <div>
+              <p class="eyebrow">رفوفك الخاصة</p>
+              <h1>مكتبتي</h1>
+              <p>كل كتاب، تقدّمه، والوقت الذي قضيته معه.</p>
+            </div>
+            <button class="button button-primary" data-action="open-book-modal">＋ إضافة كتاب</button>
+          </div>
+          <div class="toolbar">
+            <div class="search-box">
+              <span aria-hidden="true">⌕</span>
+              <input id="bookSearch" type="search" placeholder="ابحث باسم الكتاب أو المؤلف...">
+            </div>
+            <div class="filter-tabs" id="bookFilters">
+              <button class="active" data-filter="all">الكل</button>
+              <button data-filter="reading">أقرأ الآن</button>
+              <button data-filter="completed">مكتملة</button>
+            </div>
+          </div>
+          <div class="books-grid" id="booksGrid"></div>
+        </section>
+
+        <section class="page" id="page-quotes">
+          <div class="page-heading split">
+            <div>
+              <p class="eyebrow">ذاكرة القراءة</p>
+              <h1>اقتباساتي</h1>
+              <p>نصوص وصور وأصوات أردت الاحتفاظ بها.</p>
+            </div>
+            <button class="button button-primary" id="openQuoteModalButton">＋ اقتباس جديد</button>
+          </div>
+          <div class="toolbar">
+            <div class="search-box">
+              <span aria-hidden="true">⌕</span>
+              <input id="quoteSearch" type="search" placeholder="ابحث في الاقتباسات...">
+            </div>
+            <select id="quoteBookFilter" class="toolbar-select">
+              <option value="all">كل الكتب</option>
+            </select>
+          </div>
+          <div class="quotes-grid" id="quotesGrid"></div>
+        </section>
+
+        <section class="page" id="page-reports">
+          <div class="page-heading split">
+            <div>
+              <p class="eyebrow">اقرأ بياناتك</p>
+              <h1>التحليل والتقارير</h1>
+              <p>اكتشف متى تقرأ، ومدة جلساتك، وما الأنماط التي تساعدك على الاستمرار.</p>
+            </div>
+            <div class="report-range" id="reportRange">
+              <button data-range="7" class="active">7 أيام</button>
+              <button data-range="30">30 يومًا</button>
+              <button data-range="all">الكل</button>
+            </div>
+          </div>
+
+          <div class="report-summary-grid">
+            <article class="report-stat">
+              <span>◷</span>
+              <small>إجمالي وقت القراءة</small>
+              <strong id="reportTotalTime">0 دقيقة</strong>
+              <em id="reportTimeChange">ابدأ أول جلسة</em>
+            </article>
+            <article class="report-stat">
+              <span>◎</span>
+              <small>عدد الجلسات</small>
+              <strong id="reportSessionCount">0</strong>
+              <em id="reportActiveDays">0 أيام نشطة</em>
+            </article>
+            <article class="report-stat">
+              <span>↔</span>
+              <small>متوسط الجلسة</small>
+              <strong id="reportAverageSession">0 دقيقة</strong>
+              <em id="reportMedianSession">الوسيط: 0 دقيقة</em>
+            </article>
+            <article class="report-stat">
+              <span>▤</span>
+              <small>صفحات مسجّلة</small>
+              <strong id="reportPagesRead">0</strong>
+              <em id="reportPagesPerHour">— صفحة/ساعة</em>
+            </article>
+          </div>
+
+          <div class="reports-layout">
+            <section class="panel chart-panel wide-chart">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">الاستمرارية</span>
+                  <h2>وقت القراءة حسب اليوم</h2>
+                </div>
+                <span class="chart-unit">بالدقائق</span>
+              </div>
+              <div class="bar-chart daily-chart" id="dailyReadingChart"></div>
+            </section>
+
+            <section class="panel chart-panel">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">توقيتك</span>
+                  <h2>متى تقرأ غالبًا؟</h2>
+                </div>
+              </div>
+              <div class="horizontal-chart" id="timeOfDayChart"></div>
+              <p class="chart-footnote">نقسّم وقت بداية الجلسة إلى صباح، ظهر، مساء، وليل.</p>
+            </section>
+
+            <section class="panel chart-panel">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">إيقاع الجلسة</span>
+                  <h2>توزيع أطوال الجلسات</h2>
+                </div>
+              </div>
+              <div class="donut-report">
+                <div class="session-donut" id="sessionLengthDonut"><strong id="dominantSessionLength">—</strong><span>الأكثر تكرارًا</span></div>
+                <div class="donut-legend" id="sessionLengthLegend"></div>
+              </div>
+            </section>
+
+            <section class="panel chart-panel wide-chart">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">ما الذي تقوله أرقامك؟</span>
+                  <h2>ملاحظات شخصية</h2>
+                </div>
+                <span class="analysis-badge">تحليل محلي خاص</span>
+              </div>
+              <div class="insights-grid" id="reportInsights"></div>
+              <p class="analysis-disclaimer">هذه الملاحظات تصف نمط سجلك ولا تثبت أن وقتًا أو مدةً معينة تسبب قراءة أفضل. تصبح المقارنات أوثق كلما زاد عدد الجلسات.</p>
+            </section>
+
+            <section class="panel chart-panel wide-chart">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">الوقت مع كل كتاب</span>
+                  <h2>تفصيل الكتب</h2>
+                </div>
+              </div>
+              <div class="book-report-list" id="bookReportList"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="page" id="page-study">
+          <div class="page-heading split">
+            <div>
+              <p class="eyebrow">مساحة بلا تشتيت</p>
+              <h1>تركيز الدراسة</h1>
+              <p>حدّد مهمتك، اختر مدة واقعية، وابدأ جلسة تركيز مع شاشة كاملة وتنبيه للاستراحة.</p>
+            </div>
+            <span class="session-status" id="focusSupportStatus"><i></i> فحص إمكانات الجهاز</span>
+          </div>
+
+          <div class="study-layout">
+            <section class="panel study-launcher">
+              <div class="study-header">
+                <span class="study-icon">◉</span>
+                <div>
+                  <span class="eyebrow">جلسة جديدة</span>
+                  <h2>ما الذي تريد إنجازه؟</h2>
+                </div>
+              </div>
+              <label class="field">
+                <span>مهمة الجلسة</span>
+                <input id="studyTaskInput" type="text" maxlength="160" placeholder="مثال: مراجعة الفصل الثالث وحل 10 أسئلة">
+              </label>
+              <div class="field">
+                <span>مدة التركيز</span>
+                <div class="duration-options" id="studyDurationOptions">
+                  <button data-minutes="25" class="active">25 دقيقة<small>جلسة قصيرة</small></button>
+                  <button data-minutes="45">45 دقيقة<small>تركيز عميق</small></button>
+                  <button data-minutes="60">60 دقيقة<small>جلسة طويلة</small></button>
+                  <button data-minutes="90">90 دقيقة<small>مع استراحة</small></button>
+                </div>
+              </div>
+              <div class="focus-music-panel">
+                <div class="section-heading">
+                  <div>
+                    <span class="eyebrow">صوت اختياري</span>
+                    <h2>موسيقى وأجواء للتركيز</h2>
+                  </div>
+                  <span class="offline-audio-badge">تعمل دون إنترنت</span>
+                </div>
+                <div class="music-track-options" id="musicTrackOptions">
+                  <button data-music="rain" class="active"><span>☂</span><b>مطر هادئ</b><small>ضوضاء مطر ناعمة</small></button>
+                  <button data-music="ambient"><span>≈</span><b>مدى عميق</b><small>نغمات محيطية بطيئة</small></button>
+                  <button data-music="library"><span>▤</span><b>همس المكتبة</b><small>خلفية دافئة منخفضة</small></button>
+                </div>
+                <div class="music-controls">
+                  <button class="button button-secondary" id="focusMusicButton" type="button">
+                    <span id="focusMusicIcon">▶</span>
+                    <b id="focusMusicButtonText">تشغيل الصوت</b>
+                  </button>
+                  <label class="volume-control" for="musicVolumeInput">
+                    <span>صوت منخفض</span>
+                    <input id="musicVolumeInput" type="range" min="0" max="100" value="28" aria-label="مستوى صوت التركيز">
+                    <span>مرتفع</span>
+                  </label>
+                </div>
+                <p>هذه الأجواء مولّدة داخل التطبيق وليست تسجيلات أو أغانٍ محمية؛ لذلك لا تحتاج إلى تنزيل ملفات صوتية.</p>
+              </div>
+              <div class="focus-preferences">
+                <label class="toggle-row">
+                  <input id="keepAwakePreference" type="checkbox" checked>
+                  <span><strong>إبقاء الشاشة مستيقظة</strong><small>يطلب إذن Wake Lock عند دعم المتصفّح.</small></span>
+                </label>
+                <label class="toggle-row">
+                  <input id="fullscreenPreference" type="checkbox" checked>
+                  <span><strong>بدء بوضع ملء الشاشة</strong><small>يقلّل عناصر المتصفّح المرئية، لكنه لا يقفل التطبيقات الأخرى.</small></span>
+                </label>
+                <label class="toggle-row">
+                  <input id="callsPreference" type="checkbox">
+                  <span><strong>أريد السماح بالمكالمات فقط</strong><small>سنُظهر تعليمات إعداد وضع التركيز في الهاتف؛ الموقع لا يستطيع تغييرها بنفسه.</small></span>
+                </label>
+              </div>
+              <button class="button button-primary study-start-button" id="startStudyButton">ابدأ جلسة التركيز</button>
+            </section>
+
+            <aside class="study-side">
+              <section class="panel capability-card">
+                <div class="section-heading">
+                  <h2>ما الذي يستطيع التطبيق فعله؟</h2>
+                  <span class="capability-pill">نسخة الويب</span>
+                </div>
+                <ul class="capability-list">
+                  <li class="supported"><span>✓</span><div><strong>ملء الشاشة</strong><small>إخفاء معظم عناصر المتصفّح أثناء الجلسة.</small></div></li>
+                  <li class="supported"><span>✓</span><div><strong>إبقاء الشاشة مستيقظة</strong><small>على HTTPS وفي الأجهزة والمتصفّحات الداعمة.</small></div></li>
+                  <li class="manual"><span>!</span><div><strong>كتم الإشعارات مع بقاء المكالمات</strong><small>تُعدّ يدويًا من Focus/Do Not Disturb في الهاتف.</small></div></li>
+                  <li class="blocked"><span>×</span><div><strong>قفل كل التطبيقات تلقائيًا</strong><small>غير مسموح لموقع ويب. يحتاج تطبيقًا أصليًا وصلاحيات نظام خاصة.</small></div></li>
+                </ul>
+              </section>
+              <section class="phone-focus-guide" id="phoneFocusGuide">
+                <span>هاتفك، لكن أهدأ</span>
+                <h2>الإعداد الموصى به</h2>
+                <ol>
+                  <li>فعّل وضع عدم الإزعاج أو Focus.</li>
+                  <li>اسمح بالمكالمات من المفضّلين أو جهات الاتصال.</li>
+                  <li>ثبّت مِداد على الشاشة الرئيسية وافتح جلسة التركيز.</li>
+                </ol>
+                <button class="text-button" id="showFocusHelpButton">اعرض تعليمات iPhone وAndroid</button>
+              </section>
+            </aside>
+          </div>
+
+          <section class="panel study-history-panel">
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">تقدّم الدراسة</span>
+                <h2>جلسات التركيز الأخيرة</h2>
+              </div>
+              <strong id="studyWeeklyTotal">0 دقيقة هذا الأسبوع</strong>
+            </div>
+            <div id="studyHistory" class="session-list"></div>
+          </section>
+        </section>
+
+        <section class="page" id="page-articles">
+          <div class="page-heading">
+            <p class="eyebrow">قراءة أعمق</p>
+            <h1>دليل القارئ</h1>
+            <p>مقالات قصيرة تساعدك على بناء عادة قراءة واعية وممتعة.</p>
+          </div>
+          <article class="featured-article" data-article="habit">
+            <div class="featured-copy">
+              <span class="article-tag">بناء العادة</span>
+              <h2>لا تبحث عن ساعة فارغة؛ ابدأ بعشر دقائق</h2>
+              <p>الاستمرار لا يحتاج إلى جلسات طويلة بقدر ما يحتاج إلى إشارة واضحة وموعد يسهل تكراره.</p>
+              <button class="button button-light">اقرأ المقال ←</button>
+            </div>
+            <div class="featured-art" aria-hidden="true">
+              <span class="sun"></span>
+              <span class="book-shape"></span>
+              <span class="leaf leaf-one"></span>
+              <span class="leaf leaf-two"></span>
+            </div>
+          </article>
+          <div class="articles-grid" id="articlesGrid">
+            <article class="article-card" data-article="why">
+              <div class="article-card-art art-mind">◌</div>
+              <span class="article-tag">لماذا نقرأ؟</span>
+              <h3>ما الذي تفعله القراءة بعقلك؟</h3>
+              <p>تمنحك القراءة مساحة أبطأ للتفكير، وتوسّع مفرداتك وقدرتك على فهم وجهات النظر.</p>
+              <button class="text-button">4 دقائق قراءة ←</button>
+            </article>
+            <article class="article-card" data-article="remember">
+              <div class="article-card-art art-notes">✎</div>
+              <span class="article-tag">قراءة فعّالة</span>
+              <h3>كيف تتذكّر ما تقرأ؟</h3>
+              <p>اسأل قبل القراءة، لخّص بعدها، واكتب فكرة واحدة تستطيع استخدامها بدل تظليل كل شيء.</p>
+              <button class="text-button">5 دقائق قراءة ←</button>
+            </article>
+            <article class="article-card" data-article="focus">
+              <div class="article-card-art art-focus">◎</div>
+              <span class="article-tag">تركيز</span>
+              <h3>طقس صغير لجلسة بلا تشتيت</h3>
+              <p>مكان محدّد، مؤقّت واضح، وهاتف بعيد: ثلاث إشارات تساعد عقلك على الدخول في وضع القراءة.</p>
+              <button class="text-button">3 دقائق قراءة ←</button>
+            </article>
+            <article class="article-card" data-article="sessions">
+              <div class="article-card-art art-data">⌁</div>
+              <span class="article-tag">بياناتك</span>
+              <h3>هل توجد مدة مثالية لجلسة القراءة؟</h3>
+              <p>لا توجد مدة واحدة للجميع. تعلّم كيف تقرأ متوسطاتك دون تحويل الارتباط إلى سبب.</p>
+              <button class="text-button">6 دقائق قراءة ←</button>
+            </article>
+            <article class="article-card" data-article="study">
+              <div class="article-card-art art-study">◉</div>
+              <span class="article-tag">علم التعلّم</span>
+              <h3>من القراءة إلى التذكّر: اختبر نفسك</h3>
+              <p>الممارسة المتباعدة والاسترجاع النشط أقوى من إعادة القراءة وحدها في كثير من سياقات التعلّم.</p>
+              <button class="text-button">7 دقائق قراءة ←</button>
+            </article>
+          </div>
+        </section>
+
+        <section class="page" id="page-settings">
+          <div class="page-heading">
+            <p class="eyebrow">على طريقتك</p>
+            <h1>الإعدادات والبيانات</h1>
+            <p>عدّل أهدافك، الإشعارات، واحتفظ بنسخة من بياناتك.</p>
+          </div>
+          <div class="settings-grid">
+            <section class="panel settings-card">
+              <div class="settings-icon">◎</div>
+              <div class="settings-content">
+                <h2>أهداف القراءة</h2>
+                <p>اختر هدفًا يوميًا بسيطًا تستطيع الحفاظ عليه.</p>
+                <label class="field">
+                  <span>دقائق القراءة يوميًا</span>
+                  <input id="dailyGoalInput" type="number" min="5" max="600" step="5">
+                </label>
+                <label class="field">
+                  <span>عدد الجلسات أسبوعيًا</span>
+                  <input id="weeklyGoalInput" type="number" min="1" max="30">
+                </label>
+                <button class="button button-secondary" id="saveGoalsButton">حفظ الأهداف</button>
+              </div>
+            </section>
+            <section class="panel settings-card">
+              <div class="settings-icon">♢</div>
+              <div class="settings-content">
+                <h2>تذكيرات الجلسة</h2>
+                <p>إشعار بالوقت الذي قضيته دون مقاطعة الجلسة.</p>
+                <label class="field">
+                  <span>التذكير كل</span>
+                  <select id="reminderIntervalInput">
+                    <option value="5">5 دقائق</option>
+                    <option value="10">10 دقائق</option>
+                    <option value="15">15 دقيقة</option>
+                    <option value="20">20 دقيقة</option>
+                    <option value="30">30 دقيقة</option>
+                    <option value="60">60 دقيقة</option>
+                  </select>
+                </label>
+                <button class="button button-secondary" id="enableNotificationsButton">تفعيل الإشعارات</button>
+              </div>
+            </section>
+            <section class="panel settings-card wide">
+              <div class="settings-icon">⇩</div>
+              <div class="settings-content">
+                <h2>بياناتك ملكك</h2>
+                <p>نزّل جلساتك بصيغة CSV للتحليل، أو نسخة JSON كاملة تشمل الكتب والاقتباسات. الصور والصوت تُضمّن في النسخة الكاملة وقد تجعل الملف كبيرًا.</p>
+                <div class="button-row">
+                  <button class="button button-secondary" id="exportCsvButton">تحميل الجلسات CSV</button>
+                  <button class="button button-secondary" id="exportJsonButton">تحميل نسخة كاملة JSON</button>
+                  <label class="button button-ghost file-button">
+                    استعادة نسخة
+                    <input id="importJsonInput" type="file" accept="application/json,.json">
+                  </label>
+                </div>
+              </div>
+            </section>
+            <section class="panel settings-card wide privacy-card">
+              <div class="settings-icon">✓</div>
+              <div class="settings-content">
+                <h2>الخصوصية في هذه النسخة</h2>
+                <p>لا يوجد حساب ولا خادم في النسخة الحالية. كل شيء يُحفظ داخل المتصفّح على هذا الجهاز. حذف بيانات الموقع من المتصفّح يحذف السجل، لذلك ننصح بتنزيل نسخة احتياطية دوريًا.</p>
+                <button class="text-button danger-text" id="clearDataButton">حذف كل البيانات من هذا الجهاز</button>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+
+      <footer class="managed-footer">
+        <img src="assets/Logo_Ar_Red.png" alt="شعار المعهد العالي">
+        <div>
+          <strong>تطبيق مُدار ومصمّم بواسطة المعهد العالي</strong>
+          <span>نحو عادة قراءة وتعلّم أكثر وعيًا.</span>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <div class="mobile-nav" aria-label="التنقّل على الهاتف">
+    <button class="active" data-page="home"><span>⌂</span>الرئيسية</button>
+    <button data-page="timer"><span>◷</span>الجلسة</button>
+    <button data-page="library"><span>▥</span>مكتبتي</button>
+    <button data-page="reports"><span>⌁</span>تقاريري</button>
+    <button data-page="study"><span>◉</span>دراسة</button>
+  </div>
+
+  <div class="modal-backdrop hidden" id="bookModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="bookModalTitle">
+      <button class="modal-close" data-close-modal="bookModal" aria-label="إغلاق">×</button>
+      <div class="modal-heading">
+        <span class="eyebrow">كتاب جديد</span>
+        <h2 id="bookModalTitle">أضف كتابًا إلى مكتبتك</h2>
+        <p>الاسم وعدد الصفحات مطلوبان، وما عداهما اختياري.</p>
+      </div>
+      <form id="bookForm">
+        <input id="editingBookId" type="hidden">
+        <div class="form-grid">
+          <label class="field full">
+            <span>اسم الكتاب <b>*</b></span>
+            <input id="bookTitleInput" type="text" required maxlength="140" placeholder="مثال: موسم الهجرة إلى الشمال">
+          </label>
+          <label class="field">
+            <span>عدد الصفحات <b>*</b></span>
+            <input id="bookPagesInput" type="number" required min="1" max="100000" placeholder="192">
+          </label>
+          <label class="field">
+            <span>اسم المؤلف</span>
+            <input id="bookAuthorInput" type="text" maxlength="120" placeholder="اختياري">
+          </label>
+          <label class="field">
+            <span>الصفحة الحالية</span>
+            <input id="bookCurrentPageInput" type="number" min="0" value="0">
+          </label>
+          <label class="field">
+            <span>التصنيف</span>
+            <input id="bookCategoryInput" type="text" maxlength="60" placeholder="رواية، فكر، تاريخ...">
+          </label>
+          <label class="cover-upload full">
+            <input id="bookCoverInput" type="file" accept="image/jpeg,image/png,image/webp">
+            <span class="cover-preview" id="coverPreview">▧</span>
+            <span>
+              <strong>صورة الغلاف</strong>
+              <small>اختيارية — JPG أو PNG أو WebP، بحد أقصى 2MB</small>
+            </span>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button class="button button-ghost" type="button" data-close-modal="bookModal">إلغاء</button>
+          <button class="button button-primary" type="submit">حفظ الكتاب</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="finishSessionModal">
+    <div class="modal small-modal" role="dialog" aria-modal="true" aria-labelledby="finishSessionTitle">
+      <button class="modal-close" data-close-modal="finishSessionModal" aria-label="إغلاق">×</button>
+      <div class="modal-heading">
+        <span class="eyebrow">أحسنت</span>
+        <h2 id="finishSessionTitle">أنهِ جلسة القراءة</h2>
+        <p id="finishSessionSummary"></p>
+      </div>
+      <form id="finishSessionForm">
+        <label class="field">
+          <span>إلى أي صفحة وصلت؟</span>
+          <input id="sessionEndPageInput" type="number" min="0" placeholder="اختياري">
+        </label>
+        <label class="field">
+          <span>ملاحظة الجلسة</span>
+          <textarea id="sessionNoteInput" rows="4" placeholder="ما الفكرة الأهم التي خرجت بها؟"></textarea>
+        </label>
+        <div class="form-grid">
+          <label class="field">
+            <span>تركيزك في الجلسة</span>
+            <select id="sessionFocusRatingInput">
+              <option value="">غير محدد</option>
+              <option value="1">1 — مشتت جدًا</option>
+              <option value="2">2 — مشتت</option>
+              <option value="3">3 — متوسط</option>
+              <option value="4">4 — جيد</option>
+              <option value="5">5 — عميق</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>فهمك لما قرأت</span>
+            <select id="sessionUnderstandingInput">
+              <option value="">غير محدد</option>
+              <option value="1">1 — ضعيف</option>
+              <option value="2">2 — محدود</option>
+              <option value="3">3 — مقبول</option>
+              <option value="4">4 — جيد</option>
+              <option value="5">5 — واضح جدًا</option>
+            </select>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button class="button button-ghost" type="button" data-close-modal="finishSessionModal">متابعة الجلسة</button>
+          <button class="button button-primary" type="submit">حفظ وإنهاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="quoteModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="quoteModalTitle">
+      <button class="modal-close" data-close-modal="quoteModal" aria-label="إغلاق">×</button>
+      <div class="modal-heading">
+        <span class="eyebrow">فكرة تستحق البقاء</span>
+        <h2 id="quoteModalTitle">احفظ اقتباسًا</h2>
+      </div>
+      <form id="quoteForm">
+        <div class="quote-type-tabs">
+          <button type="button" class="active" data-quote-type="text">نص</button>
+          <button type="button" data-quote-type="image">صورة</button>
+          <button type="button" data-quote-type="audio">صوت</button>
+        </div>
+        <input id="quoteTypeInput" type="hidden" value="text">
+        <label class="field">
+          <span>الكتاب</span>
+          <select id="quoteBookInput">
+            <option value="">بدون كتاب</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>رقم الصفحة</span>
+          <input id="quotePageInput" type="number" min="1" placeholder="اختياري">
+        </label>
+        <div id="textQuoteFields">
+          <label class="field">
+            <span>نص الاقتباس <b>*</b></span>
+            <textarea id="quoteTextInput" rows="6" placeholder="اكتب الاقتباس هنا..."></textarea>
+          </label>
+        </div>
+        <div id="imageQuoteFields" class="hidden">
+          <label class="media-drop">
+            <input id="quoteImageInput" type="file" accept="image/jpeg,image/png,image/webp">
+            <span>▧</span>
+            <strong>اختر صورة الاقتباس</strong>
+            <small>تُحفظ على جهازك، بحد أقصى 5MB</small>
+          </label>
+        </div>
+        <div id="audioQuoteFields" class="hidden">
+          <div class="audio-recorder">
+            <button class="record-button" id="recordAudioButton" type="button"><span></span> بدء التسجيل</button>
+            <span id="recordingTime">00:00</span>
+          </div>
+          <label class="media-drop compact-drop">
+            <input id="quoteAudioInput" type="file" accept="audio/*">
+            <strong>أو اختر ملفًا صوتيًا</strong>
+            <small>بحد أقصى 10MB</small>
+          </label>
+        </div>
+        <label class="field">
+          <span>تعليقك</span>
+          <textarea id="quoteCommentInput" rows="3" placeholder="لماذا لفتك هذا الاقتباس؟ (اختياري)"></textarea>
+        </label>
+        <div class="modal-actions">
+          <button class="button button-ghost" type="button" data-close-modal="quoteModal">إلغاء</button>
+          <button class="button button-primary" type="submit">حفظ الاقتباس</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="articleModal">
+    <article class="modal article-modal" role="dialog" aria-modal="true" aria-labelledby="articleModalTitle">
+      <button class="modal-close" data-close-modal="articleModal" aria-label="إغلاق">×</button>
+      <div id="articleModalContent"></div>
+    </article>
+  </div>
+
+  <div class="modal-backdrop hidden" id="focusHelpModal">
+    <article class="modal article-modal" role="dialog" aria-modal="true" aria-labelledby="focusHelpTitle">
+      <button class="modal-close" data-close-modal="focusHelpModal" aria-label="إغلاق">×</button>
+      <div class="modal-heading">
+        <span class="eyebrow">إعداد مرة واحدة</span>
+        <h2 id="focusHelpTitle">اسمح بالمكالمات وقلّل الباقي</h2>
+        <p>لا يستطيع الموقع تغيير إعدادات النظام نيابةً عنك، لكن هذه الخطوات تحقق النتيجة المطلوبة بأمان.</p>
+      </div>
+      <div class="platform-guides">
+        <section>
+          <h3>على iPhone</h3>
+          <ol>
+            <li>افتح الإعدادات ← التركيز، وأنشئ وضعًا باسم «قراءة» أو «دراسة».</li>
+            <li>في «الأشخاص»، اسمح بالمكالمات من المفضّلين أو المجموعة التي تختارها.</li>
+            <li>اكتم إشعارات التطبيقات الأخرى، ثم فعّل الوضع قبل بدء الجلسة.</li>
+            <li>للبقاء داخل التطبيق، يمكن تشغيل «الوصول الموجّه» يدويًا من تسهيلات الاستخدام؛ انتبه أنه قد يقيّد مكالمات الطوارئ.</li>
+          </ol>
+        </section>
+        <section>
+          <h3>على Android</h3>
+          <ol>
+            <li>افتح الإعدادات ← الإشعارات ← عدم الإزعاج.</li>
+            <li>ضمن «الأشخاص»، اختر المكالمات المسموح بها والمتصلين المتكررين إن رغبت.</li>
+            <li>أوقف إشعارات التطبيقات، ثم فعّل عدم الإزعاج قبل الجلسة.</li>
+            <li>تثبيت الشاشة خيار يدوي متاح على أجهزة كثيرة، لكنه ليس قفلًا أمنيًا ويمكن للمستخدم الخروج منه.</li>
+          </ol>
+        </section>
+      </div>
+      <p class="source-note">ملاحظة: تطبيق Android مستقبلي يمكنه طلب وصول «عدم الإزعاج»، لكن قفل التطبيقات الحقيقي يتطلب وضع جهاز مُدار/كشك. على iPhone يبقى Guided Access إجراءً يبدأه المستخدم.</p>
+    </article>
+  </div>
+
+  <div class="focus-overlay hidden" id="focusOverlay" aria-live="polite">
+    <div class="focus-overlay-top">
+      <span class="focus-brand"><b>م</b> مِداد للدراسة</span>
+      <button id="exitStudyButton">إنهاء الجلسة</button>
+    </div>
+    <div class="focus-overlay-center">
+      <span class="focus-kicker">مهمتك الآن</span>
+      <h2 id="activeStudyTask">جلسة تركيز</h2>
+      <div class="focus-clock" id="focusClock">25:00</div>
+      <p id="focusMessage">شيء واحد في كل مرة.</p>
+      <div class="focus-controls">
+        <button id="pauseStudyButton"><span>Ⅱ</span><b>إيقاف مؤقت</b></button>
+        <button id="completeStudyButton" class="complete-focus"><span>✓</span><b>أنجزت</b></button>
+      </div>
+    </div>
+    <div class="focus-overlay-bottom">
+      <div class="overlay-audio-control">
+        <button id="overlayMusicButton" type="button"><span>▶</span><b>مطر هادئ</b></button>
+        <span id="wakeLockIndicator">◌ الشاشة قد تنطفئ وفق إعدادات جهازك</span>
+      </div>
+      <span>يمكنك الخروج في أي وقت. لا يقفل التطبيق هاتفك.</span>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="adModal">
+    <div class="modal ad-modal" role="dialog" aria-modal="true" aria-labelledby="adTitle">
+      <span class="ad-label">مساحة إعلانية تجريبية</span>
+      <button class="modal-close" data-close-modal="adModal" aria-label="إغلاق">×</button>
+      <div class="ad-visual">م</div>
+      <h2 id="adTitle">انتهت جلستك، وخطوتك التالية تبدأ غدًا</h2>
+      <p>في النسخة المستقبلية سيظهر إعلان واحد فقط بعد إنهاء الجلسة. حسابات <bdi>a-a.education</bdi> لن ترى إعلانات.</p>
+      <button class="button button-primary" data-close-modal="adModal">العودة إلى ملخّصي</button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="confirmModal">
+    <div class="modal small-modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div class="modal-heading">
+        <span class="eyebrow warning">انتبه</span>
+        <h2 id="confirmTitle">حذف كل البيانات؟</h2>
+        <p>سيُحذف سجل الكتب والجلسات والاقتباسات من هذا الجهاز، ولا يمكن التراجع.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="button button-ghost" data-close-modal="confirmModal">إلغاء</button>
+        <button class="button button-danger" id="confirmClearDataButton">حذف نهائي</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
