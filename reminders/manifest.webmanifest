@@ -1,0 +1,21 @@
+{
+  "name": "تذكيراتي — المعهد العالي",
+  "short_name": "تذكيراتي",
+  "description": "تذكيرات عربية تعمل دون اتصال",
+  "lang": "ar",
+  "dir": "rtl",
+  "id": "/reminders/",
+  "start_url": "/reminders/app.html",
+  "scope": "/reminders/",
+  "display": "standalone",
+  "background_color": "#f6f2ef",
+  "theme_color": "#821b20",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
