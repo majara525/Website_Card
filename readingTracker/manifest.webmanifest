@@ -1,6 +1,6 @@
 {
-  "name": "مِداد — متتبّع القراءة",
-  "short_name": "مِداد",
+  "name": "أثر القارئ — متتبّع القراءة",
+  "short_name": "أثر القارئ",
   "description": "متتبّع قراءة عربي يحفظ جلساتك واقتباساتك على جهازك.",
   "lang": "ar",
   "dir": "rtl",
@@ -8,7 +8,7 @@
   "scope": "./",
   "display": "standalone",
   "background_color": "#f6f2ef",
-  "theme_color": "#b92b31",
+  "theme_color": "#821b20",
   "icons": [
     {
       "src": "assets/icon.svg",

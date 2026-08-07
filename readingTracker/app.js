@@ -1,7 +1,16 @@
 (() => {
   "use strict";
 
-  const STORAGE_KEY = "midad-reading-tracker-v1";
+  const APP_CONFIG = window.APP_CONFIG || {
+    appName: "أثر القارئ",
+    storageKey: "athar-alqari-reading-tracker-v2",
+    exportId: "athar-alqari-reading-tracker",
+    exportSlug: "athar-alqari",
+    featureFlags: { postSessionAds: false }
+  };
+  const APP_NAME = APP_CONFIG.appName;
+  const STORAGE_KEY = APP_CONFIG.storageKey;
+  const LEGACY_STORAGE_KEYS = ["midad-reading-tracker-v1"];
   const DB_NAME = "midad-media";
   const DB_VERSION = 1;
   const QUOTES_STORE = "quotes";
@@ -9,17 +18,16 @@
   const defaultState = {
     books: [],
     sessions: [],
-    studySessions: [],
+    readArticles: {},
+    unlockedAchievements: {},
     settings: {
       dailyGoalMinutes: 30,
       weeklyGoalSessions: 5,
       reminderMinutes: 15,
-      focusSetupAcknowledged: false,
       focusMusicTrack: "rain",
       focusMusicVolume: 28
     },
-    activeTimer: null,
-    activeStudy: null
+    activeTimer: null
   };
 
   const articles = {
@@ -111,7 +119,7 @@
       body: `
         <p>لا تدعم الأدلة قاعدة عامة تقول إن 25 أو 45 أو 90 دقيقة هي المدة المثالية للجميع ولكل مهمة. صعوبة النص، النوم، الخبرة، والهدف من القراءة تغيّر ما تستطيع الحفاظ عليه.</p>
         <h3>ابدأ من الوسيط، لا من أطول جلسة</h3>
-        <p>يعرض تقرير مِداد وسيط جلساتك لأنه أقل تأثرًا بجلسة طويلة استثنائية من المتوسط. إذا كان وسيطك 22 دقيقة، جرّب هدفًا بين 20 و25 دقيقة لأسبوعين، ثم راقب الاستمرار والصفحات والملاحظات.</p>
+        <p>يعرض تقرير ${APP_NAME} وسيط جلساتك لأنه أقل تأثرًا بجلسة طويلة استثنائية من المتوسط. إذا كان وسيطك 22 دقيقة، جرّب هدفًا بين 20 و25 دقيقة لأسبوعين، ثم راقب الاستمرار والصفحات والملاحظات.</p>
         <h3>هل الاستراحات مفيدة؟</h3>
         <p>وجدت تجربة على اليقظة المستمرة أن الانتباه انخفض مع الوقت، وأن أول استراحة أعادت الحساسية الإدراكية وخفّضت الجهد والضغط المُبلّغ عنه. المهمة المختبرية ليست قراءة كتاب، لذلك نستخدمها سببًا للاختبار الشخصي لا وصفة جامدة.</p>
         <h3>هل وقت اليوم مهم؟</h3>
@@ -161,6 +169,51 @@
     }
   };
 
+  const FAST_PACE_MESSAGES = [
+    "إيقاعك اليوم أسرع من المعتاد؛ احتفظ بما فهمته بجملة قصيرة قبل المتابعة.",
+    "تقدّمت بخفّة جميلة. إن كان الفهم واضحًا، فهذا إيقاع مناسب لك اليوم.",
+    "كانت الصفحات أسرع هذه المرة؛ خذ لحظة لتثبيت الفكرة الأهم.",
+    "قرأت بوتيرة أسرع من سجلك الأخير، دون أن يكون ذلك سباقًا.",
+    "إيقاع سريع ولطيف. راجع اقتباسًا واحدًا لتمنح الجلسة أثرًا أطول.",
+    "خطوتك اليوم خفيفة. ما دمت حاضرًا مع النص، فالسرعة مجرد ملاحظة.",
+    "أنجزت الصفحات بوتيرة أسرع من عادتك؛ سجّل ما تريد تذكّره منها.",
+    "جلسة سريعة مقارنة بتاريخك القريب. دع الفهم، لا الرقم، يقود الجلسة التالية."
+  ];
+
+  const SLOW_PACE_MESSAGES = [
+    "أخذت الصفحات وقتًا أطول اليوم، وربما كان النص يستحق هذا التمهّل.",
+    "إيقاعك أهدأ من المعتاد؛ القراءة المتأنية قد تكون علامة انتباه عميق.",
+    "منحت كل صفحة مساحة أكبر. لا مشكلة ما دام الوقت خدم فهمك.",
+    "كانت الجلسة أبطأ قليلًا؛ بعض الأفكار تحتاج إلى إقامة أطول.",
+    "تمهّلت اليوم، وهذا ليس تراجعًا. دوّن ما جعل هذه الصفحات كثيفة.",
+    "سرعة القراءة تتغيّر مع صعوبة النص والطاقة. استمع إلى احتياجك اليوم.",
+    "أمضيت وقتًا أطول مع كل صفحة؛ قد يكون ذلك أثرًا للتركيز لا للبطء.",
+    "إيقاع هادئ مقارنة بتاريخك القريب. المهم أن تخرج بفكرة واضحة."
+  ];
+
+  const ACHIEVEMENTS = [
+    { id: "first-session", icon: "✦", title: "البداية", description: "احفظ أول جلسة قراءة.", metric: "sessions", target: 1 },
+    { id: "sessions-10", icon: "◷", title: "عشر جلسات", description: "أكمل 10 جلسات قراءة.", metric: "sessions", target: 10 },
+    { id: "sessions-25", icon: "◷", title: "إيقاع ثابت", description: "أكمل 25 جلسة قراءة.", metric: "sessions", target: 25 },
+    { id: "sessions-50", icon: "◉", title: "قارئ مواظب", description: "أكمل 50 جلسة قراءة.", metric: "sessions", target: 50 },
+    { id: "sessions-100", icon: "★", title: "مئة أثر", description: "أكمل 100 جلسة قراءة.", metric: "sessions", target: 100 },
+    { id: "pages-50", icon: "▤", title: "خمسون صفحة", description: "سجّل قراءة 50 صفحة.", metric: "pages", target: 50 },
+    { id: "pages-100", icon: "▤", title: "مئة صفحة", description: "سجّل قراءة 100 صفحة.", metric: "pages", target: 100 },
+    { id: "pages-500", icon: "▥", title: "رف كامل", description: "سجّل قراءة 500 صفحة.", metric: "pages", target: 500 },
+    { id: "pages-1000", icon: "♛", title: "ألف صفحة", description: "سجّل قراءة 1,000 صفحة.", metric: "pages", target: 1000 },
+    { id: "minutes-60", icon: "⌛", title: "ساعة قراءة", description: "اجمع 60 دقيقة قراءة.", metric: "minutes", target: 60 },
+    { id: "minutes-600", icon: "⌛", title: "عشر ساعات", description: "اجمع 600 دقيقة قراءة.", metric: "minutes", target: 600 },
+    { id: "streak-3", icon: "♨", title: "ثلاثة أيام", description: "حافظ على سلسلة 3 أيام.", metric: "streak", target: 3 },
+    { id: "streak-7", icon: "♨", title: "أسبوع قارئ", description: "حافظ على سلسلة 7 أيام.", metric: "streak", target: 7 },
+    { id: "streak-30", icon: "☀", title: "شهر من الأثر", description: "حافظ على سلسلة 30 يومًا.", metric: "streak", target: 30 },
+    { id: "quote-1", icon: "”", title: "فكرة باقية", description: "احفظ أول اقتباس.", metric: "quotes", target: 1 },
+    { id: "quotes-10", icon: "”", title: "دفتر الاقتباسات", description: "احفظ 10 اقتباسات.", metric: "quotes", target: 10 },
+    { id: "manual-1", icon: "✎", title: "ذاكرة مكتملة", description: "أضف أول جلسة يدويًا.", metric: "manualSessions", target: 1 },
+    { id: "tracked-10", icon: "▶", title: "رفيق المؤقّت", description: "أكمل 10 جلسات بالمؤقّت.", metric: "trackedSessions", target: 10 },
+    { id: "book-1", icon: "✓", title: "كتاب مكتمل", description: "أكمل قراءة كتاب واحد.", metric: "completedBooks", target: 1 },
+    { id: "books-5", icon: "♜", title: "مكتبة منجزة", description: "أكمل قراءة 5 كتب.", metric: "completedBooks", target: 5 }
+  ];
+
   let state = loadState();
   let quoteCache = [];
   let dbPromise = null;
@@ -172,29 +225,42 @@
   let mediaRecorder = null;
   let recordingStartedAt = null;
   let recordingTimer = null;
+  let discardRecordedAudio = false;
   let reportRange = 7;
-  let selectedStudyMinutes = 25;
-  let studyTimerInterval = null;
-  let wakeLockSentinel = null;
   let focusAudioContext = null;
   let focusMusicNodes = [];
   let focusMusicMaster = null;
   let focusMusicPlaying = false;
+  let capturedImageBlob = null;
+  let cameraStream = null;
+  let cameraTrack = null;
+  let cameraFacingMode = "environment";
+  let cameraZoom = 1;
+  let pinchStartDistance = 0;
+  let pinchStartZoom = 1;
+  let cameraPinching = false;
+  let pendingSettingsTarget = null;
+
+  const INSTALL_FLAG_KEY = `${STORAGE_KEY}-installed`;
 
   const $ = (selector, context = document) => context.querySelector(selector);
   const $$ = (selector, context = document) => [...context.querySelectorAll(selector)];
 
   function loadState() {
     try {
-      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      const raw = localStorage.getItem(STORAGE_KEY) || LEGACY_STORAGE_KEYS.map((key) => localStorage.getItem(key)).find(Boolean);
+      const stored = JSON.parse(raw);
       if (!stored || typeof stored !== "object") return structuredClone(defaultState);
+      const { studySessions: _legacyStudySessions, activeStudy: _legacyActiveStudy, ...storedWithoutStudy } = stored;
       return {
         ...structuredClone(defaultState),
-        ...stored,
+        ...storedWithoutStudy,
         settings: { ...defaultState.settings, ...(stored.settings || {}) },
         books: Array.isArray(stored.books) ? stored.books : [],
         sessions: Array.isArray(stored.sessions) ? stored.sessions : [],
-        studySessions: Array.isArray(stored.studySessions) ? stored.studySessions : []
+        readArticles: stored.readArticles && typeof stored.readArticles === "object" ? stored.readArticles : {},
+        unlockedAchievements: stored.unlockedAchievements && typeof stored.unlockedAchievements === "object" ? stored.unlockedAchievements : {},
+        activeTimer: stored.activeTimer || null
       };
     } catch {
       return structuredClone(defaultState);
@@ -222,13 +288,14 @@
     return new Intl.NumberFormat("ar", { maximumFractionDigits: 0 }).format(value || 0);
   }
 
+  function displayNumber(value) {
+    return Number.isFinite(Number(value)) ? toArabicNumber(Number(value)) : "—";
+  }
+
   function formatDate(dateValue, options = {}) {
     const date = new Date(dateValue);
-    return new Intl.DateTimeFormat("ar", {
-      day: "numeric",
-      month: "short",
-      ...options
-    }).format(date);
+    const hasStyle = "dateStyle" in options || "timeStyle" in options;
+    return new Intl.DateTimeFormat("ar", hasStyle ? options : { day: "numeric", month: "short", ...options }).format(date);
   }
 
   function localDateKey(dateValue = Date.now()) {
@@ -365,12 +432,22 @@
     const targetPage = document.getElementById(`page-${page}`) ? page : "home";
     $$(".page").forEach((element) => element.classList.toggle("active", element.id === `page-${targetPage}`));
     $$("[data-page]").forEach((button) => button.classList.toggle("active", button.dataset.page === targetPage));
-    $("#sidebar").classList.remove("open");
+    $("#headerMenu")?.classList.add("hidden");
+    $("#headerMenuButton")?.setAttribute("aria-expanded", "false");
     history.replaceState(null, "", `#${targetPage}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
-    if (targetPage === "quotes") renderQuotes();
-    if (targetPage === "reports") renderReports();
-    if (targetPage === "study") renderStudy();
+    if (targetPage === "home") renderQuotes();
+    if (targetPage === "timer") renderSessionsHistory();
+    if (targetPage === "reports") {
+      renderReports();
+      renderAchievements();
+    }
+    if (targetPage === "articles") renderArticleStates();
+    if (targetPage === "settings" && pendingSettingsTarget) {
+      const target = document.getElementById(pendingSettingsTarget);
+      pendingSettingsTarget = null;
+      window.setTimeout(() => target?.scrollIntoView({ behavior: "smooth", block: "center" }), 180);
+    }
   }
 
   function renderDates() {
@@ -393,6 +470,14 @@
       month: "long",
       year: "numeric"
     }).format(now);
+  }
+
+  function applyAppIdentity() {
+    document.title = `${APP_NAME} | متتبّع القراءة`;
+    document.querySelector('meta[name="description"]')?.setAttribute("content", `${APP_NAME} — ${APP_CONFIG.description}`);
+    document.querySelector('meta[name="application-name"]')?.setAttribute("content", APP_NAME);
+    document.querySelector('meta[name="apple-mobile-web-app-title"]')?.setAttribute("content", APP_NAME);
+    $$('[data-app-name]').forEach((element) => { element.textContent = APP_NAME; });
   }
 
   function getTodaySeconds() {
@@ -451,8 +536,6 @@
       ? `${toArabicNumber(completedBooks)} كتب مكتملة`
       : "لم تُضف كتبًا بعد";
     $("#quotesCount").textContent = toArabicNumber(quoteCache.length);
-    $("#sidebarGoalText").textContent = `${toArabicNumber(todayMinutes)} من ${toArabicNumber(dailyGoal)} دقيقة`;
-    $("#sidebarGoalBar").style.width = `${goalPercent}%`;
     $("#goalPercent").textContent = `${toArabicNumber(goalPercent)}%`;
     $("#goalReadMinutes").textContent = toArabicNumber(todayMinutes);
     $("#goalTargetMinutes").textContent = toArabicNumber(dailyGoal);
@@ -476,7 +559,7 @@
   function coverMarkup(book, extraClass = "") {
     const image = book.coverData
       ? `<img src="${book.coverData}" alt="غلاف ${escapeHTML(book.title)}">`
-      : `<strong>${escapeHTML(book.title)}</strong><small>${escapeHTML(book.author || "مِداد")}</small>`;
+      : `<strong>${escapeHTML(book.title)}</strong><small>${escapeHTML(book.author || APP_NAME)}</small>`;
     return `<div class="book-cover ${extraClass}">${image}</div>`;
   }
 
@@ -504,6 +587,7 @@
         </div>
         <div class="current-book-actions">
           <button class="button button-primary" data-read-book="${book.id}">تابع القراءة</button>
+          <button class="button button-ghost" data-book-detail="${book.id}">السجل</button>
           <button class="button button-ghost" data-edit-book="${book.id}">تعديل</button>
         </div>
       </div>`;
@@ -533,7 +617,7 @@
           <article class="session-row">
             <span class="session-symbol">◷</span>
             <div>
-              <strong>${escapeHTML(book?.title || "كتاب محذوف")}</strong>
+              <strong>${escapeHTML(book?.title || "كتاب محذوف")}${session.manual ? '<span class="manual-badge">أُضيفت يدويًا</span>' : ""}</strong>
               <small>${formatDate(session.endedAt, { weekday: "short" })}</small>
             </div>
             <span class="session-duration">${humanDuration(session.durationSeconds)}</span>
@@ -551,6 +635,7 @@
     $("#timerBookSelect").innerHTML = `<option value="">اختر كتابًا</option>${options}`;
     $("#quoteBookInput").innerHTML = `<option value="">بدون كتاب</option>${options}`;
     $("#quoteBookFilter").innerHTML = `<option value="all">كل الكتب</option>${options}`;
+    $("#manualBookInput").innerHTML = `<option value="">اختر كتابًا</option>${options}`;
     if (selectedTimerBook && bookById(selectedTimerBook)) $("#timerBookSelect").value = selectedTimerBook;
   }
 
@@ -580,7 +665,7 @@
       .map((book) => {
         const progress = bookProgress(book);
         return `
-          <article class="book-card">
+          <article class="book-card" data-book-detail="${book.id}" tabindex="0" role="button" aria-label="فتح سجل ${escapeHTML(book.title)}">
             <span class="book-status ${progress >= 100 ? "completed" : ""}">${progress >= 100 ? "مكتمل" : "أقرأ الآن"}</span>
             ${coverMarkup(book)}
             <div>
@@ -600,6 +685,22 @@
           </article>`;
       })
       .join("");
+  }
+
+  function quoteImageBlob(quote) {
+    return quote.imageMedia || (quote.type === "image" ? quote.media : null);
+  }
+
+  function quoteAudioBlob(quote) {
+    return quote.audioMedia || (quote.type === "audio" ? quote.media : null);
+  }
+
+  function quoteMediaMarkup(quote) {
+    const imageBlob = quoteImageBlob(quote);
+    const audioBlob = quoteAudioBlob(quote);
+    const image = imageBlob ? `<img src="${URL.createObjectURL(imageBlob)}" alt="${quote.photoPurpose === "handwritten" ? "اقتباس مكتوب أو مظلّل" : "صورة صفحة من الكتاب"}">` : "";
+    const audio = audioBlob ? `<audio class="audio-player" controls preload="metadata" src="${URL.createObjectURL(audioBlob)}"></audio>` : "";
+    return `${image}${audio}`;
   }
 
   async function renderQuotes() {
@@ -626,35 +727,48 @@
       .map((quote) => {
         const book = bookById(quote.bookId);
         const bookLine = `${book?.title || "بدون كتاب"}${quote.page ? ` · ص ${toArabicNumber(quote.page)}` : ""}`;
-        if (quote.type === "image" && quote.media) {
-          const mediaUrl = URL.createObjectURL(quote.media);
-          return `
-            <article class="quote-card image-quote">
-              <img src="${mediaUrl}" alt="اقتباس مصوّر">
-              ${quote.comment ? `<p class="quote-comment quote-body">${escapeHTML(quote.comment)}</p>` : ""}
-              <div class="quote-footer"><span>${escapeHTML(bookLine)}</span><button data-delete-quote="${quote.id}" aria-label="حذف الاقتباس">حذف</button></div>
-            </article>`;
-        }
-        if (quote.type === "audio" && quote.media) {
-          const mediaUrl = URL.createObjectURL(quote.media);
-          return `
-            <article class="quote-card">
-              <span class="quote-mark">”</span>
-              <p class="quote-body">اقتباس صوتي</p>
-              <audio class="audio-player" controls preload="metadata" src="${mediaUrl}"></audio>
-              ${quote.comment ? `<p class="quote-comment">${escapeHTML(quote.comment)}</p>` : ""}
-              <div class="quote-footer"><span>${escapeHTML(bookLine)}</span><button data-delete-quote="${quote.id}" aria-label="حذف الاقتباس">حذف</button></div>
-            </article>`;
-        }
         return `
-          <article class="quote-card">
+          <article class="quote-card ${quoteImageBlob(quote) ? "image-quote" : ""}">
             <span class="quote-mark">”</span>
-            <p class="quote-body">${escapeHTML(quote.text || "")}</p>
+            ${quote.text ? `<p class="quote-body">${escapeHTML(quote.text)}</p>` : ""}
+            ${quoteMediaMarkup(quote)}
             ${quote.comment ? `<p class="quote-comment">${escapeHTML(quote.comment)}</p>` : ""}
             <div class="quote-footer"><span>${escapeHTML(bookLine)}</span><button data-delete-quote="${quote.id}" aria-label="حذف الاقتباس">حذف</button></div>
           </article>`;
       })
       .join("");
+  }
+
+  function openBookDetail(bookId, highlightSessionId = "") {
+    const book = bookById(bookId);
+    if (!book) return;
+    const sessions = state.sessions
+      .filter((session) => session.bookId === bookId)
+      .sort((a, b) => Number(b.startedAt) - Number(a.startedAt));
+    const totalPages = sessions.reduce((sum, session) => sum + sessionPages(session), 0);
+    const content = $("#bookDetailContent");
+    content.innerHTML = `
+      <header class="book-detail-header">
+        ${coverMarkup(book)}
+        <div><span class="eyebrow">سجل الكتاب الكامل</span><h2 id="bookDetailTitle">${escapeHTML(book.title)}</h2><p>${escapeHTML(book.author || "مؤلف غير مضاف")}</p><button class="button button-primary" data-read-book="${book.id}">ابدأ جلسة لهذا الكتاب</button></div>
+      </header>
+      <div class="book-detail-summary">
+        <div><small>الجلسات</small><strong>${toArabicNumber(sessions.length)}</strong></div>
+        <div><small>الوقت</small><strong>${humanDuration(readingSecondsForBook(book.id))}</strong></div>
+        <div><small>الصفحات المسجّلة</small><strong>${toArabicNumber(totalPages)}</strong></div>
+      </div>
+      <section><div class="section-heading"><div><span class="eyebrow">من الأحدث إلى الأقدم</span><h3>جلسات القراءة</h3></div></div>
+        <div class="book-session-history">${sessions.length ? sessions.map((session) => {
+          const sessionQuotes = quoteCache.filter((quote) => quote.sessionId === session.id);
+          return `<article class="book-session-entry ${session.id === highlightSessionId ? "highlighted" : ""}" id="book-session-${session.id}">
+            <div class="section-heading split"><div><strong>${displayNumber(session.startPage)} ← ${displayNumber(session.endPage)}${session.manual ? '<span class="manual-badge">أُضيفت يدويًا</span>' : ""}</strong><small>${formatDate(session.startedAt, { dateStyle: "medium", timeStyle: "short" })}</small></div><span>${humanDuration(session.durationSeconds)}</span></div>
+            <p>متوسط الصفحة: <strong>${formatSecondsPerPage(secondsPerPage(session))}</strong>${session.note ? ` · ${escapeHTML(session.note)}` : ""}</p>
+            ${sessionQuotes.length ? `<div class="session-quotes-inline"><strong>اقتباسات هذه الجلسة</strong>${sessionQuotes.map((quote) => `<div>${quote.text ? `<p>“${escapeHTML(quote.text)}”</p>` : ""}${quoteMediaMarkup(quote)}${quote.comment ? `<small>${escapeHTML(quote.comment)}</small>` : ""}</div>`).join("")}</div>` : ""}
+          </article>`;
+        }).join("") : '<div class="empty-state"><strong>لا جلسات لهذا الكتاب بعد</strong><p>ابدأ جلسة أو أضف واحدة يدويًا.</p></div>'}</div>
+      </section>`;
+    openModal("bookDetailModal");
+    if (highlightSessionId) window.setTimeout(() => document.getElementById(`book-session-${highlightSessionId}`)?.scrollIntoView({ block: "center" }), 100);
   }
 
   function getReportSessions() {
@@ -677,6 +791,145 @@
   function sessionPages(session) {
     if (!Number.isFinite(session.startPage) || !Number.isFinite(session.endPage)) return 0;
     return Math.max(0, session.endPage - session.startPage);
+  }
+
+  function secondsPerPage(session) {
+    const pages = sessionPages(session);
+    return pages > 0 && Number(session.durationSeconds) > 0 ? Number(session.durationSeconds) / pages : null;
+  }
+
+  function formatSecondsPerPage(seconds) {
+    if (!Number.isFinite(seconds) || seconds <= 0) return "—";
+    const rounded = Math.round(seconds);
+    if (rounded < 60) return `${toArabicNumber(rounded)} ث/صفحة`;
+    const minutes = Math.floor(rounded / 60);
+    const remainder = rounded % 60;
+    return `${toArabicNumber(minutes)} د${remainder ? ` و${toArabicNumber(remainder)} ث` : ""}/صفحة`;
+  }
+
+  function bookAverageSecondsPerPage(bookId, sessions = state.sessions) {
+    const valid = sessions.filter((session) => session.bookId === bookId && secondsPerPage(session));
+    const totalPages = valid.reduce((sum, session) => sum + sessionPages(session), 0);
+    const totalSeconds = valid.reduce((sum, session) => sum + Number(session.durationSeconds), 0);
+    return totalPages ? totalSeconds / totalPages : null;
+  }
+
+  function paceAnalysisForSession(session) {
+    const current = secondsPerPage(session);
+    if (!current) return { type: "neutral", reason: "أضف صفحتي البداية والنهاية لنحسب إيقاع القراءة لكل صفحة." };
+    const history = state.sessions
+      .filter((item) => item.bookId === session.bookId && item.id !== session.id && secondsPerPage(item))
+      .sort((a, b) => Number(b.endedAt) - Number(a.endedAt));
+    if (history.length < 5) {
+      return { type: "neutral", reason: "سنقارن إيقاعك الشخصي بعد خمس جلسات سابقة صالحة لهذا الكتاب." };
+    }
+    const windowSize = history.length > 100 ? Math.max(20, Math.ceil(history.length * 0.2)) : Math.min(20, history.length);
+    const sample = history.slice(0, windowSize).map(secondsPerPage);
+    const average = sample.reduce((sum, value) => sum + value, 0) / sample.length;
+    const variance = sample.reduce((sum, value) => sum + (value - average) ** 2, 0) / sample.length;
+    const deviation = Math.sqrt(variance);
+    if (!deviation) return { type: "neutral", average, deviation, sampleSize: sample.length, reason: "إيقاعك قريب من نمطك المعتاد لهذا الكتاب." };
+    if (current < average - deviation) return { type: "fast", average, deviation, sampleSize: sample.length };
+    if (current > average + deviation) return { type: "slow", average, deviation, sampleSize: sample.length };
+    return { type: "neutral", average, deviation, sampleSize: sample.length, reason: "إيقاعك اليوم ضمن نطاقك الشخصي المعتاد لهذا الكتاب." };
+  }
+
+  function deterministicChoice(items, seed) {
+    const hash = String(seed).split("").reduce((total, character) => (total * 31 + character.charCodeAt(0)) >>> 0, 7);
+    return items[hash % items.length];
+  }
+
+  function achievementMetrics() {
+    return {
+      sessions: state.sessions.length,
+      pages: state.sessions.reduce((sum, session) => sum + sessionPages(session), 0),
+      minutes: Math.floor(state.sessions.reduce((sum, session) => sum + Number(session.durationSeconds || 0), 0) / 60),
+      streak: calculateStreak(),
+      quotes: quoteCache.length,
+      manualSessions: state.sessions.filter((session) => session.manual).length,
+      trackedSessions: state.sessions.filter((session) => !session.manual).length,
+      completedBooks: state.books.filter((book) => bookProgress(book) >= 100).length
+    };
+  }
+
+  function unlockEligibleAchievements() {
+    const metrics = achievementMetrics();
+    const newlyUnlocked = [];
+    ACHIEVEMENTS.forEach((achievement) => {
+      if (metrics[achievement.metric] >= achievement.target && !state.unlockedAchievements[achievement.id]) {
+        state.unlockedAchievements[achievement.id] = Date.now();
+        newlyUnlocked.push(achievement.id);
+      }
+    });
+    if (newlyUnlocked.length) saveState();
+    return newlyUnlocked;
+  }
+
+  function renderAchievements() {
+    const container = $("#achievementsGrid");
+    if (!container) return;
+    const metrics = achievementMetrics();
+    const unlockedCount = ACHIEVEMENTS.filter((achievement) => state.unlockedAchievements[achievement.id]).length;
+    $("#achievementProgress").textContent = `${toArabicNumber(unlockedCount)} من ${toArabicNumber(ACHIEVEMENTS.length)}`;
+    container.innerHTML = ACHIEVEMENTS.map((achievement) => {
+      const unlocked = Boolean(state.unlockedAchievements[achievement.id]);
+      const value = Math.min(metrics[achievement.metric], achievement.target);
+      return `<article class="achievement-card ${unlocked ? "unlocked" : "locked"}">
+        <span class="achievement-icon">${unlocked ? achievement.icon : "◇"}</span>
+        <h3>${escapeHTML(achievement.title)}</h3>
+        <p>${escapeHTML(achievement.description)}</p>
+        <small>${unlocked ? "مفتوح" : `${toArabicNumber(value)} / ${toArabicNumber(achievement.target)}`}</small>
+      </article>`;
+    }).join("");
+  }
+
+  function renderSessionsHistory() {
+    const container = $("#sessionsHistory");
+    if (!container) return;
+    const sessions = [...state.sessions].sort((a, b) => Number(b.endedAt) - Number(a.endedAt));
+    if (!sessions.length) {
+      container.innerHTML = `<div class="empty-state"><div class="empty-symbol">◷</div><strong>لا جلسات محفوظة بعد</strong><p>ابدأ المؤقّت أو أضف جلسة سابقة يدويًا.</p></div>`;
+      return;
+    }
+    container.innerHTML = sessions.map((session) => {
+      const book = bookById(session.bookId);
+      const pages = sessionPages(session);
+      return `<article class="session-row" data-session-detail="${session.id}" data-book-detail="${session.bookId}">
+        <span class="session-symbol">${session.manual ? "✎" : "◷"}</span>
+        <div><strong>${escapeHTML(book?.title || "كتاب غير موجود")}${session.manual ? '<span class="manual-badge">أُضيفت يدويًا</span>' : ""}</strong><small>${formatDate(session.startedAt, { dateStyle: "medium", timeStyle: "short" })}</small></div>
+        <span class="session-duration">${humanDuration(session.durationSeconds)}</span>
+        <span class="session-metric">${displayNumber(session.startPage)} ← ${displayNumber(session.endPage)}</span>
+        <span class="session-metric">${pages ? formatSecondsPerPage(secondsPerPage(session)) : "دون معدل"}</span>
+      </article>`;
+    }).join("");
+  }
+
+  function renderPostSessionResult(session, achievementIds = []) {
+    $("#sessionResultTitle").textContent = session.manual ? "أثر جلستك · أُضيفت يدويًا" : "أثر جلستك";
+    const pages = sessionPages(session);
+    const sessionAverage = secondsPerPage(session);
+    const bookAverage = bookAverageSecondsPerPage(session.bookId);
+    $("#sessionResultStats").innerHTML = `
+      <article><small>مدة الجلسة</small><strong>${humanDuration(session.durationSeconds)}</strong></article>
+      <article><small>متوسط هذه الجلسة</small><strong>${formatSecondsPerPage(sessionAverage)}</strong></article>
+      <article><small>متوسط الكتاب كله</small><strong>${formatSecondsPerPage(bookAverage)}</strong></article>`;
+    const pace = paceAnalysisForSession(session);
+    const message = pace.type === "fast"
+      ? deterministicChoice(FAST_PACE_MESSAGES, session.id)
+      : pace.type === "slow"
+        ? deterministicChoice(SLOW_PACE_MESSAGES, session.id)
+        : pace.reason;
+    $("#sessionPaceMessage").innerHTML = `<strong>${pages ? `${toArabicNumber(pages)} صفحات · ` : ""}${pace.type === "fast" ? "أسرع من نمطك القريب" : pace.type === "slow" ? "أهدأ من نمطك القريب" : "إيقاع شخصي متوازن"}</strong><br>${escapeHTML(message || "استمر بما يناسب فهمك وراحتك.")}`;
+    const celebration = $("#newAchievementsCelebration");
+    if (achievementIds.length) {
+      const unlocked = achievementIds.map((id) => ACHIEVEMENTS.find((item) => item.id === id)).filter(Boolean);
+      celebration.classList.remove("hidden");
+      celebration.innerHTML = `<strong>🎉 إنجاز جديد بعد هذه الجلسة</strong><ul>${unlocked.map((item) => `<li>${escapeHTML(item.icon)} ${escapeHTML(item.title)}</li>`).join("")}</ul>`;
+    } else {
+      celebration.classList.add("hidden");
+      celebration.innerHTML = "";
+    }
+    openModal("sessionResultModal");
   }
 
   function timeBucket(dateValue) {
@@ -891,6 +1144,7 @@
     const pagesInsight = pagesPerHour
       ? `معدّلك المسجّل ${toArabicNumber(Math.round(pagesPerHour))} صفحة/ساعة. قارنه داخل الكتاب نفسه، لأن صعوبة الكتب تختلف.`
       : "سجّل صفحة البداية والنهاية كي نحسب سرعة تقريبية. السرعة ليست مقياسًا للفهم.";
+    const manualCount = sessions.filter((session) => session.manual).length;
 
     container.innerHTML = `
       <article class="insight-card">
@@ -907,6 +1161,11 @@
         <span>▤</span>
         <strong>حضور في ${toArabicNumber(consistency)}% من أيام الفترة</strong>
         <p>${pagesInsight}</p>
+      </article>
+      <article class="insight-card">
+        <span>✎</span>
+        <strong>${toArabicNumber(manualCount)} جلسات أُضيفت يدويًا</strong>
+        <p>الجلسات اليدوية موسومة بوضوح وتدخل في الإجماليات والتحليلات مثل الجلسات المتتبّعة.</p>
       </article>`;
   }
 
@@ -949,6 +1208,7 @@
     $("#enableNotificationsButton").textContent =
       permission === "granted" ? "الإشعارات مفعّلة ✓" : permission === "denied" ? "الإشعارات محظورة" : "تفعيل الإشعارات";
     $("#enableNotificationsButton").disabled = !notificationSupported || permission === "denied";
+    renderInstallState();
   }
 
   const focusMusicLabels = {
@@ -1111,7 +1371,6 @@
     $("#musicVolumeInput").value = state.settings.focusMusicVolume ?? 28;
     $("#focusMusicIcon").textContent = focusMusicPlaying ? "Ⅱ" : "▶";
     $("#focusMusicButtonText").textContent = focusMusicPlaying ? "إيقاف الصوت" : "تشغيل الصوت";
-    $("#overlayMusicButton").innerHTML = `<span>${focusMusicPlaying ? "Ⅱ" : "▶"}</span><b>${focusMusicLabels[track]}</b>`;
   }
 
   function updateConnectionStatus(event) {
@@ -1122,209 +1381,11 @@
       : event?.type === "online"
         ? false
         : !navigator.onLine;
-    indicator.classList.toggle("offline", offline);
-    indicator.querySelector("b").textContent = offline ? "تعمل دون اتصال" : "جاهز دون اتصال";
+    indicator.classList.toggle("degraded", offline);
+    indicator.querySelector("b").textContent = offline ? "غير متصل" : "متصل";
     indicator.title = offline
-      ? "التطبيق يعمل الآن من الملفات المحفوظة على الجهاز"
-      : "تم حفظ الملفات الأساسية للعمل دون اتصال بعد أول تحميل";
-  }
-
-  function getStudyElapsedSeconds() {
-    const study = state.activeStudy;
-    if (!study) return 0;
-    const live = study.status === "running" && study.startedAt
-      ? Math.floor((Date.now() - study.startedAt) / 1000)
-      : 0;
-    return Math.max(0, Number(study.elapsedSeconds || 0) + live);
-  }
-
-  function renderStudy() {
-    updateFocusMusicUI();
-    const supportsFullscreen = Boolean(document.documentElement.requestFullscreen);
-    const supportsWakeLock = "wakeLock" in navigator;
-    const supportStatus = $("#focusSupportStatus");
-    const supportedCount = Number(supportsFullscreen) + Number(supportsWakeLock);
-    supportStatus.className = `session-status ${supportedCount ? "running" : ""}`;
-    supportStatus.innerHTML = `<i></i> ${supportedCount === 2 ? "ملء الشاشة وإبقاء الشاشة مدعومان" : supportedCount ? "بعض مزايا التركيز مدعومة" : "وضع المؤقّت الأساسي متاح"}`;
-
-    const weekStart = new Date();
-    weekStart.setHours(0, 0, 0, 0);
-    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-    const weeklySessions = state.studySessions.filter((session) => session.endedAt >= weekStart.getTime());
-    const weeklySeconds = weeklySessions.reduce((sum, session) => sum + Number(session.durationSeconds || 0), 0);
-    $("#studyWeeklyTotal").textContent = `${humanDuration(weeklySeconds)} هذا الأسبوع`;
-
-    const recent = [...state.studySessions].sort((a, b) => b.endedAt - a.endedAt).slice(0, 5);
-    $("#studyHistory").innerHTML = recent.length
-      ? recent
-          .map((session) => `
-            <article class="session-row">
-              <span class="session-symbol">◉</span>
-              <div>
-                <strong>${escapeHTML(session.task || "جلسة تركيز")}</strong>
-                <small>${formatDate(session.endedAt, { weekday: "short" })}${session.completed ? " · مكتملة" : " · منتهية مبكرًا"}</small>
-              </div>
-              <span class="session-duration">${humanDuration(session.durationSeconds)}</span>
-              <span class="session-pages">${toArabicNumber(session.plannedMinutes)} د مخططة</span>
-            </article>`)
-          .join("")
-      : `
-        <div class="empty-state">
-          <div class="empty-symbol">◉</div>
-          <strong>لا جلسات دراسة بعد</strong>
-          <p>اختر مهمة واحدة ومدة واضحة. سيظهر سجل التركيز هنا منفصلًا عن جلسات القراءة.</p>
-        </div>`;
-  }
-
-  async function requestStudyWakeLock() {
-    if (!$("#keepAwakePreference").checked || !("wakeLock" in navigator) || !window.isSecureContext) {
-      $("#wakeLockIndicator").textContent = "◌ الشاشة قد تنطفئ وفق إعدادات جهازك";
-      return;
-    }
-    try {
-      wakeLockSentinel = await navigator.wakeLock.request("screen");
-      $("#wakeLockIndicator").textContent = "● الشاشة ستبقى مستيقظة أثناء الجلسة";
-      wakeLockSentinel.addEventListener("release", () => {
-        $("#wakeLockIndicator").textContent = "◌ تم تحرير إبقاء الشاشة";
-      });
-    } catch {
-      $("#wakeLockIndicator").textContent = "◌ تعذّر إبقاء الشاشة مستيقظة";
-    }
-  }
-
-  async function releaseStudyWakeLock() {
-    try {
-      await wakeLockSentinel?.release();
-    } catch {
-      // The browser may already have released it when the page became hidden.
-    }
-    wakeLockSentinel = null;
-  }
-
-  function startStudySession() {
-    const task = $("#studyTaskInput").value.trim();
-    if (!task) {
-      showToast("اكتب مهمة واضحة للجلسة أولًا", "error");
-      $("#studyTaskInput").focus();
-      return;
-    }
-    if ($("#callsPreference").checked && !state.settings.focusSetupAcknowledged) {
-      state.settings.focusSetupAcknowledged = true;
-      saveState();
-      openModal("focusHelpModal");
-      showToast("راجع إعداد المكالمات، ثم اضغط بدء مرة أخرى");
-      return;
-    }
-
-    state.activeStudy = {
-      id: uid("study"),
-      task,
-      plannedMinutes: selectedStudyMinutes,
-      plannedSeconds: selectedStudyMinutes * 60,
-      status: "running",
-      startedAt: Date.now(),
-      elapsedSeconds: 0,
-      createdAt: Date.now()
-    };
-    saveState();
-    $("#focusOverlay").classList.remove("hidden");
-    document.body.style.overflow = "hidden";
-    if ($("#fullscreenPreference").checked && document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    }
-    requestStudyWakeLock();
-    startStudyLoop();
-    updateStudyUI();
-  }
-
-  function startStudyLoop() {
-    stopStudyLoop();
-    studyTimerInterval = window.setInterval(updateStudyUI, 1000);
-  }
-
-  function stopStudyLoop() {
-    if (studyTimerInterval) window.clearInterval(studyTimerInterval);
-    studyTimerInterval = null;
-  }
-
-  function pauseResumeStudy() {
-    const study = state.activeStudy;
-    if (!study) return;
-    if (study.status === "running") {
-      study.elapsedSeconds = getStudyElapsedSeconds();
-      study.startedAt = null;
-      study.status = "paused";
-      releaseStudyWakeLock();
-    } else {
-      study.startedAt = Date.now();
-      study.status = "running";
-      requestStudyWakeLock();
-      startStudyLoop();
-    }
-    saveState();
-    updateStudyUI();
-  }
-
-  function updateStudyUI() {
-    const study = state.activeStudy;
-    if (!study) {
-      $("#focusOverlay").classList.add("hidden");
-      return;
-    }
-    const elapsed = getStudyElapsedSeconds();
-    const remaining = Math.max(0, Number(study.plannedSeconds) - elapsed);
-    $("#focusOverlay").classList.remove("hidden");
-    $("#activeStudyTask").textContent = study.task;
-    $("#focusClock").textContent = formatDuration(remaining).slice(3);
-    $("#pauseStudyButton").innerHTML = study.status === "running"
-      ? "<span>Ⅱ</span><b>إيقاف مؤقت</b>"
-      : "<span>▶</span><b>متابعة</b>";
-    $("#focusMessage").textContent = study.status === "running"
-      ? "شيء واحد في كل مرة."
-      : "الجلسة متوقفة مؤقتًا.";
-    if (remaining === 0 && study.status === "running") finishStudySession(true, true);
-  }
-
-  async function finishStudySession(completed, automatic = false) {
-    const study = state.activeStudy;
-    if (!study) return;
-    const elapsed = getStudyElapsedSeconds();
-    if (elapsed >= 5) {
-      state.studySessions.push({
-        id: study.id,
-        task: study.task,
-        plannedMinutes: study.plannedMinutes,
-        durationSeconds: elapsed,
-        startedAt: study.createdAt,
-        endedAt: Date.now(),
-        completed
-      });
-    }
-    state.activeStudy = null;
-    saveState();
-    stopStudyLoop();
-    stopFocusMusic();
-    await releaseStudyWakeLock();
-    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-    document.body.style.overflow = "";
-    renderStudy();
-    updateStudyUI();
-    const message = completed ? "أحسنت، اكتملت جلسة التركيز" : "تم إنهاء جلسة التركيز";
-    showToast(message);
-    if (automatic && "Notification" in window && Notification.permission === "granted") {
-      new Notification("مِداد — انتهى وقت التركيز", {
-        body: "اكتملت الجلسة. خذ استراحة قصيرة قبل المهمة التالية.",
-        icon: "assets/icon.svg",
-        tag: "study-complete"
-      });
-    }
-  }
-
-  function exitStudySession() {
-    if (!state.activeStudy) return;
-    const elapsed = getStudyElapsedSeconds();
-    if (elapsed > 10 && !window.confirm("هل تريد إنهاء جلسة التركيز قبل اكتمالها؟")) return;
-    finishStudySession(false);
+      ? "الاتصال متوقف؛ التطبيق يعمل من الملفات المحفوظة على الجهاز"
+      : "متصل بالإنترنت، والبيانات الأساسية محفوظة محليًا";
   }
 
   function renderAll() {
@@ -1333,9 +1394,11 @@
     renderBooks();
     renderSettings();
     renderReports();
-    renderStudy();
+    renderSessionsHistory();
+    renderAchievements();
+    renderArticleStates();
+    updateFocusMusicUI();
     updateTimerUI();
-    updateStudyUI();
   }
 
   function openBookModal(book = null) {
@@ -1417,9 +1480,11 @@
       return;
     }
     state.activeTimer = {
+      id: uid("session"),
       bookId,
       status: "running",
       startedAt: Date.now(),
+      createdAt: Date.now(),
       elapsedSeconds: 0,
       lastReminder: 0,
       startPage: bookById(bookId).currentPage || 0,
@@ -1456,6 +1521,7 @@
     $("#sessionQuickNote").value = "";
     pendingFinishWasRunning = false;
     stopTimerLoop();
+    stopFocusMusic();
     updateTimerUI();
     showToast("أُلغيت الجلسة دون حفظ");
   }
@@ -1486,18 +1552,24 @@
       showToast(`أدخل صفحة بين 0 و${book.totalPages}`, "error");
       return;
     }
-    state.sessions.push({
-      id: uid("session"),
+    if (endPage !== null && endPage < Number(timer.startPage || 0)) {
+      showToast("صفحة النهاية لا يمكن أن تسبق صفحة البداية", "error");
+      return;
+    }
+    const session = {
+      id: timer.id || uid("session"),
       bookId: timer.bookId,
-      startedAt: Date.now() - durationSeconds * 1000,
+      startedAt: timer.createdAt || Date.now() - durationSeconds * 1000,
       endedAt: Date.now(),
       durationSeconds,
       startPage: timer.startPage,
       endPage,
       note: $("#sessionNoteInput").value.trim(),
       focusRating: Number($("#sessionFocusRatingInput").value) || null,
-      understandingRating: Number($("#sessionUnderstandingInput").value) || null
-    });
+      understandingRating: Number($("#sessionUnderstandingInput").value) || null,
+      manual: false
+    };
+    state.sessions.push(session);
     if (book && endPage !== null) {
       book.currentPage = Math.max(book.currentPage || 0, endPage);
       book.updatedAt = Date.now();
@@ -1506,12 +1578,98 @@
     pendingFinishWasRunning = false;
     saveState();
     stopTimerLoop();
+    stopFocusMusic();
     $("#sessionQuickNote").value = "";
     closeModal("finishSessionModal");
     renderAll();
-    navigate("home");
     showToast("حُفظت جلسة القراءة");
-    window.setTimeout(() => openModal("adModal"), 450);
+    const newlyUnlocked = unlockEligibleAchievements();
+    renderAchievements();
+    renderPostSessionResult(session, newlyUnlocked);
+  }
+
+  async function discardFinishedSession() {
+    if (!state.activeTimer) return;
+    const discardedId = state.activeTimer.id;
+    state.activeTimer = null;
+    pendingFinishWasRunning = false;
+    stopTimerLoop();
+    stopFocusMusic();
+    $("#sessionQuickNote").value = "";
+    const linkedQuotes = quoteCache.filter((quote) => quote.sessionId === discardedId);
+    for (const quote of linkedQuotes) await putQuote({ ...quote, sessionId: null });
+    saveState();
+    closeModal("finishSessionModal");
+    renderAll();
+    renderQuotes();
+    showToast("تم تجاهل الجلسة، وبقيت اقتباساتك محفوظة دون ربط بجلسة");
+  }
+
+  function openManualSessionModal() {
+    if (!state.books.length) {
+      showToast("أضف كتابًا قبل تسجيل جلسة", "error");
+      openBookModal();
+      return;
+    }
+    $("#manualSessionForm").reset();
+    $("#manualDateInput").value = localDateKey();
+    const now = new Date();
+    const start = new Date(now.getTime() - 30 * 60 * 1000);
+    const timeValue = (date) => `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+    $("#manualStartTimeInput").value = timeValue(start);
+    $("#manualEndTimeInput").value = timeValue(now);
+    openModal("manualSessionModal");
+  }
+
+  function saveManualSession(event) {
+    event.preventDefault();
+    const book = bookById($("#manualBookInput").value);
+    const startPage = Number($("#manualStartPageInput").value);
+    const endPage = Number($("#manualEndPageInput").value);
+    const date = $("#manualDateInput").value;
+    const startTime = $("#manualStartTimeInput").value;
+    const endTime = $("#manualEndTimeInput").value;
+    if (!book || !date || !startTime || !endTime || !Number.isFinite(startPage) || !Number.isFinite(endPage)) {
+      showToast("أكمل الحقول المطلوبة", "error");
+      return;
+    }
+    if (startPage < 0 || endPage < startPage || endPage > book.totalPages) {
+      showToast(`تحقق من الصفحات؛ الحد الأعلى ${toArabicNumber(book.totalPages)}`, "error");
+      return;
+    }
+    const startedAt = new Date(`${date}T${startTime}:00`).getTime();
+    const endedAt = new Date(`${date}T${endTime}:00`).getTime();
+    if (!Number.isFinite(startedAt) || !Number.isFinite(endedAt) || endedAt <= startedAt) {
+      showToast("يجب أن يكون وقت النهاية بعد وقت البداية في اليوم نفسه", "error");
+      return;
+    }
+    const session = {
+      id: uid("session"),
+      bookId: book.id,
+      startedAt,
+      endedAt,
+      durationSeconds: Math.round((endedAt - startedAt) / 1000),
+      startPage,
+      endPage,
+      note: $("#manualSessionNoteInput").value.trim(),
+      focusRating: Number($("#manualFocusRatingInput").value) || null,
+      understandingRating: null,
+      manual: true
+    };
+    state.sessions.push(session);
+    book.currentPage = Math.max(book.currentPage || 0, endPage);
+    book.updatedAt = Date.now();
+    saveState();
+    closeModal("manualSessionModal");
+    renderAll();
+    const newlyUnlocked = unlockEligibleAchievements();
+    renderAchievements();
+    renderPostSessionResult(session, newlyUnlocked);
+    showToast("حُفظت الجلسة اليدوية");
+  }
+
+  function maybeShowPostSessionAd() {
+    if (APP_CONFIG.featureFlags?.postSessionAds) window.setTimeout(() => openModal("adModal"), 250);
   }
 
   function startTimerLoop() {
@@ -1574,7 +1732,7 @@
       const message = `أنت تقرأ منذ ${humanDuration(elapsed)}. خذ نفسًا وأكمل حين تكون مستعدًا.`;
       showToast(message);
       if ("Notification" in window && Notification.permission === "granted") {
-        new Notification("مِداد — وقت القراءة", {
+        new Notification(`${APP_NAME} — وقت القراءة`, {
           body: message,
           icon: "assets/icon.svg",
           tag: `reading-${milestone}`
@@ -1597,89 +1755,59 @@
     showToast(permission === "granted" ? "تم تفعيل الإشعارات" : "لم يُسمح بالإشعارات", permission === "granted" ? "success" : "error");
   }
 
-  async function saveQuickQuote() {
-    const text = $("#quickQuoteText").value.trim();
-    if (!text) {
-      showToast("اكتب الاقتباس أولًا", "error");
-      return;
-    }
-    const bookId = state.activeTimer?.bookId || $("#timerBookSelect").value || "";
-    await putQuote({
-      id: uid("quote"),
-      type: "text",
-      bookId,
-      page: Number($("#quickQuotePage").value) || null,
-      text,
-      comment: "",
-      createdAt: Date.now()
-    });
-    $("#quickQuoteText").value = "";
-    $("#quickQuotePage").value = "";
-    renderDashboard();
-    showToast("حُفظ الاقتباس دون إيقاف المؤقّت");
-  }
-
   function openQuoteModal(bookId = "") {
     $("#quoteForm").reset();
-    $("#quoteTypeInput").value = "text";
-    $$(".quote-type-tabs button").forEach((button) => button.classList.toggle("active", button.dataset.quoteType === "text"));
-    updateQuoteTypeFields("text");
     $("#quoteBookInput").value = bookId || state.activeTimer?.bookId || "";
     recordedAudioBlob = null;
+    capturedImageBlob = null;
     $("#recordingTime").textContent = "00:00";
+    updateQuoteAttachmentUI();
     openModal("quoteModal");
   }
 
-  function updateQuoteTypeFields(type) {
-    $("#textQuoteFields").classList.toggle("hidden", type !== "text");
-    $("#imageQuoteFields").classList.toggle("hidden", type !== "image");
-    $("#audioQuoteFields").classList.toggle("hidden", type !== "audio");
+  function updateQuoteAttachmentUI() {
+    const selectedImage = capturedImageBlob || $("#quoteImageInput")?.files?.[0] || null;
+    const preview = $("#quoteImagePreview");
+    if (selectedImage) {
+      preview.classList.remove("hidden");
+      preview.innerHTML = `<img src="${URL.createObjectURL(selectedImage)}" alt="معاينة الصورة">`;
+    } else {
+      preview.classList.add("hidden");
+      preview.innerHTML = "";
+    }
+    $("#removeQuoteImageButton").classList.toggle("hidden", !selectedImage);
+    const selectedAudio = recordedAudioBlob || $("#quoteAudioInput")?.files?.[0] || null;
+    $("#removeQuoteAudioButton").classList.toggle("hidden", !selectedAudio);
   }
 
   async function saveQuote(event) {
     event.preventDefault();
-    const type = $("#quoteTypeInput").value;
-    let media = null;
-    let text = "";
-    if (type === "text") {
-      text = $("#quoteTextInput").value.trim();
-      if (!text) {
-        showToast("اكتب نص الاقتباس", "error");
-        return;
-      }
+    const text = $("#quoteTextInput").value.trim();
+    const imageMedia = capturedImageBlob || $("#quoteImageInput").files[0] || null;
+    const audioMedia = recordedAudioBlob || $("#quoteAudioInput").files[0] || null;
+    if (!text && !imageMedia && !audioMedia) {
+      showToast("أضف نصًا أو صورة أو صوتًا واحدًا على الأقل", "error");
+      return;
     }
-    if (type === "image") {
-      const file = $("#quoteImageInput").files[0];
-      if (!file) {
-        showToast("اختر صورة للاقتباس", "error");
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        showToast("الصورة أكبر من 5MB", "error");
-        return;
-      }
-      media = file;
+    if (imageMedia?.size > 5 * 1024 * 1024) {
+      showToast("الصورة أكبر من 5MB", "error");
+      return;
     }
-    if (type === "audio") {
-      const file = $("#quoteAudioInput").files[0];
-      media = recordedAudioBlob || file || null;
-      if (!media) {
-        showToast("سجّل أو اختر ملفًا صوتيًا", "error");
-        return;
-      }
-      if (media.size > 10 * 1024 * 1024) {
-        showToast("الملف الصوتي أكبر من 10MB", "error");
-        return;
-      }
+    if (audioMedia?.size > 10 * 1024 * 1024) {
+      showToast("الملف الصوتي أكبر من 10MB", "error");
+      return;
     }
     await putQuote({
       id: uid("quote"),
-      type,
+      type: "rich",
       bookId: $("#quoteBookInput").value,
+      sessionId: state.activeTimer?.id || null,
       page: Number($("#quotePageInput").value) || null,
       text,
       comment: $("#quoteCommentInput").value.trim(),
-      media,
+      imageMedia,
+      audioMedia,
+      photoPurpose: $("#quotePhotoPurpose").value,
       createdAt: Date.now()
     });
     closeModal("quoteModal");
@@ -1700,14 +1828,16 @@
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const chunks = [];
+      discardRecordedAudio = false;
       mediaRecorder = new MediaRecorder(stream);
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size) chunks.push(event.data);
       };
       mediaRecorder.onstop = () => {
-        recordedAudioBlob = new Blob(chunks, { type: mediaRecorder.mimeType || "audio/webm" });
+        recordedAudioBlob = discardRecordedAudio ? null : new Blob(chunks, { type: mediaRecorder.mimeType || "audio/webm" });
         stream.getTracks().forEach((track) => track.stop());
-        showToast("تم تسجيل المقطع الصوتي");
+        updateQuoteAttachmentUI();
+        if (!discardRecordedAudio) showToast("تم تسجيل المقطع الصوتي");
       };
       mediaRecorder.start();
       recordingStartedAt = Date.now();
@@ -1725,32 +1855,133 @@
   function stopRecording(discard = false) {
     if (recordingTimer) window.clearInterval(recordingTimer);
     recordingTimer = null;
+    discardRecordedAudio = discard;
     if (mediaRecorder?.state === "recording") mediaRecorder.stop();
     if (discard) recordedAudioBlob = null;
     $("#recordAudioButton")?.classList.remove("recording");
     if ($("#recordAudioButton")) $("#recordAudioButton").lastChild.textContent = " بدء التسجيل";
+    updateQuoteAttachmentUI();
+  }
+
+  function stopCamera() {
+    cameraStream?.getTracks().forEach((track) => track.stop());
+    cameraStream = null;
+    cameraTrack = null;
+    $("#cameraVideo").srcObject = null;
+    $("#cameraModal").classList.add("hidden");
+    if (!$$('.modal-backdrop:not(.hidden)').length) document.body.style.overflow = "";
+  }
+
+  async function openCamera() {
+    if (!navigator.mediaDevices?.getUserMedia || !window.isSecureContext) {
+      showToast("الكاميرا المباشرة تحتاج HTTPS ومتصفّحًا داعمًا؛ استخدم اختيار الصورة", "error");
+      return;
+    }
+    stopCamera();
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: cameraFacingMode }, width: { ideal: 1920 }, height: { ideal: 1440 } },
+        audio: false
+      });
+      cameraTrack = cameraStream.getVideoTracks()[0];
+      $("#cameraVideo").srcObject = cameraStream;
+      $("#cameraModal").classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+      const capabilities = cameraTrack.getCapabilities?.() || {};
+      cameraZoom = capabilities.zoom?.min || 1;
+      $("#cameraHint").textContent = capabilities.zoom
+        ? "قرّب بإصبعين، واضغط على موضع للتركيز"
+        : "اضغط على موضع للتركيز؛ التكبير اليدوي غير متاح في هذه الكاميرا";
+    } catch {
+      stopCamera();
+      showToast("تعذّر فتح الكاميرا؛ يمكنك اختيار صورة من الجهاز", "error");
+    }
+  }
+
+  function touchDistance(touches) {
+    return Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
+  }
+
+  async function applyCameraZoom(nextZoom) {
+    const capabilities = cameraTrack?.getCapabilities?.() || {};
+    if (!capabilities.zoom) return;
+    cameraZoom = Math.min(capabilities.zoom.max, Math.max(capabilities.zoom.min, nextZoom));
+    try {
+      await cameraTrack.applyConstraints({ advanced: [{ zoom: cameraZoom }] });
+    } catch {
+      // The browser may advertise zoom but reject a particular intermediate value.
+    }
+  }
+
+  async function focusCameraAt(clientX, clientY) {
+    if (!cameraTrack) return;
+    const stage = $("#cameraStage");
+    const rect = stage.getBoundingClientRect();
+    const x = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    const y = Math.min(1, Math.max(0, (clientY - rect.top) / rect.height));
+    const ring = $("#cameraFocusRing");
+    ring.style.left = `${x * 100}%`;
+    ring.style.top = `${y * 100}%`;
+    ring.classList.remove("hidden");
+    window.setTimeout(() => ring.classList.add("hidden"), 650);
+    const capabilities = cameraTrack.getCapabilities?.() || {};
+    try {
+      const constraint = { pointsOfInterest: [{ x, y }] };
+      if (capabilities.focusMode?.includes("single-shot")) constraint.focusMode = "single-shot";
+      await cameraTrack.applyConstraints({ advanced: [constraint] });
+      $("#cameraSupportNote").textContent = "تم إرسال نقطة التركيز إلى الكاميرا.";
+    } catch {
+      $("#cameraSupportNote").textContent = "أظهرنا نقطة التركيز، لكن هذا المتصفّح يدير التركيز تلقائيًا.";
+    }
+  }
+
+  function captureCameraPhoto() {
+    const video = $("#cameraVideo");
+    if (!video.videoWidth) {
+      showToast("انتظر لحظة حتى تصبح الكاميرا جاهزة", "error");
+      return;
+    }
+    const canvas = $("#cameraCanvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d").drawImage(video, 0, 0);
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      capturedImageBlob = blob;
+      $("#quoteImageInput").value = "";
+      updateQuoteAttachmentUI();
+      stopCamera();
+      showToast("تم التقاط الصورة");
+    }, "image/jpeg", 0.88);
+  }
+
+  function toggleArticleRead(key) {
+    if (!articles[key]) return;
+    state.readArticles[key] = !state.readArticles[key];
+    saveState();
+    renderArticleStates();
+  }
+
+  function renderArticleStates() {
+    $$("[data-article-read]").forEach((button) => {
+      const read = Boolean(state.readArticles[button.dataset.articleRead]);
+      button.classList.toggle("read", read);
+      button.setAttribute("aria-pressed", String(read));
+      button.innerHTML = `<span>✓</span> ${read ? "تمت القراءة" : "قرأت هذا المقال"}`;
+    });
   }
 
   function openArticle(key) {
     const article = articles[key];
     if (!article) return;
-    const sources = article.sources?.length
-      ? `
-        <footer class="article-sources">
-          <h3>المصادر والقراءة الإضافية</h3>
-          <ul>${article.sources
-            .map((source) => `<li><a href="${source.url}" target="_blank" rel="noopener noreferrer">${escapeHTML(source.label)}</a></li>`)
-            .join("")}</ul>
-          <p class="chart-footnote">الإحصاءات المذكورة تصف الدراسات المرتبطة بها، وقد لا تنطبق بنفس المقدار على كل قارئ.</p>
-        </footer>`
-      : "";
     $("#articleModalContent").innerHTML = `
       <header class="article-hero">
         <span class="article-tag">${escapeHTML(article.tag)}</span>
         <h2 id="articleModalTitle">${escapeHTML(article.title)}</h2>
         <p>${escapeHTML(article.intro)}</p>
+        <button class="article-read-toggle ${state.readArticles[key] ? "read" : ""}" type="button" data-article-read="${key}"><span>✓</span> ${state.readArticles[key] ? "تمت القراءة" : "قرأت هذا المقال"}</button>
       </header>
-      <div class="article-prose">${article.body}${sources}</div>`;
+      <div class="article-prose">${article.body}</div>`;
     openModal("articleModal");
   }
 
@@ -1772,25 +2003,27 @@
   }
 
   function exportCsv() {
-    const headers = ["session_id", "book_title", "author", "started_at", "ended_at", "duration_minutes", "start_page", "end_page", "focus_rating", "understanding_rating", "note"];
+    const headers = ["session_id", "book_title", "author", "entry_type", "started_at", "ended_at", "duration_minutes", "start_page", "end_page", "seconds_per_page", "focus_rating", "understanding_rating", "note"];
     const rows = state.sessions.map((session) => {
       const book = bookById(session.bookId);
       return [
         session.id,
         book?.title || "",
         book?.author || "",
+        session.manual ? "manual" : "tracked",
         new Date(session.startedAt).toISOString(),
         new Date(session.endedAt).toISOString(),
         Math.round((session.durationSeconds / 60) * 100) / 100,
         session.startPage ?? "",
         session.endPage ?? "",
+        secondsPerPage(session) ? Math.round(secondsPerPage(session) * 100) / 100 : "",
         session.focusRating ?? "",
         session.understandingRating ?? "",
         session.note || ""
       ];
     });
     const csv = "\uFEFF" + [headers, ...rows].map((row) => row.map(csvEscape).join(",")).join("\r\n");
-    downloadFile(`midad-sessions-${localDateKey()}.csv`, csv, "text/csv;charset=utf-8");
+    downloadFile(`${APP_CONFIG.exportSlug}-sessions-${localDateKey()}.csv`, csv, "text/csv;charset=utf-8");
     showToast("تم تحميل سجل الجلسات");
   }
 
@@ -1798,12 +2031,14 @@
     const quotes = await Promise.all(
       quoteCache.map(async (quote) => ({
         ...quote,
-        media: quote.media ? await blobToDataURL(quote.media) : null
+        media: quote.media ? await blobToDataURL(quote.media) : null,
+        imageMedia: quote.imageMedia ? await blobToDataURL(quote.imageMedia) : null,
+        audioMedia: quote.audioMedia ? await blobToDataURL(quote.audioMedia) : null
       }))
     );
     const backup = {
-      app: "midad-reading-tracker",
-      version: 1,
+      app: APP_CONFIG.exportId,
+      version: 2,
       exportedAt: new Date().toISOString(),
       data: {
         ...state,
@@ -1811,7 +2046,7 @@
       }
     };
     downloadFile(
-      `midad-backup-${localDateKey()}.json`,
+      `${APP_CONFIG.exportSlug}-backup-${localDateKey()}.json`,
       JSON.stringify(backup, null, 2),
       "application/json;charset=utf-8"
     );
@@ -1821,24 +2056,27 @@
   async function importJson(file) {
     try {
       const backup = JSON.parse(await file.text());
-      if (backup?.app !== "midad-reading-tracker" || !backup?.data) throw new Error("invalid");
+      if (![APP_CONFIG.exportId, "midad-reading-tracker"].includes(backup?.app) || !backup?.data) throw new Error("invalid");
       if (!window.confirm("ستستبدل هذه النسخة البيانات الحالية. هل تريد المتابعة؟")) return;
       const imported = backup.data;
+      const { studySessions: _legacyStudySessions, activeStudy: _legacyActiveStudy, ...importedWithoutStudy } = imported;
       state = {
         ...structuredClone(defaultState),
-        ...imported,
+        ...importedWithoutStudy,
         settings: { ...defaultState.settings, ...(imported.settings || {}) },
         books: Array.isArray(imported.books) ? imported.books : [],
         sessions: Array.isArray(imported.sessions) ? imported.sessions : [],
-        studySessions: Array.isArray(imported.studySessions) ? imported.studySessions : [],
-        activeTimer: null,
-        activeStudy: null
+        readArticles: imported.readArticles && typeof imported.readArticles === "object" ? imported.readArticles : {},
+        unlockedAchievements: imported.unlockedAchievements && typeof imported.unlockedAchievements === "object" ? imported.unlockedAchievements : {},
+        activeTimer: null
       };
       await clearQuotes();
       for (const quote of imported.quotes || []) {
         await putQuote({
           ...quote,
-          media: typeof quote.media === "string" ? dataURLToBlob(quote.media) : null
+          media: typeof quote.media === "string" ? dataURLToBlob(quote.media) : null,
+          imageMedia: typeof quote.imageMedia === "string" ? dataURLToBlob(quote.imageMedia) : null,
+          audioMedia: typeof quote.audioMedia === "string" ? dataURLToBlob(quote.audioMedia) : null
         });
       }
       saveState();
@@ -1854,23 +2092,40 @@
 
   async function clearAllData() {
     localStorage.removeItem(STORAGE_KEY);
+    LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
     await clearQuotes();
     stopTimerLoop();
-    stopStudyLoop();
     stopFocusMusic();
-    await releaseStudyWakeLock();
     state = structuredClone(defaultState);
     saveState();
     closeModal("confirmModal");
     renderAll();
     await renderQuotes();
-    showToast("حُذفت بيانات مِداد من هذا الجهاز");
+    showToast(`حُذفت بيانات ${APP_NAME} من هذا الجهاز`);
+  }
+
+  function isInstalledDisplayMode() {
+    return window.matchMedia?.("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  }
+
+  function markAppInstalled() {
+    localStorage.setItem(INSTALL_FLAG_KEY, "true");
+    renderInstallState();
+  }
+
+  function renderInstallState() {
+    if (isInstalledDisplayMode()) localStorage.setItem(INSTALL_FLAG_KEY, "true");
+    const installed = localStorage.getItem(INSTALL_FLAG_KEY) === "true";
+    $("#homeInstallCard").classList.toggle("hidden", installed);
+    $("#settingsInstallButton").classList.toggle("hidden", installed);
+    $("#settingsInstalledConfirmation").classList.toggle("hidden", !installed);
   }
 
   async function installApp() {
     if (deferredInstallPrompt) {
       deferredInstallPrompt.prompt();
-      await deferredInstallPrompt.userChoice;
+      const choice = await deferredInstallPrompt.userChoice;
+      if (choice.outcome === "accepted") markAppInstalled();
       deferredInstallPrompt = null;
       return;
     }
@@ -1879,39 +2134,106 @@
 
   function setupEvents() {
     document.addEventListener("click", async (event) => {
-      const pageButton = event.target.closest("[data-page]");
-      const jumpButton = event.target.closest("[data-page-jump]");
-      const actionButton = event.target.closest("[data-action]");
-      const closeButton = event.target.closest("[data-close-modal]");
-      const readButton = event.target.closest("[data-read-book]");
-      const editButton = event.target.closest("[data-edit-book]");
-      const deleteQuoteButton = event.target.closest("[data-delete-quote]");
-      const articleCard = event.target.closest("[data-article]");
+      const articleReadButton = event.target.closest("[data-article-read]");
+      if (articleReadButton) {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleArticleRead(articleReadButton.dataset.articleRead);
+        return;
+      }
 
-      if (pageButton) navigate(pageButton.dataset.page);
-      if (jumpButton) navigate(jumpButton.dataset.pageJump);
-      if (actionButton?.dataset.action === "open-book-modal") openBookModal();
-      if (closeButton) closeModal(closeButton.dataset.closeModal);
-      if (readButton) selectBookAndRead(readButton.dataset.readBook);
-      if (editButton) openBookModal(bookById(editButton.dataset.editBook));
-      if (articleCard) openArticle(articleCard.dataset.article);
-      if (deleteQuoteButton) {
-        if (window.confirm("حذف هذا الاقتباس؟")) {
-          await deleteQuote(deleteQuoteButton.dataset.deleteQuote);
-          renderDashboard();
-          renderQuotes();
-          showToast("حُذف الاقتباس");
-        }
+      const closeButton = event.target.closest("[data-close-modal]");
+      if (closeButton) {
+        closeModal(closeButton.dataset.closeModal);
+        return;
+      }
+
+      const pageButton = event.target.closest("[data-page]");
+      if (pageButton) {
+        event.preventDefault();
+        navigate(pageButton.dataset.page);
+        return;
+      }
+
+      const jumpButton = event.target.closest("[data-page-jump]");
+      if (jumpButton) {
+        pendingSettingsTarget = jumpButton.dataset.settingsTarget || null;
+        navigate(jumpButton.dataset.pageJump);
+        return;
+      }
+
+      const actionButton = event.target.closest("[data-action]");
+      if (actionButton?.dataset.action === "open-book-modal") {
+        openBookModal();
+        return;
+      }
+
+      const readButton = event.target.closest("[data-read-book]");
+      if (readButton) {
+        closeModal("bookDetailModal");
+        selectBookAndRead(readButton.dataset.readBook);
+        return;
+      }
+
+      const editButton = event.target.closest("[data-edit-book]");
+      if (editButton) {
+        openBookModal(bookById(editButton.dataset.editBook));
+        return;
+      }
+
+      const sessionDetail = event.target.closest("[data-session-detail]");
+      if (sessionDetail) {
+        openBookDetail(sessionDetail.dataset.bookDetail, sessionDetail.dataset.sessionDetail);
+        return;
+      }
+
+      const bookDetail = event.target.closest("[data-book-detail]");
+      if (bookDetail) {
+        openBookDetail(bookDetail.dataset.bookDetail);
+        return;
+      }
+
+      const articleCard = event.target.closest("[data-article]");
+      if (articleCard) {
+        openArticle(articleCard.dataset.article);
+        return;
+      }
+
+      const deleteQuoteButton = event.target.closest("[data-delete-quote]");
+      if (deleteQuoteButton && window.confirm("حذف هذا الاقتباس؟")) {
+        await deleteQuote(deleteQuoteButton.dataset.deleteQuote);
+        renderDashboard();
+        renderQuotes();
+        showToast("حُذف الاقتباس");
+      }
+
+      if (!event.target.closest("#headerMenu, #headerMenuButton")) {
+        $("#headerMenu").classList.add("hidden");
+        $("#headerMenuButton").setAttribute("aria-expanded", "false");
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if ((event.key === "Enter" || event.key === " ") && event.target.matches(".book-card[data-book-detail]")) {
+        event.preventDefault();
+        openBookDetail(event.target.dataset.bookDetail);
       }
     });
 
     $$(".modal-backdrop").forEach((backdrop) => {
       backdrop.addEventListener("click", (event) => {
-        if (event.target === backdrop && backdrop.id !== "finishSessionModal") closeModal(backdrop.id);
+        if (event.target !== backdrop) return;
+        if (["finishSessionModal", "sessionResultModal", "cameraModal"].includes(backdrop.id)) return;
+        closeModal(backdrop.id);
       });
     });
 
-    $("#menuButton").addEventListener("click", () => $("#sidebar").classList.toggle("open"));
+    $("#headerMenuButton").addEventListener("click", () => {
+      const menu = $("#headerMenu");
+      const willOpen = menu.classList.contains("hidden");
+      menu.classList.toggle("hidden", !willOpen);
+      $("#headerMenuButton").setAttribute("aria-expanded", String(willOpen));
+    });
     $("#bookForm").addEventListener("submit", saveBook);
     $("#bookCoverInput").addEventListener("change", async (event) => {
       const file = event.target.files[0];
@@ -1932,19 +2254,59 @@
       $$("#bookFilters button").forEach((item) => item.classList.toggle("active", item === button));
       renderBooks();
     });
+
     $("#quoteSearch").addEventListener("input", renderQuotes);
     $("#quoteBookFilter").addEventListener("change", renderQuotes);
     $("#openQuoteModalButton").addEventListener("click", () => openQuoteModal());
+    $("#openSessionQuoteButton").addEventListener("click", () => {
+      if (!state.activeTimer) {
+        showToast("ابدأ جلسة قراءة أولًا لربط الاقتباس بها", "error");
+        return;
+      }
+      openQuoteModal(state.activeTimer.bookId);
+    });
     $("#quoteForm").addEventListener("submit", saveQuote);
-    $$(".quote-type-tabs button").forEach((button) => {
-      button.addEventListener("click", () => {
-        const type = button.dataset.quoteType;
-        $("#quoteTypeInput").value = type;
-        $$(".quote-type-tabs button").forEach((item) => item.classList.toggle("active", item === button));
-        updateQuoteTypeFields(type);
-      });
+    $("#quoteImageInput").addEventListener("change", updateQuoteAttachmentUI);
+    $("#quoteAudioInput").addEventListener("change", updateQuoteAttachmentUI);
+    $("#removeQuoteImageButton").addEventListener("click", () => {
+      capturedImageBlob = null;
+      $("#quoteImageInput").value = "";
+      updateQuoteAttachmentUI();
+    });
+    $("#removeQuoteAudioButton").addEventListener("click", () => {
+      stopRecording(true);
+      recordedAudioBlob = null;
+      $("#quoteAudioInput").value = "";
+      updateQuoteAttachmentUI();
     });
     $("#recordAudioButton").addEventListener("click", toggleRecording);
+    $("#openCameraButton").addEventListener("click", openCamera);
+    $("#closeCameraButton").addEventListener("click", stopCamera);
+    $("#capturePhotoButton").addEventListener("click", captureCameraPhoto);
+    $("#switchCameraButton").addEventListener("click", async () => {
+      cameraFacingMode = cameraFacingMode === "environment" ? "user" : "environment";
+      await openCamera();
+    });
+    $("#cameraStage").addEventListener("touchstart", (event) => {
+      if (event.touches.length === 2) {
+        cameraPinching = true;
+        pinchStartDistance = touchDistance(event.touches);
+        pinchStartZoom = cameraZoom;
+      }
+    }, { passive: true });
+    $("#cameraStage").addEventListener("touchmove", (event) => {
+      if (event.touches.length !== 2 || !pinchStartDistance) return;
+      event.preventDefault();
+      applyCameraZoom(pinchStartZoom * (touchDistance(event.touches) / pinchStartDistance));
+    }, { passive: false });
+    $("#cameraStage").addEventListener("touchend", (event) => {
+      if (event.touches.length < 2) window.setTimeout(() => { cameraPinching = false; }, 120);
+    }, { passive: true });
+    $("#cameraStage").addEventListener("pointerup", (event) => {
+      if (!cameraPinching) focusCameraAt(event.clientX, event.clientY);
+      pinchStartDistance = 0;
+    });
+
     $("#startPauseButton").addEventListener("click", () => {
       if (!state.activeTimer) startNewTimer();
       else if (state.activeTimer.status === "running") pauseTimer();
@@ -1953,13 +2315,21 @@
     $("#resetTimerButton").addEventListener("click", cancelTimer);
     $("#stopTimerButton").addEventListener("click", prepareFinishSession);
     $("#finishSessionForm").addEventListener("submit", finishSession);
-    $("#saveQuickQuoteButton").addEventListener("click", saveQuickQuote);
+    $("#discardFinishedSessionButton").addEventListener("click", discardFinishedSession);
+    $("#openManualSessionButton").addEventListener("click", openManualSessionModal);
+    $("#manualSessionForm").addEventListener("submit", saveManualSession);
+    $("#closeSessionResultButton").addEventListener("click", () => {
+      closeModal("sessionResultModal");
+      navigate("home");
+      maybeShowPostSessionAd();
+    });
     $("#sessionQuickNote").addEventListener("input", () => {
       if (state.activeTimer) {
         state.activeTimer.quickNote = $("#sessionQuickNote").value;
         saveState();
       }
     });
+
     $("#saveGoalsButton").addEventListener("click", () => {
       const daily = Number($("#dailyGoalInput").value);
       const weekly = Number($("#weeklyGoalInput").value);
@@ -1980,8 +2350,12 @@
       showToast("تم تحديث وقت التذكير");
     });
     $("#enableNotificationsButton").addEventListener("click", enableNotifications);
-    $("#notificationButton").addEventListener("click", () => navigate("settings"));
+    $("#notificationButton").addEventListener("click", () => {
+      pendingSettingsTarget = null;
+      navigate("settings");
+    });
     $("#exportQuickButton").addEventListener("click", exportCsv);
+    $("#sessionsExportButton").addEventListener("click", exportCsv);
     $("#exportCsvButton").addEventListener("click", exportCsv);
     $("#exportJsonButton").addEventListener("click", exportJson);
     $("#importJsonInput").addEventListener("change", (event) => {
@@ -1989,7 +2363,8 @@
     });
     $("#clearDataButton").addEventListener("click", () => openModal("confirmModal"));
     $("#confirmClearDataButton").addEventListener("click", clearAllData);
-    $("#installButton").addEventListener("click", installApp);
+    $("#homeInstallButton").addEventListener("click", installApp);
+    $("#settingsInstallButton").addEventListener("click", installApp);
     $("#reportRange").addEventListener("click", (event) => {
       const button = event.target.closest("[data-range]");
       if (!button) return;
@@ -1997,46 +2372,37 @@
       $$("#reportRange button").forEach((item) => item.classList.toggle("active", item === button));
       renderReports();
     });
-    $("#studyDurationOptions").addEventListener("click", (event) => {
-      const button = event.target.closest("[data-minutes]");
-      if (!button) return;
-      selectedStudyMinutes = Number(button.dataset.minutes);
-      $$("#studyDurationOptions button").forEach((item) => item.classList.toggle("active", item === button));
-    });
+
     $("#musicTrackOptions").addEventListener("click", (event) => {
       const button = event.target.closest("[data-music]");
       if (button) selectFocusMusic(button.dataset.music);
     });
     $("#focusMusicButton").addEventListener("click", toggleFocusMusic);
-    $("#overlayMusicButton").addEventListener("click", toggleFocusMusic);
     $("#musicVolumeInput").addEventListener("input", (event) => setFocusMusicVolume(event.target.value));
-    $("#startStudyButton").addEventListener("click", startStudySession);
-    $("#pauseStudyButton").addEventListener("click", pauseResumeStudy);
-    $("#completeStudyButton").addEventListener("click", () => finishStudySession(true));
-    $("#exitStudyButton").addEventListener("click", exitStudySession);
-    $("#showFocusHelpButton").addEventListener("click", () => openModal("focusHelpModal"));
+
     window.addEventListener("hashchange", () => navigate(location.hash.slice(1) || "home"));
     window.addEventListener("beforeinstallprompt", (event) => {
       event.preventDefault();
       deferredInstallPrompt = event;
-      $("#installButton").classList.remove("hidden");
+      renderInstallState();
     });
     window.addEventListener("appinstalled", () => {
       deferredInstallPrompt = null;
-      showToast("تم تثبيت مِداد");
+      markAppInstalled();
+      showToast(`تم تثبيت ${APP_NAME}`);
     });
     window.addEventListener("online", updateConnectionStatus);
     window.addEventListener("offline", updateConnectionStatus);
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
         updateTimerUI();
-        updateStudyUI();
-        if (state.activeStudy?.status === "running") requestStudyWakeLock();
+        renderInstallState();
       }
     });
   }
-
   async function initialize() {
+    applyAppIdentity();
+    saveState();
     renderDates();
     setupEvents();
     updateConnectionStatus();
@@ -2045,13 +2411,11 @@
     } catch {
       showToast("تعذّر فتح مساحة الوسائط المحلية", "error");
     }
+    unlockEligibleAchievements();
     renderAll();
     navigate(location.hash.slice(1) || "home");
     if (state.activeTimer?.status === "running") startTimerLoop();
-    if (state.activeStudy) {
-      startStudyLoop();
-      document.body.style.overflow = "hidden";
-    }
+    renderInstallState();
     if ("serviceWorker" in navigator && location.protocol !== "file:") {
       navigator.serviceWorker.register("./sw.js").catch(() => {});
     }

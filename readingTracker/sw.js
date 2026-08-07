@@ -1,8 +1,9 @@
-const CACHE_NAME = "midad-reading-tracker-v6";
+const CACHE_NAME = "athar-alqari-reading-tracker-v8";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
+  "./app-config.js",
   "./app.js",
   "./manifest.webmanifest",
   "./assets/icon.svg",
@@ -36,8 +37,10 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", clone));
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", clone));
+          }
           return response;
         })
         .catch(() => caches.match("./index.html"))
@@ -50,8 +53,10 @@ self.addEventListener("fetch", (event) => {
       cached ||
       fetch(event.request)
         .then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
           return response;
         })
         .catch(() => new Response("", { status: 504, statusText: "Offline" }))
