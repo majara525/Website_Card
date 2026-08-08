@@ -1,0 +1,21 @@
+{
+  "name": "شاهد الإعلان — المعهد العالي",
+  "short_name": "شاهد الإعلان",
+  "description": "منصة عربية تفاعلية لتعلّم الإعلان والتسويق",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/home",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f7f6fb",
+  "theme_color": "#6d3df5",
+  "categories": ["education", "business"],
+  "icons": [
+    { "src": "/app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "المقالات", "url": "/articles", "icons": [{ "src": "/app-icon.svg", "sizes": "any", "type": "image/svg+xml" }] },
+    { "name": "إعلان الأسبوع", "url": "/home#weekly-ad", "icons": [{ "src": "/app-icon.svg", "sizes": "any", "type": "image/svg+xml" }] }
+  ]
+}
