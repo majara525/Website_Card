@@ -1,0 +1,34 @@
+id,area,feature,status,priority,next_action,updated
+CONFIG-001,configuration,Single-source application identity,complete,high,Run sync script after future config changes,2026-08-07
+BRAND-003,branding,Rename to Athar Al-Qari,complete,high,None,2026-08-07
+NAV-001,navigation,Remove left sidebar,complete,high,None,2026-08-07
+NAV-002,navigation,Five-item bottom navigation,complete,high,Physical mobile acceptance,2026-08-07
+HEADER-001,design,Dark-red header CSS variable,complete,high,None,2026-08-07
+HEADER-002,navigation,Header brand connectivity and menu,complete,high,None,2026-08-07
+INSTALL-001,pwa,Main and Settings install actions,complete,high,Physical Android and iOS test,2026-08-07
+INSTALL-002,pwa,Installed-state lifecycle,complete,high,Physical Android and iOS test,2026-08-07
+STUDY-REMOVAL,scope,Remove standalone Study system,complete,high,None,2026-08-07
+AUDIO-002,audio,Move focus soundscapes into reading sessions,complete,medium,None,2026-08-07
+SESSION-002,sessions,Manual session entry with native pickers,complete,high,None,2026-08-07
+SESSION-003,sessions,Manual-entry labels everywhere,complete,high,None,2026-08-07
+SESSION-004,sessions,Save-or-discard finish gate,complete,high,None,2026-08-07
+SESSION-005,analytics,Post-session and whole-book pace,complete,high,None,2026-08-07
+SESSION-006,analytics,Adaptive standard-deviation pace classification,complete,high,Review after real-world data,2026-08-07
+SESSION-007,content,Sixteen supportive pace messages,complete,medium,None,2026-08-07
+BOOK-004,library,Full book session and quote history,complete,high,None,2026-08-07
+QUOTE-005,quotes,Combined text image and audio quotes,complete,high,Physical media test,2026-08-07
+CAMERA-001,camera,In-app camera and canvas capture,complete,high,Physical Android acceptance,2026-08-07
+CAMERA-002,camera,Pinch zoom and tap focus,complete,high,Physical Android acceptance,2026-08-07
+ACHIEVE-001,achievements,Twenty local achievements,complete,high,None,2026-08-07
+ACHIEVE-002,achievements,Locked and unlocked catalog in Analytics,complete,high,None,2026-08-07
+ACHIEVE-003,achievements,Post-session-only unlock celebration,complete,high,Regression test,2026-08-07
+ARTICLE-001,articles,Persistent read checkmarks,complete,medium,None,2026-08-07
+ARTICLE-002,articles,Hide displayed sources and preserve data,complete,medium,None,2026-08-07
+PROMPT-001,content,Six OpenAI ImageGen prompts under 2000 characters,complete,medium,Generate images when approved,2026-08-07
+ADS-002,monetization,Disable ad interstitial behind feature flag,complete,medium,Future monetization phase,2026-08-07
+DOCS-001,documentation,English README and tracker,complete,high,None,2026-08-07
+PWA-001,offline,Offline app shell and configuration cache,complete,high,Retest after every shell change,2026-08-07
+QA-004,quality,Physical Android installed-PWA camera acceptance,pending,high,User device test,2026-08-07
+QA-005,quality,Physical iOS Add-to-Home-Screen acceptance,pending,high,User device test,2026-08-07
+QA-006,quality,Automated desktop mobile offline and regression pass,complete,high,None,2026-08-07
+QA-007,quality,Phone navigation and horizontal overflow regression,complete,high,Physical phone confirmation after deployment,2026-08-08

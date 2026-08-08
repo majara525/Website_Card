@@ -1,4 +1,4 @@
-const CACHE_NAME = "athar-alqari-reading-tracker-v8";
+const CACHE_NAME = "athar-alqari-reading-tracker-v9";
 const APP_SHELL = [
   "./",
   "./index.html",

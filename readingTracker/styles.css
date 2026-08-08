@@ -27,7 +27,10 @@
 }
 
 html {
+  max-width: 100%;
+  overflow-x: hidden;
   scroll-behavior: smooth;
+  width: 100%;
 }
 
 body {
@@ -37,7 +40,17 @@ body {
     var(--paper);
   color: var(--ink);
   font-family: var(--font);
+  max-width: 100%;
   min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+@supports (overflow: clip) {
+  html,
+  body {
+    overflow-x: clip;
+  }
 }
 
 button,
@@ -3501,11 +3514,13 @@ body {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   height: 76px;
-  left: 50%;
+  left: 0;
+  margin-inline: auto;
   max-width: 760px;
   padding: 5px 8px max(5px, env(safe-area-inset-bottom));
   position: fixed;
-  transform: translateX(-50%);
+  right: 0;
+  transform: none;
   width: min(760px, 100%);
   z-index: 45;
 }
@@ -3522,8 +3537,10 @@ body {
   font-size: 10px;
   gap: 3px;
   min-width: 0;
+  overflow: hidden;
   padding: 7px 3px;
   position: relative;
+  white-space: nowrap;
 }
 
 .mobile-nav button span {
@@ -3985,6 +4002,12 @@ body {
     border-inline: 0;
     border-radius: 0;
     height: 70px;
+    left: 0;
+    margin: 0;
+    max-width: none;
+    right: 0;
+    transform: none;
+    width: 100%;
   }
 
   .mobile-nav button {
@@ -3994,6 +4017,62 @@ body {
 
   .mobile-nav button span {
     font-size: 18px;
+  }
+
+  .app-shell,
+  .main-column,
+  .content,
+  .page,
+  .timer-layout,
+  .timer-layout > *,
+  .timer-card,
+  .timer-side,
+  .chart-panel {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .timer-layout,
+  .timer-side {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .timer-card {
+    width: 100%;
+  }
+
+  .timer-controls {
+    gap: clamp(8px, 4vw, 18px);
+    justify-content: center;
+    width: 100%;
+  }
+
+  .control-button {
+    min-width: 0;
+  }
+
+  .timer-milestones,
+  .section-heading {
+    flex-wrap: wrap;
+  }
+
+  .filter-tabs {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  .filter-tabs button {
+    flex: 1 1 auto;
+  }
+
+  .bar-chart {
+    gap: clamp(2px, 1.5vw, 8px);
+    overflow-x: hidden;
+  }
+
+  .daily-bar {
+    flex: 1 1 0;
+    min-width: 0;
   }
 
   .home-install-card,
