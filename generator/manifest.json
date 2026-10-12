@@ -1,0 +1,17 @@
+{
+  "name": "مولد كلمات المرور ورموز QR - المعهد العالي",
+  "short_name": "أدوات المعهد",
+  "description": "إنشاء كلمات مرور آمنة ورموز QR على جهازك.",
+  "lang": "ar",
+  "dir": "rtl",
+  "id": "./index.html",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f2ef",
+  "theme_color": "#b92b31",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

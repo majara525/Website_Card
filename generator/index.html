@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#b92b31">
+  <meta name="description" content="مولد كلمات مرور آمنة ورموز QR يعمل على جهازك.">
+  <title>مولد كلمات المرور ورموز QR</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.9.2/lib/qr-code-styling.min.js"></script>
+  <script defer src="qr-code-styling.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand"><img src="logo.jpg" alt="المعهد العالي"><span>أدوات سريعة</span></div>
+      <button id="settings-open" class="icon-button" type="button" aria-label="فتح الإعدادات" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true"><path d="M19.14 12.94a7.8 7.8 0 0 0 .05-1.88l2-1.56-2-3.46-2.38.96a7.5 7.5 0 0 0-1.62-.94L14.82 3h-4l-.37 3.06c-.58.23-1.12.55-1.62.94l-2.38-.96-2 3.46 2 1.56a7.8 7.8 0 0 0 0 1.88l-2 1.56 2 3.46 2.38-.96c.5.39 1.04.71 1.62.94l.37 3.06h4l.37-3.06c.58-.23 1.12-.55 1.62-.94l2.38.96 2-3.46-2-1.56ZM12.82 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section id="password-tab" class="tab-panel" aria-labelledby="password-title">
+      <div class="intro"><p class="eyebrow">أمانك يبدأ هنا</p><h1 id="password-title">مولد كلمات المرور</h1><p>أنشئ كلمة مرور قوية على جهازك وانسخها بضغطة واحدة.</p></div>
+      <div class="content-grid">
+        <form id="password-form" class="card" autocomplete="off">
+          <div class="card-heading"><span class="step">١</span><h2>خصّص كلمة المرور</h2></div>
+          <div class="field"><div class="label-row"><label for="password-length">طول كلمة المرور</label><output id="length-value" for="password-length">١٦</output></div><input id="password-length" type="range" min="8" max="64" value="16"><div class="range-labels"><span>٨ أحرف</span><span>٦٤ حرفًا</span></div></div>
+          <fieldset class="choices"><legend>تضمين الأحرف</legend><label><input id="include-upper" type="checkbox" checked><span>أحرف إنجليزية كبيرة (A–Z)</span></label><label><input id="include-lower" type="checkbox" checked><span>أحرف إنجليزية صغيرة (a–z)</span></label><label><input id="include-numbers" type="checkbox" checked><span>أرقام (0–9)</span></label><label><input id="include-symbols" type="checkbox" checked><span>رموز (!@#…)</span></label></fieldset>
+          <label class="check-row separated"><input id="exclude-similar" type="checkbox"><span>استبعاد الأحرف المتشابهة مثل 0 و O و 1 و l</span></label>
+          <button class="button primary full" type="submit">توليد كلمة مرور</button>
+        </form>
+        <section class="card result-card" aria-labelledby="password-result-title"><div class="card-heading"><span class="step">٢</span><h2 id="password-result-title">كلمة المرور</h2></div><div class="output-box"><input id="password-output" type="text" dir="ltr" readonly aria-label="كلمة المرور الناتجة" placeholder="ستظهر كلمة المرور هنا"><button id="password-copy" class="icon-button" type="button" aria-label="نسخ كلمة المرور" disabled>نسخ</button></div><div class="strength-heading"><span>قوة كلمة المرور</span><strong id="strength-label">—</strong></div><div id="strength-meter" class="strength-meter" role="progressbar" aria-label="قوة كلمة المرور" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><span></span></div><p id="strength-hint" class="helper">اختر الإعدادات ثم اضغط زر التوليد.</p><button id="password-clear" class="button quiet" type="button" disabled>مسح كلمة المرور</button><p class="privacy-note">تُنشأ كلمات المرور على جهازك ولا تُحفظ في السجل.</p></section>
+      </div>
+    </section>
+
+    <section id="qr-tab" class="tab-panel" aria-labelledby="qr-title" hidden>
+      <div class="intro"><p class="eyebrow">شارك ما تريد بسهولة</p><h1 id="qr-title">مولد رمز QR</h1><p>أنشئ رمزًا للنصوص والروابط وبيانات التواصل، ثم نزّله بالصّيغة التي تناسبك.</p></div>
+      <div class="content-grid">
+        <form id="qr-form" class="card" autocomplete="off" novalidate>
+          <div class="card-heading"><span class="step">١</span><h2>محتوى الرمز</h2></div>
+          <div class="field"><label for="qr-type">نوع المحتوى</label><select id="qr-type"><option value="text">نص عادي</option><option value="url">رابط موقع</option><option value="wifi">شبكة واي فاي</option><option value="vcard">بطاقة جهة اتصال</option><option value="email">بريد إلكتروني</option><option value="sms">رسالة نصية</option></select></div>
+          <div id="qr-fields">
+            <div data-type="text" class="type-fields"><div class="field"><label for="qr-text">النص</label><textarea id="qr-text" rows="3" placeholder="اكتب النص الذي تريد مشاركته"></textarea></div></div>
+            <div data-type="url" class="type-fields" hidden><div class="field"><label for="qr-url">رابط الموقع</label><input id="qr-url" type="url" dir="ltr" inputmode="url" placeholder="https://example.com"></div></div>
+            <div data-type="wifi" class="type-fields" hidden><div class="field"><label for="wifi-name">اسم الشبكة</label><input id="wifi-name" type="text" placeholder="اسم شبكة واي فاي"></div><div class="field"><label for="wifi-password">كلمة مرور الشبكة</label><input id="wifi-password" type="text" dir="ltr" placeholder="كلمة المرور"></div><div class="field"><label for="wifi-security">نوع الحماية</label><select id="wifi-security"><option value="WPA">WPA / WPA2 / WPA3</option><option value="WEP">WEP</option><option value="nopass">شبكة مفتوحة</option></select></div><label class="check-row"><input id="wifi-hidden" type="checkbox"><span>الشبكة مخفية</span></label></div>
+            <div data-type="vcard" class="type-fields" hidden><div class="field"><label for="vcard-name">الاسم</label><input id="vcard-name" type="text" placeholder="الاسم الكامل"></div><div class="field"><label for="vcard-phone">رقم الهاتف</label><input id="vcard-phone" type="tel" dir="ltr" placeholder="+972..."></div><div class="field"><label for="vcard-email">البريد الإلكتروني</label><input id="vcard-email" type="email" dir="ltr" placeholder="name@example.com"></div><div class="field"><label for="vcard-org">المؤسسة (اختياري)</label><input id="vcard-org" type="text" placeholder="اسم المؤسسة"></div></div>
+            <div data-type="email" class="type-fields" hidden><div class="field"><label for="email-to">إلى</label><input id="email-to" type="email" dir="ltr" placeholder="name@example.com"></div><div class="field"><label for="email-subject">الموضوع (اختياري)</label><input id="email-subject" type="text" placeholder="موضوع الرسالة"></div><div class="field"><label for="email-body">الرسالة (اختياري)</label><textarea id="email-body" rows="2" placeholder="نص الرسالة"></textarea></div></div>
+            <div data-type="sms" class="type-fields" hidden><div class="field"><label for="sms-to">رقم الهاتف</label><input id="sms-to" type="tel" dir="ltr" placeholder="+972..."></div><div class="field"><label for="sms-body">الرسالة (اختياري)</label><textarea id="sms-body" rows="2" placeholder="نص الرسالة"></textarea></div></div>
+          </div>
+          <div class="divider"></div><div class="card-heading compact"><span class="step">٢</span><h2>تصميم الرمز</h2></div>
+          <div class="color-grid"><div class="field"><label for="qr-foreground">لون الرمز</label><input id="qr-foreground" type="color" value="#18181b"></div><div class="field"><label for="qr-background">لون الخلفية</label><input id="qr-background" type="color" value="#ffffff"></div></div>
+          <div class="field"><label for="qr-correction">مستوى تصحيح الأخطاء</label><select id="qr-correction"><option value="L">منخفض</option><option value="M" selected>متوسط</option><option value="Q">عالٍ</option><option value="H">عالٍ جدًا</option></select></div>
+          <div class="field"><label for="qr-logo">شعار في الوسط (اختياري)</label><input id="qr-logo" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"><small>صورة حتى ٢٠٠ كيلوبايت. يُفضّل اختيار تصحيح عالٍ مع الشعار.</small></div>
+          <button class="button primary full" type="submit">إنشاء رمز QR</button>
+        </form>
+        <div class="side-stack"><section class="card result-card" aria-labelledby="qr-result-title"><div class="card-heading"><span class="step">٣</span><h2 id="qr-result-title">معاينة الرمز</h2></div><div id="qr-preview" class="qr-preview" aria-label="معاينة رمز QR"><span id="qr-placeholder">أدخل المحتوى لمعاينة الرمز</span></div><p id="qr-status" class="helper" role="status">تتحدّث المعاينة أثناء الكتابة. اضغط إنشاء لحفظ الرمز في السجل.</p><div class="action-row"><button id="download-png" class="button secondary" type="button" disabled>تنزيل PNG</button><button id="download-svg" class="button secondary" type="button" disabled>تنزيل SVG</button></div></section><section class="card" aria-labelledby="history-title"><div class="history-heading"><h2 id="history-title">الرموز السابقة</h2><button id="history-clear" class="text-button" type="button">مسح السجل</button></div><p class="helper">آخر ٢٠ رمزًا محفوظًا على هذا الجهاز.</p><ul id="history-list" class="history-list"><li class="empty-history">لا توجد رموز محفوظة بعد.</li></ul></section></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="التنقل الرئيسي"><button id="nav-password" class="nav-item active" type="button" aria-current="page" aria-controls="password-tab"><span class="nav-icon" aria-hidden="true">✳</span><span>مولد كلمات المرور</span></button><button id="nav-qr" class="nav-item" type="button" aria-controls="qr-tab"><span class="nav-icon" aria-hidden="true">▦</span><span>مولد رمز QR</span></button></nav>
+  <dialog id="settings-dialog" aria-labelledby="settings-title"><div class="dialog-heading"><h2 id="settings-title">الإعدادات</h2><button id="settings-close" class="icon-button" type="button" aria-label="إغلاق الإعدادات">✕</button></div><div class="dialog-content"><h3>إمكانية الوصول</h3><label class="check-row"><input id="larger-text" type="checkbox"><span>نص أكبر</span></label><label class="check-row"><input id="high-contrast" type="checkbox"><span>تباين عالٍ</span></label><div class="divider"></div><h3>اللغة</h3><p>العربية فقط حاليًا.</p><div class="divider"></div><h3>حول التطبيق</h3><p>أداة لإنشاء كلمات مرور ورموز QR مباشرة في متصفحك.</p><p>تُحفظ رموز QR السابقة محليًا على جهازك.</p><button id="settings-history-clear" class="button quiet" type="button">مسح سجل رموز QR</button></div></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
