@@ -197,9 +197,47 @@ h1 {
 }
 
 .full-width,
+.validation-summary,
 .submit-button,
 .form-status {
   grid-column: 1 / -1;
+}
+
+.validation-summary {
+  padding: 16px 20px;
+  border: 1px solid var(--red);
+  border-radius: 8px;
+  background: #fff3f3;
+  color: var(--red-dark);
+}
+
+.validation-summary[hidden] {
+  display: none;
+}
+
+.validation-summary p {
+  margin: 0 0 8px;
+  font-weight: 800;
+}
+
+.validation-summary ul {
+  margin: 0;
+  padding-right: 20px;
+}
+
+.validation-summary button {
+  border: 0;
+  padding: 4px 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: right;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+[aria-invalid="true"] {
+  border-color: var(--red);
 }
 
 label,
