@@ -46,6 +46,11 @@
         <input type="hidden" name="_subject" value="טופס הודעה חדש - المعهد العالي">
         <input type="hidden" name="_language" value="he">
 
+        <div class="validation-summary" id="validation-summary" role="alert" tabindex="-1" hidden>
+          <p>יש לתקן את השדות הבאים לפני השליחה:</p>
+          <ul id="validation-errors"></ul>
+        </div>
+
         <div class="field full-width">
           <label for="request-type">סוג הבקשה</label>
           <select id="request-type" name="סוג הבקשה" required>
@@ -53,6 +58,7 @@
             <option value="שינוי מסלול">שינוי מסלול</option>
             <option value="הקפאת לימודים">הקפאת לימודים</option>
             <option value="הפסקת לימודים">הפסקת לימודים</option>
+            <option value="חזרה ללימודים">חזרה ללימודים</option>
           </select>
         </div>
 
@@ -221,6 +227,18 @@
           </label>
         </fieldset>
 
+        <fieldset class="conditional-section" data-request-section="חזרה ללימודים" hidden disabled>
+          <div class="field full-width">
+            <label for="return-notes">הערות</label>
+            <textarea id="return-notes" name="הערות" rows="5"></textarea>
+          </div>
+
+          <label class="checkbox-field full-width" for="return-confirm">
+            <input id="return-confirm" name="אישור חזרה ללימודים" type="checkbox" value="אני מאשר/ת שאני מוכן/ה לחזור ללימודים" required>
+            <span>אני מאשר/ת שאני מוכן/ה לחזור ללימודים</span>
+          </label>
+        </fieldset>
+
         <label class="checkbox-field full-width" for="confirm">
           <input id="confirm" name="אישור נכונות הפרטים" type="checkbox" value="מאשר/ת שהפרטים נכונים" required>
           <span>אני מאשר/ת שהפרטים שמסרתי נכונים</span>
@@ -236,6 +254,8 @@
     const form = document.querySelector(".notice-form");
     const submitButton = form.querySelector(".submit-button");
     const statusMessage = document.getElementById("form-status");
+    const validationSummary = document.getElementById("validation-summary");
+    const validationErrors = document.getElementById("validation-errors");
     const requestType = document.getElementById("request-type");
     const requestSections = document.querySelectorAll("[data-request-section]");
     const idNumber = document.getElementById("id-number");
@@ -251,30 +271,61 @@
     }
 
     function validateIdNumber() {
-      const isValid = /^[0-9]{9}$/.test(idNumber.value.trim());
-      idNumber.setCustomValidity(isValid ? "" : "number needs to be 9 numbers.");
-      return isValid;
+      const value = idNumber.value.trim();
+      idNumber.setCustomValidity(!value || /^[0-9]{9}$/.test(value) ? "" : "יש להזין 9 ספרות.");
     }
 
     function validateEmail() {
-      const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim());
-      email.setCustomValidity(isValid ? "" : "Please enter a valid email address.");
-      return isValid;
+      const value = email.value.trim();
+      email.setCustomValidity(!value || /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value) ? "" : "יש להזין כתובת מייל תקינה.");
     }
 
     function validatePhone() {
       const value = phone.value.trim();
       const hasOnlyAllowedCharacters = /^[0-9\s-]+$/.test(value);
       const digitCount = value.replace(/\D/g, "").length;
-      const isValid = hasOnlyAllowedCharacters && digitCount === 10;
-      phone.setCustomValidity(isValid ? "" : "phone number needs to be 10 numbers.");
-      return isValid;
+      phone.setCustomValidity(!value || (hasOnlyAllowedCharacters && digitCount === 10) ? "" : "יש להזין מספר טלפון בן 10 ספרות.");
+    }
+
+    function updateValidationSummary(focusSummary = false) {
+      validateIdNumber();
+      validatePhone();
+      validateEmail();
+
+      const invalidFields = [...form.elements].filter((field) => field.willValidate && !field.validity.valid);
+      validationErrors.replaceChildren();
+
+      form.querySelectorAll('[aria-invalid="true"]').forEach((field) => field.removeAttribute("aria-invalid"));
+      invalidFields.forEach((field) => {
+        field.setAttribute("aria-invalid", "true");
+        const label = field.labels?.[0]?.textContent.trim() || field.name;
+        const message = field.validity.valueMissing
+          ? field.type === "checkbox" ? "יש לאשר" : field.tagName === "SELECT" ? "יש לבחור" : "יש למלא"
+          : field.validationMessage;
+        const item = document.createElement("li");
+        const link = document.createElement("button");
+        link.type = "button";
+        link.textContent = `${label} — ${message}`;
+        link.addEventListener("click", () => field.focus());
+        item.append(link);
+        validationErrors.append(item);
+      });
+
+      validationSummary.hidden = invalidFields.length === 0;
+      if (focusSummary && invalidFields.length) validationSummary.focus();
+      return invalidFields.length === 0;
     }
 
     idNumber.addEventListener("input", validateIdNumber);
     phone.addEventListener("input", validatePhone);
     email.addEventListener("input", validateEmail);
     requestType.addEventListener("change", updateRequestSection);
+    form.addEventListener("input", () => {
+      if (!validationSummary.hidden) updateValidationSummary();
+    });
+    form.addEventListener("change", () => {
+      if (!validationSummary.hidden) updateValidationSummary();
+    });
     updateRequestSection();
 
     form.addEventListener("submit", async (event) => {
@@ -282,14 +333,7 @@
       statusMessage.textContent = "";
       statusMessage.className = "form-status";
 
-      validateIdNumber();
-      validatePhone();
-      validateEmail();
-
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-      }
+      if (!updateValidationSummary(true)) return;
 
       submitButton.disabled = true;
 
@@ -308,6 +352,7 @@
 
         form.reset();
         updateRequestSection();
+        validationSummary.hidden = true;
         statusMessage.textContent = "form submited";
         statusMessage.classList.add("success");
       } catch (error) {
