@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#b92b31">
+  <meta name="description" content="مفكرة نوم عربية تحفظ بياناتك على جهازك">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <title>نومي | مفكرة النوم</title>
+</head>
+<body>
+  <main class="page-shell app-shell">
+    <div class="form-panel app-panel">
+      <div class="logo-strip app-brand"><div class="brand-mark" aria-hidden="true">☾</div><strong>نومي</strong><span>مفكرة نومك الخاصة</span></div>
+      <header class="form-header app-header">
+        <div class="header-top"><p class="eyebrow">مساحة هادئة لليلتك</p><button id="settings-open" class="header-action" type="button" aria-label="فتح الإعدادات">الإعدادات</button></div>
+        <h1 id="page-title">ليلة هادئة تبدأ هنا</h1>
+        <div class="notice-text"><p id="page-subtitle">ابدأ التتبع حين تستعد للنوم، وحدد موعد الاستيقاظ المناسب لك.</p></div>
+      </header>
+      <nav class="tabs" aria-label="أقسام التطبيق">
+        <button class="tab active" data-view="home" type="button" aria-current="page">الرئيسية</button>
+        <button class="tab" data-view="articles" type="button">المقالات</button>
+        <button class="tab" data-view="stats" type="button">الإحصائيات</button>
+        <button class="tab" data-view="history" type="button">التاريخ واليوميات</button>
+      </nav>
+      <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+      <section id="home-view" class="view content" aria-labelledby="tracking-title">
+        <div class="section-heading"><div><p class="section-kicker">تتبع النوم</p><h2 id="tracking-title">استعد لليلتك</h2></div><span id="tracking-badge" class="badge">غير نشط</span></div>
+        <div class="card feature-card">
+          <div class="field-grid">
+            <div class="field"><label for="wake-time">وقت الاستيقاظ المستهدف</label><input id="wake-time" type="time" required></div>
+            <div class="field"><label for="alarm-window">نافذة المنبه الذكي</label><select id="alarm-window"><option value="15">15 دقيقة</option><option value="30">30 دقيقة</option><option value="45">45 دقيقة</option></select></div>
+            <div class="field"><label for="tracking-source">وسيلة التتبع</label><select id="tracking-source"><option value="auto">الميكروفون ثم الحركة عند الرفض</option><option value="motion">الحركة فقط</option></select></div>
+          </div>
+          <p class="helper">يبدأ البحث عن مرحلة أخف قبل موعد الاستيقاظ بالمدة المختارة، وينطلق المنبه عند الموعد على أقصى تقدير إذا بقي التطبيق يعمل.</p>
+          <div class="tracking-controls"><button id="start-button" class="submit-button" type="button">بدء تتبع النوم</button><button id="stop-button" class="secondary-button" type="button" hidden>إيقاف وحفظ الليلة</button></div>
+          <div id="live-panel" class="live-panel" hidden><div><span>المدة الحالية</span><strong id="live-duration">0 دقيقة</strong></div><div><span>التقدير الحالي</span><strong id="live-stage">جارٍ التحليل</strong></div><div><span>وسيلة التتبع</span><strong id="live-source">—</strong></div></div>
+          <button id="dismiss-alarm" class="secondary-button alarm-dismiss" type="button" hidden>إسكات المنبه</button>
+        </div>
+        <div class="rules-box warning-box"><strong>تنبيه مهم</strong><p>قد يوقف المتصفح الميكروفون أو المؤقتات عند قفل الشاشة أو إغلاق التطبيق، ولا يمكن الاعتماد على منبه الويب وحده للاستيقاظ. اترك التطبيق مفتوحاً والجهاز مشحوناً، واضبط منبهاً احتياطياً على جهازك. مراحل النوم والشخير تقديرات صوتية وليست قياسات طبية.</p></div>
+        <div class="section-heading compact"><div><p class="section-kicker">أصوات مساعدة</p><h2>صوت يرافق نومك</h2></div></div>
+        <div class="card"><div class="field-grid"><div class="field"><label for="sound-select">اختر صوتاً متكرراً</label><select id="sound-select"><option value="off">بدون صوت</option><option value="white">ضوضاء بيضاء</option><option value="rain">مطر</option><option value="waves">أمواج</option><option value="brown">ضوضاء بنية</option></select></div><div class="field"><label for="sound-volume">مستوى الصوت <span id="volume-value">35%</span></label><input id="sound-volume" type="range" min="0" max="100" value="35"></div></div><button id="sound-toggle" class="secondary-button" type="button">تشغيل الصوت</button><p class="helper">الأصوات تُولّد على جهازك. استعمل سماعات إذا أردت تحسين التمييز بين صوت الغرفة والصوت المساعد.</p></div>
+      </section>
+      <section id="articles-view" class="view content" aria-labelledby="articles-title" hidden>
+        <div class="section-heading"><div><p class="section-kicker">مكتبتك</p><h2 id="articles-title">المقالات</h2></div><button id="article-add-toggle" class="secondary-button small" type="button">إضافة مقالة</button></div>
+        <p class="helper top-helper">ابدأ بإضافة مقالاتك. تُحفظ النصوص وحالة القراءة محلياً، ويمكن ربط مصدر مقالات لاحقاً من خلال طبقة البيانات.</p>
+        <form id="article-form" class="card article-form" hidden><div class="field"><label for="article-title">عنوان المقالة</label><input id="article-title" required maxlength="120"></div><div class="field"><label for="article-summary">ملخص قصير</label><textarea id="article-summary" rows="3" maxlength="500"></textarea></div><div class="field"><label for="article-body">نص المقالة</label><textarea id="article-body" required rows="7"></textarea></div><button class="submit-button" type="submit">حفظ المقالة</button></form>
+        <div id="articles-list" class="stack"></div>
+      </section>
+      <section id="stats-view" class="view content" aria-labelledby="stats-title" hidden>
+        <div class="section-heading"><div><p class="section-kicker">نظرة عامة</p><h2 id="stats-title">إحصائيات النوم</h2></div><select id="chart-period" class="period-select" aria-label="فترة الرسم"><option value="week">آخر 7 أيام</option><option value="month">آخر 30 يوماً</option></select></div>
+        <div class="metric-grid"><div class="card metric"><span>متوسط مدة النوم</span><strong id="average-duration">—</strong></div><div class="card metric"><span>جودة تقديرية</span><strong id="average-quality">—</strong></div><div class="card metric"><span>مرات الشخير المرصودة</span><strong id="total-snores">—</strong></div></div>
+        <div class="card"><h3>مدة النوم حسب اليوم</h3><div id="duration-chart" class="chart" role="img" aria-label="رسم مدة النوم"></div><p class="helper">المدة والجودة تعتمدان على وقت تشغيل التتبع وإشارات المستشعر، وليستا تشخيصاً طبياً.</p></div>
+      </section>
+      <section id="history-view" class="view content" aria-labelledby="history-title" hidden>
+        <div class="section-heading"><div><p class="section-kicker">كل ليلة لها حكاية</p><h2 id="history-title">التاريخ واليوميات</h2></div></div>
+        <div id="history-list" class="stack"></div>
+      </section>
+      <section id="settings-view" class="view content" aria-labelledby="settings-title" hidden>
+        <div class="section-heading"><div><p class="section-kicker">تفضيلاتك</p><h2 id="settings-title">الإعدادات</h2></div><button id="settings-back" class="secondary-button small" type="button">عودة</button></div>
+        <form id="settings-form" class="card settings-form"><div class="field"><label for="settings-window">نافذة المنبه الافتراضية</label><select id="settings-window"><option value="15">15 دقيقة</option><option value="30">30 دقيقة</option><option value="45">45 دقيقة</option></select></div><div class="field"><label for="settings-sound">الصوت الافتراضي</label><select id="settings-sound"><option value="off">بدون صوت</option><option value="white">ضوضاء بيضاء</option><option value="rain">مطر</option><option value="waves">أمواج</option><option value="brown">ضوضاء بنية</option></select></div><label class="checkbox-field"><input id="settings-mic" type="checkbox" checked><span>السماح بطلب الميكروفون عند بدء التتبع</span></label><p class="helper">لا يُحفظ التسجيل الصوتي؛ يحفظ التطبيق مؤشرات تحليلية فقط. عند إيقاف هذا الخيار أو رفض الإذن، يحاول استخدام مستشعر الحركة إذا توفر.</p><label class="checkbox-field"><input id="settings-notifications" type="checkbox"><span>طلب إذن إشعارات المنبه الخارجية</span></label><button class="submit-button" type="submit">حفظ الإعدادات</button></form>
+      </section>
+      <footer class="app-footer">بياناتك محفوظة على هذا الجهاز فقط · تقديرات النوم غير طبية</footer>
+    </div>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
