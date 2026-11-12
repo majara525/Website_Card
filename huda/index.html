@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#b92b31">
+  <title>هُدى | المعهد العالي</title>
+  <link rel="icon" type="image/png" href="Favicon_Transparent.png">
+  <style>
+    :root {
+      --red:#b92b31;
+      --red-dark:#932126;
+      --yellow:#fbc23a;
+      --black:#171717;
+      --gray:#d1d5db;
+      --muted:#686868;
+      --line:#dedede;
+      --white:#fff
+    }
+    * {
+      box-sizing:border-box
+    }
+    html {
+      height:100%
+    }
+    body {
+      margin:0;
+      min-height:100%;
+      font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
+      color:var(--black);
+      background:linear-gradient(150deg,var(--red),var(--yellow) 64%,#e7e7e7);
+      -webkit-tap-highlight-color:transparent
+    }
+    button,input,textarea {
+      font:inherit
+    }
+    button {
+      cursor:pointer
+    }
+    button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible {
+      outline:3px solid var(--yellow);
+      outline-offset:2px
+    }
+    .page {
+      max-width:780px;
+      margin:0 auto;
+      padding:22px 12px 28px
+    }
+    .card {
+      background:white;
+      box-shadow:0 14px 42px #0003;
+      min-height:min(790px,calc(100dvh - 44px));
+      display:flex;
+      flex-direction:column;
+      border:1px solid #ddd
+    }
+    .header {
+      display:flex;
+      align-items:center;
+      gap:11px;
+      padding:12px 15px;
+      background:white;
+      border-bottom:1px solid var(--line);
+      min-height:77px
+    }
+    .header .back {
+      width:37px;
+      height:37px;
+      display:grid;
+      place-items:center;
+      color:var(--red);
+      text-decoration:none;
+      border:1px solid #ddd;
+      border-radius:50%;
+      flex-shrink:0
+    }
+    .avatar-wrap {
+      position:relative;
+      width:48px;
+      height:48px;
+      flex-shrink:0;
+      border-radius:50%;
+      background:#f1f1f1;
+      border:1px solid #ddd;
+      display:grid;
+      place-items:center
+    }
+    .avatar-fallback {
+      position:absolute;
+      font-size:24px;
+      color:var(--red);
+      font-weight:700
+    }
+    .avatar {
+      position:relative;
+      width:48px;
+      height:48px;
+      border:1px solid #ddd;
+      border-radius:50%;
+      padding:4px;
+      background:white;
+      object-fit:contain;
+      flex-shrink:0
+    }
+    .header-info {
+      flex:1;
+      min-width:0
+    }
+    .header-info strong {
+      display:block;
+      font-size:18px
+    }
+    .header-info small {
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin-top:2px
+    }
+    .header-tools {
+      display:flex;
+      gap:6px
+    }
+    .tool {
+      background:#f3f3f3;
+      border:1px solid #ddd;
+      border-radius:8px;
+      min-height:36px;
+      padding:6px 10px;
+      font-size:12px;
+      color:#222
+    }
+    .chat-box {
+      flex:1;
+      min-height:390px;
+      height:61vh;
+      max-height:760px;
+      overflow-y:auto;
+      overscroll-behavior:contain;
+      padding:20px 14px 24px;
+      background:linear-gradient(#ffffffe0,#ffffffe0),url("Logo_Ar_Red.png") center center / 230px no-repeat;
+      scroll-behavior:smooth
+    }
+    .message {
+      display:flex;
+      flex-direction:column;
+      max-width:100%;
+      margin-bottom:15px;
+      align-items:flex-start
+    }
+    .message.bot {
+      align-items:flex-end
+    }
+    .message.user {
+      align-items:flex-start
+    }
+    .bubble {
+      position:relative;
+      border-radius:16px;
+      max-width:min(85%,540px);
+      min-width:48px;
+      padding:11px 15px;
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+      line-height:1.75;
+      box-shadow:0 3px 10px #00000012;
+      font-size:15px;
+      text-align:right
+    }
+    .bot .bubble {
+      background:var(--red);
+      color:#fff;
+      border-bottom-left-radius:5px
+    }
+    .user .bubble {
+      background:var(--gray);
+      color:var(--black);
+      border-bottom-right-radius:5px
+    }
+    .bot .bubble::after,.user .bubble::after {
+      content:"";
+      position:absolute;
+      bottom:0;
+      border:8px solid transparent
+    }
+    .bot .bubble::after {
+      left:-8px;
+      border-bottom-color:var(--red);
+      border-right-color:var(--red)
+    }
+    .user .bubble::after {
+      right:-8px;
+      border-bottom-color:var(--gray);
+      border-left-color:var(--gray)
+    }
+    .message a {
+      color:inherit;
+      text-decoration:underline;
+      overflow-wrap:anywhere
+    }
+    .message-feedback {
+      display:flex;
+      gap:7px;
+      margin:5px 3px 0;
+      direction:ltr
+    }
+    .feedback-btn {
+      border:1px solid #ddd;
+      border-radius:7px;
+      background:#fff;
+      color:#333;
+      padding:3px 8px;
+      display:flex;
+      align-items:center;
+      gap:4px;
+      min-width:34px;
+      justify-content:center
+    }
+    .feedback-btn[aria-pressed="true"] {
+      background:var(--yellow);
+      border-color:#b38822
+    }
+    .feedback-btn svg {
+      width:15px;
+      height:15px;
+      stroke:currentColor;
+      fill:none;
+      stroke-width:1.8
+    }
+    .menu {
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+      margin-top:12px;
+      width:100%
+    }
+    .menu-grid {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:7px;
+      width:100%
+    }
+    .menu-btn {
+      border:1px solid #ffffff7e;
+      border-radius:9px;
+      background:#fff;
+      color:var(--black);
+      padding:10px 8px;
+      min-height:45px;
+      line-height:1.4;
+      text-align:center;
+      font-size:13px;
+      font-weight:650;
+      white-space:normal;
+      overflow-wrap:anywhere
+    }
+    .menu-btn:hover {
+      background:var(--yellow)
+    }
+    .menu-btn.secondary {
+      background:transparent;
+      color:white;
+      border-color:#ffffffa8
+    }
+    .menu-btn.secondary:hover {
+      background:#ffffff20
+    }
+    .menu-btn.full {
+      grid-column:1/-1
+    }
+    .menu .menu-label {
+      font-weight:700;
+      font-size:14px
+    }
+    .typing-bubble {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
+      direction:ltr;
+      min-width:74px;
+      min-height:43px;
+      white-space:normal
+    }
+    .typing-dot {
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:#fff;
+      display:inline-block;
+      animation:huda-dot 1.05s ease-in-out infinite
+    }
+    .typing-dot:nth-child(2) {
+      animation-delay:.16s
+    }
+    .typing-dot:nth-child(3) {
+      animation-delay:.32s
+    }
+    @keyframes huda-dot {
+      0%,62%,100% {
+        transform:translateY(0);
+        opacity:.65
+      }
+      30% {
+        transform:translateY(-7px);
+        opacity:1
+      }
+    }
+    .typing-caption {
+      font-size:11px;
+      color:var(--muted);
+      margin:4px 6px 0
+    }
+    .composer-area {
+      background:white;
+      border-top:1px solid var(--line);
+      padding:11px 13px 12px
+    }
+    .composer {
+      display:flex;
+      align-items:stretch;
+      gap:9px
+    }
+    .composer input {
+      flex:1;
+      min-width:0;
+      min-height:48px;
+      border:1px solid #aaa;
+      border-radius:8px;
+      padding:12px 14px;
+      text-align:right;
+      font-size:16px;
+      color:var(--black);
+      background:white
+    }
+    .send {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+      background:var(--yellow);
+      border:0;
+      border-radius:8px;
+      width:55px;
+      color:var(--black)
+    }
+    .send:hover {
+      filter:brightness(.97)
+    }
+    .send:disabled {
+      opacity:.55;
+      cursor:default
+    }
+    .send svg {
+      width:23px;
+      height:23px;
+      stroke:currentColor;
+      fill:none;
+      stroke-width:2;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+      transform:scaleX(-1)
+    }
+    .status {
+      font-size:12px;
+      color:var(--muted);
+      min-height:17px;
+      margin-top:6px;
+      text-align:center
+    }
+    .disclaimer {
+      font-size:10px;
+      line-height:1.5;
+      color:#555;
+      text-align:center;
+      margin:6px 3px 0
+    }
+    .chat-link {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:var(--yellow);
+      color:var(--black)!important;
+      text-decoration:none!important;
+      border-radius:8px;
+      padding:9px 12px;
+      margin-top:7px;
+      font-weight:700
+    }
+    .modal {
+      position:fixed;
+      inset:0;
+      z-index:50;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:12px;
+      background:#0009
+    }
+    .modal.open {
+      display:flex
+    }
+    .modal-panel {
+      background:#fff;
+      border-radius:13px;
+      max-width:780px;
+      width:100%;
+      height:min(88dvh,900px);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      box-shadow:0 16px 60px #0005
+    }
+    .modal-header {
+      padding:12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid #ddd
+    }
+    .modal-header strong {
+      font-size:16px
+    }
+    .modal-frame {
+      width:100%;
+      height:100%;
+      border:0;
+      background:#f4f4f4;
+      flex:1
+    }
+    .modal-actions {
+      display:flex;
+      gap:8px;
+      padding:10px;
+      border-top:1px solid #ddd
+    }
+    .modal-actions button,.modal-actions a {
+      flex:1;
+      text-align:center;
+      border:1px solid #aaa;
+      border-radius:8px;
+      color:var(--black);
+      background:white;
+      padding:10px;
+      text-decoration:none;
+      font-size:13px
+    }
+    .modal-actions .yellow {
+      background:var(--yellow);
+      border-color:var(--yellow)
+    }
+    .rating {
+      border-top:1px solid #ddd;
+      background:#fff;
+      padding:16px;
+      display:none
+    }
+    .rating.open {
+      display:block
+    }
+    .rating h2 {
+      font-size:16px;
+      margin:0 0 10px
+    }
+    .stars {
+      display:flex;
+      gap:5px;
+      justify-content:center;
+      direction:ltr
+    }
+    .stars button {
+      background:transparent;
+      border:0;
+      font-size:30px;
+      color:#9a9a9a
+    }
+    .stars button.selected {
+      color:#bc8b00
+    }
+    .rating textarea {
+      display:block;
+      width:100%;
+      resize:vertical;
+      min-height:60px;
+      margin:10px 0;
+      padding:9px;
+      border-radius:8px;
+      border:1px solid #bbb
+    }
+    .rating-note {
+      font-size:12px;
+      color:var(--muted)
+    }
+    .end-chat-action {
+      text-align:center;
+      margin-top:5px
+    }
+    @media(max-width:620px) {
+      .page {
+        padding:0
+      }
+      .card {
+        height:100dvh;
+        min-height:100dvh
+      }
+      .chat-box {
+        min-height:0;
+        height:auto;
+        max-height:none
+      }
+      .bubble {
+        max-width:91%;
+        font-size:14px
+      }
+      .menu-grid {
+        grid-template-columns:1fr 1fr
+      }
+      .menu-btn {
+        font-size:12px
+      }
+      .header {
+        padding:9px 11px;
+        min-height:66px
+      }
+      .avatar-wrap,.avatar {
+        width:43px;
+        height:43px
+      }
+      .tool {
+        padding:5px 7px
+      }
+      .composer-area {
+        padding-bottom:max(10px,env(safe-area-inset-bottom))
+      }
+    }
+    @media(prefers-reduced-motion:reduce) {
+      .typing-dot {
+        animation:none
+      }
+      .chat-box {
+        scroll-behavior:auto
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page"><div class="card">
+    <header class="header">
+      <a class="back" href="https://mycard.almahad-alali.com" aria-label="العودة إلى موقع المعهد" title="العودة إلى موقع المعهد">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+      </a>
+      <div class="avatar-wrap"><span class="avatar-fallback" aria-hidden="true">ه</span><img class="avatar" src="Logo_Ar_Red.png" alt="شعار المعهد العالي"></div>
+      <div class="header-info"><strong>هُدى</strong><small>المعهد العالي - شبكة كُلّيات قُطرية</small></div>
+      <div class="header-tools">
+        <button type="button" class="tool" id="homeMenuBtn">القائمة</button>
+        <button type="button" class="tool" id="newChatBtn">محادثة جديدة</button>
+      </div>
+    </header>
+    <section class="chat-box" id="chatBox" aria-label="محادثة هدى" aria-live="polite" aria-relevant="additions"></section>
+    <section class="rating" id="ratingPanel" aria-label="تقييم المحادثة">
+      <h2>كيف كانت تجربتك مع هُدى؟</h2>
+      <div class="stars" id="stars"></div>
+      <textarea id="ratingComment" placeholder="ملاحظاتك لتحسين الخدمة (اختياري)"></textarea>
+      <div class="rating-note">التقييم والملاحظات يبقيان في هذه الصفحة فقط؛ لا توجد واجهة لحفظهما في Cloudflare أو n8n حالياً.</div>
+      <button type="button" class="tool" id="closeRatingBtn">إغلاق التقييم</button>
+    </section>
+    <div class="composer-area">
+      <div class="composer">
+        <input id="messageInput" type="text" autocomplete="off" inputmode="text" maxlength="3000" placeholder="اكتب سؤالك هنا..." aria-label="اكتب رسالتك إلى هدى">
+        <button type="button" class="send" id="sendBtn" aria-label="إرسال الرسالة" title="إرسال الرسالة">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3L10 14"/><path d="M21 3L14.5 21L10 14L3 9.5L21 3Z"/></svg>
+        </button>
+      </div>
+      <div id="status" class="status" role="status"></div>
+      <div class="disclaimer">هُدى مساعد ذكي وقد تخطئ أحياناً. للمعلومات الرسمية والمؤكدة، يُرجى التواصل مع سكرتارية الكلية.</div>
+      <div class="end-chat-action"><button class="tool" id="endChatBtn" type="button">إنهاء المحادثة وتقييمها</button></div>
+    </div>
+  </div></main>
+
+  <div class="modal" id="formModal" role="dialog" aria-modal="true" aria-label="استمارة استشارة المعهد" aria-hidden="true">
+    <div class="modal-panel">
+      <div class="modal-header"><strong>استمارة الاستشارة والتسجيل</strong><button type="button" class="tool" id="closeModalTop" aria-label="إغلاق الاستمارة">✕</button></div>
+      <iframe class="modal-frame" id="formFrame" title="الاستمارة الرسمية للمعهد العالي" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      <div class="modal-actions"><button type="button" id="closeModalBtn">رجوع للمحادثة</button><a class="yellow" href="https://portal.almahad-alali.com/forms/show/fb?logo=1" target="_blank" rel="noopener noreferrer">فتح الاستمارة في صفحة جديدة</a></div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  'use strict';
+  // The Worker URL is public. Never place a webhook secret or API credential in this file.
+  const WORKER_URL = 'https://chat-api.almahad-alali.com';
+  const FORM_URL = 'https://portal.almahad-alali.com/forms/show/fb?logo=1';
+  const ONE_HOUR = 60 * 60 * 1000;
+  const $ = id => document.getElementById(id);
+  const chatBox = $('chatBox'), input = $('messageInput'), sendBtn = $('sendBtn');
+  const statusEl = $('status'), modal = $('formModal'), frame = $('formFrame');
+  let busy = false, ended = false, lastFocus = null, selectedRating = 0, sessionId;
+
+  function randomId() {
+    if (globalThis.crypto?.randomUUID) return crypto.randomUUID();
+    if (!globalThis.crypto?.getRandomValues) throw new Error('Secure session ID requires HTTPS.');
+    return [...crypto.getRandomValues(new Uint8Array(24))].map(v => v.toString(16).padStart(2,'0')).join('');
+  }
+  function resetSession() {
+    sessionId = randomId();
+    sessionStorage.setItem('huda_session_id_v5', sessionId);
+    sessionStorage.setItem('huda_activity_v5', String(Date.now()));
+  }
+  function ensureSession() {
+    const last = Number(sessionStorage.getItem('huda_activity_v5') || '0');
+    if (!sessionId || (last && Date.now()-last > ONE_HOUR)) {
+      resetSession();
+      if (last && chatBox.childElementCount) { chatBox.replaceChildren(); showWelcome(); }
+    }
+    sessionStorage.setItem('huda_activity_v5', String(Date.now()));
+  }
+  function initSession() {
+    const last = Number(sessionStorage.getItem('huda_activity_v5') || '0');
+    if (last && Date.now()-last <= ONE_HOUR) {
+      sessionId = sessionStorage.getItem('huda_session_id_v5');
+    }
+    if (!sessionId) resetSession();
+  }
+  function scrollBottom() { requestAnimationFrame(() => { chatBox.scrollTop = chatBox.scrollHeight; }); }
+  function isSafeUrl(url) { try {return /^https?:$/.test(new URL(url).protocol);} catch {return false;} }
+  function appendTextWithLinks(target, text) {
+    const parts = String(text).split(/(https?:\/\/[^\s<>]+)/g);
+    for (const piece of parts) {
+      if (/^https?:\/\//.test(piece) && isSafeUrl(piece)) {
+        const a=document.createElement('a'); a.href=piece; a.target='_blank'; a.rel='noopener noreferrer'; a.textContent=piece; target.append(a);
+      } else target.append(document.createTextNode(piece));
+    }
+  }
+  function icon(name) {
+    const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    s.setAttribute('viewBox','0 0 24 24'); s.setAttribute('aria-hidden','true');
+    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d',name==='up'?'M7 10v11H4V10h3Zm3 11h7a2 2 0 0 0 1.9-1.4l1.8-6a2 2 0 0 0-2-2.6h-5V4a2 2 0 0 0-2-2l-1.5 8-2 3v8Z':'M7 14V3H4v11h3Zm3-11h7a2 2 0 0 1 1.9 1.4l1.8 6a2 2 0 0 1-2 2.6h-5v7a2 2 0 0 1-2 2l-1.5-8-2-3V3Z');
+    s.append(p); return s;
+  }
+  function addMessage(text, sender='bot', options={}) {
+    const row=document.createElement('div'); row.className='message '+sender;
+    if (options.menuKey) row.dataset.menuKey=options.menuKey;
+    const bubble=document.createElement('div'); bubble.className='bubble';
+    appendTextWithLinks(bubble,text); row.append(bubble);
+    if (sender==='bot') {
+      const feedback=document.createElement('div'); feedback.className='message-feedback';
+      for (const type of ['up','down']) {
+        const btn=document.createElement('button'); btn.type='button'; btn.className='feedback-btn';
+        btn.setAttribute('aria-label',type==='up'?'إجابة مفيدة':'إجابة غير مفيدة'); btn.setAttribute('aria-pressed','false');
+        btn.append(icon(type));
+        btn.addEventListener('click',()=>{
+          for (const sibling of feedback.querySelectorAll('button')) sibling.setAttribute('aria-pressed','false');
+          btn.setAttribute('aria-pressed','true');
+          statusEl.textContent='تم اختيار رأيك في هذه الصفحة فقط؛ لا توجد واجهة لحفظه حالياً.';
+        });
+        feedback.append(btn);
+      }
+      row.append(feedback);
+    }
+    chatBox.append(row); scrollBottom(); return {row,bubble};
+  }
+  function addTyping() {
+    const row=document.createElement('div'); row.className='message bot'; row.id='typingIndicator';
+    const bubble=document.createElement('div'); bubble.className='bubble typing-bubble';
+    bubble.setAttribute('role','status'); bubble.setAttribute('aria-label','هُدى تكتب الآن');
+    for(let n=0;n<3;n++){const dot=document.createElement('span');dot.className='typing-dot';bubble.append(dot);}
+    row.append(bubble); chatBox.append(row); scrollBottom(); return row;
+  }
+  const menus = {
+    main: {title:'أهلاً! أنا هُدى، مساعدتك الذكية في المعهد العالي. كيف بقدر أساعدك اليوم؟', items:[
+      ['ساعديني أختار تخصص','guidance'],['مواضيع التعليم','education'],
+      ['التسجيل والاستشارة','registration'],['المعهد والفروع','college'],
+      ['الدعم التقني','support'],['التواصل مع السكرتارية','secretary'],
+      ['خدمات الموظفين','staff'],['موضوع آخر / احكي مع هُدى','other']]},
+    education:{title:'شو بتحب تعرف عن التعليم بالمعهد؟',items:[
+      ['مساقات الكلية','college_courses'],['المساقات الذهبية / المدمجة','golden'],['ألقاب جامعية','degrees'],['رجوع للقائمة الرئيسية','main']]},
+    college:{title:'شو بتحب تعرف عن المعهد؟',items:[
+      ['الفروع','branches'],['معلومات عن المعهد','college_about'],['الموقع الرسمي','official_site'],['القائمة الرئيسية','main']]},
+    branches:{title:'اختار الفرع أو اسألني عن فرع آخر:',items:[
+      ['الناصرة','branch_nazareth'],['شفاعمرو','branch_shefaram'],
+      ['أم الفحم','branch_ummfahm'],['دالية الكرمل','branch_daliyat'],
+      ['فرع آخر','branch_other'],['رجوع','college']]}
+  };
+  function showMenu(key='main') {
+    ensureSession();
+    // Never append the same menu if it is already the last visible chat item.
+    if (chatBox.lastElementChild?.dataset.menuKey===key) return;
+    const menu=menus[key]; if(!menu) return;
+    const {bubble}=addMessage(menu.title,'bot',{menuKey:key});
+    const grid=document.createElement('div');grid.className='menu-grid';
+    const wrapper=document.createElement('div');wrapper.className='menu';wrapper.append(grid);
+    for(const [label,target] of menu.items){
+      const btn=document.createElement('button');btn.type='button';btn.className='menu-btn';
+      btn.textContent=label;btn.addEventListener('click',()=>handleMenu(target,label));grid.append(btn);
+    }
+    bubble.append(wrapper);scrollBottom();
+  }
+  function showWelcome(){showMenu('main');}
+  function openForm() { lastFocus=document.activeElement; modal.classList.add('open');modal.setAttribute('aria-hidden','false');frame.src=FORM_URL;$('closeModalTop').focus(); }
+  function closeForm() {
+    if(!modal.classList.contains('open'))return;
+    modal.classList.remove('open');modal.setAttribute('aria-hidden','true');frame.removeAttribute('src');
+    lastFocus?.focus();addMessage('إذا أرسلت الاستمارة وظهرت رسالة نجاح، فينا نكمل هون. هل في شي ثاني بقدر أساعدك فيه؟','bot');
+  }
+  async function handleMenu(target,label) {
+    if (busy || ended) return;
+    if(menus[target]) {showMenu(target);return;}
+    if(target==='registration') {openForm();return;}
+    if(target==='official_site') {addMessage('https://almahad-alali.com','bot');return;}
+    if(target==='other'){input.focus();return;}
+    const questions={
+      guidance:'ساعديني أختار تخصص مناسب، اسأليني عن اهتماماتي خطوة خطوة',
+      college_courses:'ما هي أقسام مساقات الكلية المتوفرة؟',
+      golden:'ما هي المساقات الذهبية أو المدمجة المتوفرة؟',
+      degrees:'ما هي الألقاب الجامعية المتوفرة؟',
+      support:'أريد التواصل مع الدعم التقني',
+      secretary:'أريد التواصل مع السكرتارية',
+      staff:'أريد معرفة خدمات الموظفين وما هي طريقة تسجيل الدخول الآمنة',
+      college_about:'احكيلي عن المعهد العالي وفروعه',
+      branch_nazareth:'أريد معلومات فرع الناصرة: ساعات العمل والهاتف والخريطة',
+      branch_shefaram:'أريد معلومات فرع شفاعمرو: ساعات العمل والهاتف والخريطة',
+      branch_ummfahm:'أريد معلومات فرع أم الفحم: ساعات العمل والهاتف والخريطة',
+      branch_daliyat:'أريد معلومات فرع دالية الكرمل: ساعات العمل والهاتف والخريطة',
+      branch_other:'ما هي باقي فروع المعهد العالي؟'
+    };
+    await sendMessage(questions[target]||label);
+  }
+  async function sendMessage(value=null) {
+    if (busy || ended) return;
+    ensureSession();
+    const text=String(value===null?input.value:value).trim();
+    if(!text){input.focus();return;}
+    addMessage(text,'user'); if(value===null)input.value='';
+    busy=true;sendBtn.disabled=true;input.disabled=true;statusEl.textContent='';
+    const typing=addTyping();
+    try{
+      // Keep the Worker request identical to the working chat.html contract.
+      const body={question:text,user_type:'student',session_id:sessionId};
+      const response=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),cache:'no-store'});
+      const data=await response.json();
+      typing.remove();
+      const answer=typeof data?.answer==='string' && data.answer.trim()?data.answer.trim():
+        !response.ok && typeof data?.message==='string' && data.message.trim()?data.message.trim():
+        response.ok?'لم يتم استلام رد صالح من الخادم.':'تعذر الحصول على رد حالياً. يرجى المحاولة لاحقاً.';
+      const {bubble}=addMessage(answer,'bot');
+      // Show only explicit backend actions; never make up a successful handoff.
+      const suggestions=Array.isArray(data?.suggestions)?data.suggestions.slice(0,6):[];
+      const actions=suggestions.filter(x=>typeof x==='string'||(x&&typeof x.label==='string'));
+      if(actions.length){
+        const grid=document.createElement('div');grid.className='menu-grid';grid.style.marginTop='10px';
+        for(const item of actions){
+          const label=typeof item==='string'?item:item.label;
+          const btn=document.createElement('button');btn.className='menu-btn';btn.type='button';btn.textContent=label;
+          btn.addEventListener('click',()=>sendMessage(label));grid.append(btn);
+        }
+        bubble.append(grid);
+      }
+      if(data?.handoff && !suggestions.length){
+        const btn=document.createElement('button');btn.type='button';btn.className='menu-btn';btn.style.marginTop='9px';btn.textContent='فتح استمارة التواصل';btn.addEventListener('click',openForm);bubble.append(btn);
+      }
+      if(!response.ok)statusEl.textContent='تعذر إتمام الطلب.';
+    }catch(error){
+      typing.remove();addMessage('تعذر الاتصال بهُدى حالياً. حاول مرة ثانية.','bot');
+      statusEl.textContent='مشكلة مؤقتة في الاتصال.';
+      console.warn('Huda request failed (details omitted).');
+    }finally{
+      busy=false;sendBtn.disabled=false;input.disabled=false;input.focus();
+    }
+  }
+  function openRating(){
+    if (busy || ended) return;
+    ended=true;
+    input.disabled=true;
+    sendBtn.disabled=true;
+    $('endChatBtn').disabled=true;
+    $('homeMenuBtn').disabled=true;
+    $('ratingPanel').classList.add('open');
+    statusEl.textContent='انتهت المحادثة. ابدأ محادثة جديدة للمتابعة.';
+    scrollBottom();
+  }
+  for(let i=1;i<=5;i++){
+    const btn=document.createElement('button');btn.type='button';btn.textContent='★';btn.setAttribute('aria-label',`${i} من 5`);
+    btn.addEventListener('click',()=>{selectedRating=i;for(const [j,b]of [...$('stars').children].entries())b.classList.toggle('selected',j<i);});
+    $('stars').append(btn);
+  }
+  $('sendBtn').addEventListener('click',()=>sendMessage());
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();sendMessage();}});
+  $('homeMenuBtn').addEventListener('click',()=>showMenu('main'));
+  $('newChatBtn').addEventListener('click',()=>{
+    if(busy)return;
+    resetSession();
+    ended=false;
+    selectedRating=0;
+    input.disabled=false;
+    sendBtn.disabled=false;
+    $('endChatBtn').disabled=false;
+    $('homeMenuBtn').disabled=false;
+    $('ratingComment').value='';
+    for(const star of $('stars').children)star.classList.remove('selected');
+    chatBox.replaceChildren();
+    $('ratingPanel').classList.remove('open');
+    statusEl.textContent='';
+    showWelcome();
+    input.focus();
+  });
+  $('endChatBtn').addEventListener('click',openRating);
+  $('closeRatingBtn').addEventListener('click',()=>{$('ratingPanel').classList.remove('open');});
+  $('closeModalBtn').addEventListener('click',closeForm);
+  $('closeModalTop').addEventListener('click',closeForm);
+  modal.addEventListener('click',e=>{if(e.target===modal)closeForm();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeForm();});
+  document.querySelector('.avatar').addEventListener('error',e=>{e.target.style.display='none';});
+  initSession();showWelcome();
+})();
+</script>
+</body>
+</html>
