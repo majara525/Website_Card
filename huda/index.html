@@ -90,6 +90,7 @@
       border-radius:50%;
       background:#f1f1f1;
       border:1px solid #ddd;
+      overflow:hidden;
       display:grid;
       place-items:center
     }
@@ -101,11 +102,11 @@
     }
     .avatar {
       position:relative;
-      width:48px;
-      height:48px;
-      border:1px solid #ddd;
+      width:100%;
+      height:100%;
+      border:0;
       border-radius:50%;
-      padding:4px;
+      padding:0;
       background:white;
       object-fit:cover;
       flex-shrink:0
@@ -136,6 +137,15 @@
       padding:6px 10px;
       font-size:12px;
       color:#222
+    }
+    .tool,.send,.menu-btn,.feedback-btn,.stars button {
+      transition:transform .18s ease, background-color .18s ease, border-color .18s ease
+    }
+    .tool:hover:not(:disabled),.send:hover:not(:disabled),.menu-btn:hover:not(:disabled),.feedback-btn:hover:not(:disabled),.stars button:hover:not(:disabled) {
+      transform:translateY(-3px)
+    }
+    .tool:active:not(:disabled),.send:active:not(:disabled),.menu-btn:active:not(:disabled),.feedback-btn:active:not(:disabled),.stars button:active:not(:disabled) {
+      transform:translateY(2px) scale(.97)
     }
     .chat-box {
       flex:1;
@@ -278,11 +288,11 @@
     .branch-message .bubble {
       width:min(100%,620px);
       max-width:100%;
-      padding:0;
+      padding:10px;
       overflow:hidden;
-      background:#fff;
-      color:var(--black);
-      border:1px solid #e5e7eb;
+      background:var(--red);
+      color:#fff;
+      border:1px solid var(--red);
       border-radius:9px
     }
     .branch-message .bubble::after {
@@ -293,7 +303,12 @@
       grid-template-columns:minmax(0,1.4fr) minmax(115px,1fr);
       gap:12px;
       min-height:125px;
-      direction:rtl
+      direction:rtl;
+      background:#fff;
+      color:var(--black);
+      border:1px solid #e5e7eb;
+      border-radius:8px;
+      overflow:hidden
     }
     .branch-details {
       display:flex;
@@ -326,8 +341,47 @@
       min-height:125px;
       object-fit:cover
     }
+    .branch-followup {
+      margin:8px 4px 0;
+      color:#fff;
+      font-size:13px
+    }
+    .social-links {
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:8px;
+      margin-top:10px
+    }
+    .social-links a {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      min-height:44px;
+      padding:6px;
+      border-radius:8px;
+      background:#fff;
+      color:var(--black);
+      font-size:12px;
+      font-weight:600;
+      text-decoration:none;
+      transition:transform .18s ease, background-color .18s ease
+    }
+    .social-links a:hover {
+      background:var(--yellow);
+      transform:translateY(-3px)
+    }
+    .social-links a:active {
+      transform:translateY(2px) scale(.97)
+    }
+    .social-links img {
+      width:24px;
+      height:24px;
+      object-fit:contain
+    }
     .menu-btn:hover {
-      background:var(--yellow)
+      background:var(--yellow);
+      border-color:var(--yellow)
     }
     .menu-btn.secondary {
       background:transparent;
@@ -386,7 +440,7 @@
     .composer-area {
       background:white;
       border-top:1px solid var(--line);
-      padding:11px 13px 12px;
+      padding:9px 13px 8px;
       flex-shrink:0
     }
     .composer {
@@ -432,21 +486,23 @@
       stroke-width:2;
       stroke-linecap:round;
       stroke-linejoin:round;
-      transform:rotate(-45deg) scaleX(-1)
+      transform:translate(2px,1px) rotate(-45deg) scaleX(-1)
     }
     .status {
       font-size:12px;
       color:var(--muted);
-      min-height:17px;
-      margin-top:6px;
+      margin-top:2px;
       text-align:center
+    }
+    .status:empty {
+      display:none
     }
     .disclaimer {
       font-size:10px;
       line-height:1.5;
       color:#555;
       text-align:center;
-      margin:6px 3px 0
+      margin:3px 3px 0
     }
     .chat-link {
       display:inline-flex;
@@ -586,7 +642,7 @@
         padding:9px 11px;
         min-height:66px
       }
-      .avatar-wrap,.avatar {
+      .avatar-wrap {
         width:43px;
         height:43px
       }
@@ -598,6 +654,12 @@
       }
     }
     @media(prefers-reduced-motion:reduce) {
+      .tool,.send,.menu-btn,.feedback-btn,.stars button,.social-links a {
+        transition:none
+      }
+      .tool:hover:not(:disabled),.send:hover:not(:disabled),.menu-btn:hover:not(:disabled),.feedback-btn:hover:not(:disabled),.stars button:hover:not(:disabled),.social-links a:hover {
+        transform:none
+      }
       .typing-dot {
         animation:none
       }
@@ -632,7 +694,7 @@
     </section>
     <div class="composer-area">
       <div class="composer">
-        <input id="messageInput" type="text" autocomplete="off" inputmode="text" maxlength="3000" placeholder="اكتب سؤالك هنا..." aria-label="اكتب رسالتك إلى هدى">
+        <input id="messageInput" type="text" autocomplete="off" inputmode="text" maxlength="3000" placeholder="اكتب/ي سؤالك هنا..." aria-label="اكتب رسالتك إلى هدى">
         <button type="button" class="send" id="sendBtn" aria-label="إرسال الرسالة" title="إرسال الرسالة">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3L10 14"/><path d="M21 3L14.5 21L10 14L3 9.5L21 3Z"/></svg>
         </button>
@@ -743,18 +805,29 @@
     education:{title:'شو بتحب تعرف عن التعليم بالمعهد؟',items:[
       ['مساقات الكلية','college_courses'],['المساقات الذهبية / المدمجة','golden'],['ألقاب جامعية','degrees'],['رجوع للقائمة الرئيسية','main'],['إنهاء المحادثة وتقييمها','end_chat']]},
     college:{title:'شو بتحب تعرف عن المعهد؟',items:[
-      ['الفروع','branches'],['معلومات عن المعهد','college_about'],['الموقع الرسمي','official_site'],['القائمة الرئيسية','main'],['إنهاء المحادثة وتقييمها','end_chat']]},
+      ['الفروع','branches'],['من نحن:','college_about'],['مواقع التواصل الاجتماعية الخاصة بالكلية:','social_links'],['القائمة الرئيسية','main'],['إنهاء المحادثة وتقييمها','end_chat']]},
     branches:{title:'اختار الفرع أو اسألني عن فرع آخر:',items:[
       ['الناصرة','branch_nazareth'],['شفاعمرو','branch_shefaram'],
       ['أم الفحم','branch_ummfahm'],['دالية الكرمل','branch_daliyat'],
       ['فرع آخر','branch_other'],['رجوع','college'],['إنهاء المحادثة وتقييمها','end_chat']]}
   };
   const branches = {
-    branch_nazareth:{name:'الناصرة - الفرع الرئيسي',hours:['الاثنين - السبت: 8:00 – 20:00','الأحد: مغلق'],image:'Branches/Nazareth.jpg',map:'https://share.google/Gl1Nsi9UFp3legJPb'},
-    branch_shefaram:{name:'شفاعمرو',hours:['الاثنين - الجمعة: 10:00 – 20:00','السبت: 10:00 – 14:00','الأحد: مغلق'],image:'Branches/Sh.jpg',map:'https://maps.app.goo.gl/XSaB43xGiMdi8KQW9?g_st=aw'},
-    branch_daliyat:{name:'دالية الكرمل',hours:['الأحد - الخميس: 8:00 – 20:00','الجمعة: 10:00 – 14:00','السبت: مغلق'],image:'Branches/Carmel.jpg',map:'https://maps.app.goo.gl/vBpv4VckYSahChS96?g_st=aw'},
-    branch_ummfahm:{name:'أم الفحم',hours:['السبت - الخميس: 8:00 – 15:00','الجمعة: مغلق'],image:'Branches/Am.jpg',map:'https://maps.app.goo.gl/yr8mBnrJUtRhcKCP7'}
+    branch_nazareth:{name:'الناصرة - الفرع الرئيسي',hours:['الاثنين - السبت: 8:00 – 20:00','الأحد: مغلق'],image:'../Branches/Nazareth.jpg',map:'https://share.google/Gl1Nsi9UFp3legJPb'},
+    branch_shefaram:{name:'شفاعمرو',hours:['الاثنين - الجمعة: 10:00 – 20:00','السبت: 10:00 – 14:00','الأحد: مغلق'],image:'../Branches/Sh.jpg',map:'https://maps.app.goo.gl/XSaB43xGiMdi8KQW9?g_st=aw'},
+    branch_daliyat:{name:'دالية الكرمل',hours:['الأحد - الخميس: 8:00 – 20:00','الجمعة: 10:00 – 14:00','السبت: مغلق'],image:'../Branches/Carmel.jpg',map:'https://maps.app.goo.gl/vBpv4VckYSahChS96?g_st=aw'},
+    branch_ummfahm:{name:'أم الفحم',hours:['السبت - الخميس: 8:00 – 15:00','الجمعة: مغلق'],image:'../Branches/Am.jpg',map:'https://maps.app.goo.gl/yr8mBnrJUtRhcKCP7'}
   };
+  const socialLinks = [
+    {label:'إنستغرام',href:'https://www.instagram.com/almahad_alali/',icon:'Instagram.png'},
+    {label:'فيسبوك',href:'https://facebook.com/AlmahadAlaali/',icon:'Facebook.png'},
+    {label:'تيك توك',href:'https://www.tiktok.com/@alm3had_al3ali?_t=8paRr5PIFya&_r=1',icon:'Tiktok.png'},
+    {label:'لينكد إن',href:'https://www.linkedin.com/company/almahad-alali/about/',icon:'Linkedin.png'},
+    {label:'يوتيوب',href:'https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw',icon:'Youtube.png'},
+    {label:'موقع المعهد العالي',href:'https://almahad-alali.com',icon:'Website.png'},
+    {label:'البريد الإلكتروني',href:'mailto:info@almahad-alali.com',icon:'Mail_New.png'},
+    {label:'واتساب',href:'https://api.whatsapp.com/send/?phone=972526734002&text&type=phone_number&app_absent=0',icon:'Whatsapp.png'},
+    {label:'اتصل بنا',href:'tel:046000645',icon:'Phone.png'}
+  ];
   const menuPaths = {
     guidance:'M12 3 9 9l3 2 3-2-3-6Zm-7 9 4-2 3 2 3-2 4 2v8l-4-2-3 2-3-2-4 2v-8Z',
     education:'M4 5h6a3 3 0 0 1 3 3v12a3 3 0 0 0-3-3H4V5Zm16 0h-4a3 3 0 0 0-3 3v12a3 3 0 0 1 3-3h4V5Z',
@@ -764,6 +837,7 @@
     support:'M4 14v-3a8 8 0 0 1 16 0v3M4 13h3v6H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2Zm13 0h3a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-3v-6Z',
     secretary:'M4 5h16v12H8l-4 3V5Zm4 5h8m-8 4h5',
     staff:'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 9v-2a7 7 0 0 1 14 0v2H2Zm15-9a4 4 0 0 0 0-8m1 11a6 6 0 0 1 4 6',
+    social_links:'M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2',
     end_chat:'M5 5l14 14M19 5 5 19',
     main:'M3 11 12 4l9 7M5 10v10h14V10M9 20v-6h6v6',
     other:'M4 5h16v12H8l-4 3V5Z'
@@ -817,8 +891,39 @@
     photo.loading='lazy';
     card.append(details,photo);
     bubble.append(card);
+    const followup=document.createElement('p');
+    followup.className='branch-followup';
+    followup.textContent='هذه معلومات الفرع. كيف بقدر أساعدك كمان؟';
+    bubble.append(followup);
     row.append(bubble);
     messages.append(row);
+    scrollBottom();
+  }
+  function showAbout(label) {
+    addMessage(label,'user');
+    addMessage('كلية تعليمية تنفرد بتدريس مسارات تأهيل، برامج دبلوم متقدمه وحتى تعليم جامعي يواكب متطلبات سوق العمل.\n\nتميّزت الكلية، ومنذ انطلاقتها سنة 1990، بطابع خاص يجمع بين المهنية، الجودة العالية والمصداقية العلمية، وركزّت جلّ اهتمامها على النقاط التالية:\n\n• مستوى تعليمي عالٍ ومتميّز.\n• شهادات رسمية تضمن لك التميّز والتفوّق.\n• فروع عديدة مجهّزة بأحدث التقنيات، وقريبة من بيتك.\n• توجيه دراسي ومهني على أيدي خبراء في مجالي التعليم والعمل.\n• دمج مواد تطبيقية في المناهج التعليمية لتسهيل انخراط الخريجين في سوق العمل.\n\nالمعهد العالي... مسيرة طويلة، خبرة، مهنية، وتجدّد.','bot');
+  }
+  function showSocialLinks(label) {
+    addMessage(label,'user');
+    const {bubble}=addMessage('روابط المعهد العالي:','bot');
+    const grid=document.createElement('div');
+    grid.className='social-links';
+    for(const item of socialLinks){
+      const link=document.createElement('a');
+      link.href=item.href;
+      if(!item.href.startsWith('tel:') && !item.href.startsWith('mailto:')){
+        link.target='_blank';
+        link.rel='noopener noreferrer';
+      }
+      const icon=document.createElement('img');
+      icon.src='../Icons/'+item.icon;
+      icon.alt='';
+      const text=document.createElement('span');
+      text.textContent=item.label;
+      link.append(icon,text);
+      grid.append(link);
+    }
+    bubble.append(grid);
     scrollBottom();
   }
   function showMenu(key='main') {
@@ -848,8 +953,9 @@
     if(target==='end_chat'){openRating();return;}
     if(menus[target]) {showMenu(target);return;}
     if(branches[target]){addMessage(label,'user');showBranch(target);return;}
+    if(target==='college_about'){showAbout(label);return;}
+    if(target==='social_links'){showSocialLinks(label);return;}
     if(target==='registration') {openForm();return;}
-    if(target==='official_site') {addMessage('https://almahad-alali.com','bot');return;}
     if(target==='other'){input.focus();return;}
     const questions={
       guidance:'ساعديني أختار تخصص مناسب، اسأليني عن اهتماماتي خطوة خطوة',
@@ -859,7 +965,6 @@
       support:'أريد التواصل مع الدعم التقني',
       secretary:'أريد التواصل مع السكرتارية',
       staff:'أريد معرفة خدمات الموظفين وما هي طريقة تسجيل الدخول الآمنة',
-      college_about:'احكيلي عن المعهد العالي وفروعه',
       branch_other:'ما هي باقي فروع المعهد العالي؟'
     };
     await sendMessage(questions[target]||label);
