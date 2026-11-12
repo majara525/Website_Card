@@ -21,11 +21,13 @@
       box-sizing:border-box
     }
     html {
-      height:100%
+      height:100%;
+      overflow:hidden
     }
     body {
       margin:0;
-      min-height:100%;
+      height:100dvh;
+      overflow:hidden;
       font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
       color:var(--black);
       background:linear-gradient(150deg,var(--red),var(--yellow) 64%,#e7e7e7);
@@ -43,13 +45,18 @@
     }
     .page {
       max-width:780px;
+      height:100dvh;
       margin:0 auto;
-      padding:22px 12px 28px
+      padding:22px 12px;
+      display:flex;
+      flex-direction:column;
+      min-height:0
     }
     .card {
       background:white;
       box-shadow:0 14px 42px #0003;
-      min-height:min(790px,calc(100dvh - 44px));
+      height:100%;
+      min-height:0;
       display:flex;
       flex-direction:column;
       border:1px solid #ddd
@@ -61,7 +68,8 @@
       padding:12px 15px;
       background:white;
       border-bottom:1px solid var(--line);
-      min-height:77px
+      min-height:77px;
+      flex-shrink:0
     }
     .header .back {
       width:37px;
@@ -71,7 +79,7 @@
       color:var(--red);
       text-decoration:none;
       border:1px solid #ddd;
-      border-radius:50%;
+      border-radius:9px;
       flex-shrink:0
     }
     .avatar-wrap {
@@ -99,7 +107,7 @@
       border-radius:50%;
       padding:4px;
       background:white;
-      object-fit:contain;
+      object-fit:cover;
       flex-shrink:0
     }
     .header-info {
@@ -131,9 +139,7 @@
     }
     .chat-box {
       flex:1;
-      min-height:390px;
-      height:61vh;
-      max-height:760px;
+      min-height:0;
       overflow-y:auto;
       overscroll-behavior:contain;
       padding:20px 14px 24px;
@@ -253,6 +259,73 @@
       white-space:normal;
       overflow-wrap:anywhere
     }
+    .menu-btn-content {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:7px
+    }
+    .menu-btn svg {
+      width:17px;
+      height:17px;
+      flex-shrink:0;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:1.8;
+      stroke-linecap:round;
+      stroke-linejoin:round
+    }
+    .branch-message .bubble {
+      width:min(100%,620px);
+      max-width:100%;
+      padding:0;
+      overflow:hidden;
+      background:#fff;
+      color:var(--black);
+      border:1px solid #e5e7eb;
+      border-radius:9px
+    }
+    .branch-message .bubble::after {
+      display:none
+    }
+    .branch-card {
+      display:grid;
+      grid-template-columns:minmax(0,1.4fr) minmax(115px,1fr);
+      gap:12px;
+      min-height:125px;
+      direction:rtl
+    }
+    .branch-details {
+      display:flex;
+      flex-direction:column;
+      gap:5px;
+      padding:11px 12px 11px 0;
+      text-align:right
+    }
+    .branch-details strong {
+      font-size:14px
+    }
+    .branch-hours {
+      color:#6b7280;
+      font-size:12px;
+      line-height:1.6
+    }
+    .branch-details a {
+      margin-top:auto;
+      color:var(--red);
+      font-size:12px;
+      font-weight:700;
+      text-decoration:none
+    }
+    .branch-details a:hover {
+      text-decoration:underline
+    }
+    .branch-photo {
+      width:100%;
+      height:100%;
+      min-height:125px;
+      object-fit:cover
+    }
     .menu-btn:hover {
       background:var(--yellow)
     }
@@ -313,7 +386,8 @@
     .composer-area {
       background:white;
       border-top:1px solid var(--line);
-      padding:11px 13px 12px
+      padding:11px 13px 12px;
+      flex-shrink:0
     }
     .composer {
       display:flex;
@@ -358,7 +432,7 @@
       stroke-width:2;
       stroke-linecap:round;
       stroke-linejoin:round;
-      transform:scaleX(-1)
+      transform:rotate(-45deg) scaleX(-1)
     }
     .status {
       font-size:12px;
@@ -490,22 +564,13 @@
       font-size:12px;
       color:var(--muted)
     }
-    .end-chat-action {
-      text-align:center;
-      margin-top:5px
-    }
     @media(max-width:620px) {
       .page {
-        padding:0
+        padding:0;
+        height:100dvh
       }
       .card {
-        height:100dvh;
-        min-height:100dvh
-      }
-      .chat-box {
-        min-height:0;
-        height:auto;
-        max-height:none
+        height:100%
       }
       .bubble {
         max-width:91%;
@@ -548,20 +613,22 @@
       <a class="back" href="https://mycard.almahad-alali.com" aria-label="العودة إلى موقع المعهد" title="العودة إلى موقع المعهد">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
       </a>
-      <div class="avatar-wrap"><span class="avatar-fallback" aria-hidden="true">ه</span><img class="avatar" src="Logo_Ar_Red.png" alt="شعار المعهد العالي"></div>
+      <div class="avatar-wrap"><span class="avatar-fallback" aria-hidden="true">ه</span><img class="avatar" src="Huda.png" alt="هُدى"></div>
       <div class="header-info"><strong>هُدى</strong><small>المعهد العالي - شبكة كُلّيات قُطرية</small></div>
       <div class="header-tools">
         <button type="button" class="tool" id="homeMenuBtn">القائمة</button>
         <button type="button" class="tool" id="newChatBtn">محادثة جديدة</button>
       </div>
     </header>
-    <section class="chat-box" id="chatBox" aria-label="محادثة هدى" aria-live="polite" aria-relevant="additions"></section>
-    <section class="rating" id="ratingPanel" aria-label="تقييم المحادثة">
-      <h2>كيف كانت تجربتك مع هُدى؟</h2>
-      <div class="stars" id="stars"></div>
-      <textarea id="ratingComment" placeholder="ملاحظاتك لتحسين الخدمة (اختياري)"></textarea>
-      <div class="rating-note">التقييم والملاحظات يبقيان في هذه الصفحة فقط؛ لا توجد واجهة لحفظهما في Cloudflare أو n8n حالياً.</div>
-      <button type="button" class="tool" id="closeRatingBtn">إغلاق التقييم</button>
+    <section class="chat-box" id="chatBox" aria-label="محادثة هدى" aria-live="polite" aria-relevant="additions">
+      <div id="messages"></div>
+      <section class="rating" id="ratingPanel" aria-label="تقييم المحادثة">
+        <h2>كيف كانت تجربتك مع هُدى؟</h2>
+        <div class="stars" id="stars"></div>
+        <textarea id="ratingComment" placeholder="ملاحظاتك لتحسين الخدمة (اختياري)"></textarea>
+        <div class="rating-note">التقييم والملاحظات يبقيان في هذه الصفحة فقط؛ لا توجد واجهة لحفظهما في Cloudflare أو n8n حالياً.</div>
+        <button type="button" class="tool" id="closeRatingBtn">إغلاق التقييم</button>
+      </section>
     </section>
     <div class="composer-area">
       <div class="composer">
@@ -572,7 +639,6 @@
       </div>
       <div id="status" class="status" role="status"></div>
       <div class="disclaimer">هُدى مساعد ذكي وقد تخطئ أحياناً. للمعلومات الرسمية والمؤكدة، يُرجى التواصل مع سكرتارية الكلية.</div>
-      <div class="end-chat-action"><button class="tool" id="endChatBtn" type="button">إنهاء المحادثة وتقييمها</button></div>
     </div>
   </div></main>
 
@@ -592,7 +658,8 @@
   const FORM_URL = 'https://portal.almahad-alali.com/forms/show/fb?logo=1';
   const ONE_HOUR = 60 * 60 * 1000;
   const $ = id => document.getElementById(id);
-  const chatBox = $('chatBox'), input = $('messageInput'), sendBtn = $('sendBtn');
+  const chatBox = $('chatBox'), messages = $('messages');
+  const input = $('messageInput'), sendBtn = $('sendBtn');
   const statusEl = $('status'), modal = $('formModal'), frame = $('formFrame');
   let busy = false, ended = false, lastFocus = null, selectedRating = 0, sessionId;
 
@@ -610,7 +677,7 @@
     const last = Number(sessionStorage.getItem('huda_activity_v5') || '0');
     if (!sessionId || (last && Date.now()-last > ONE_HOUR)) {
       resetSession();
-      if (last && chatBox.childElementCount) { chatBox.replaceChildren(); showWelcome(); }
+      if (last && messages.childElementCount) { messages.replaceChildren(); showWelcome(); }
     }
     sessionStorage.setItem('huda_activity_v5', String(Date.now()));
   }
@@ -652,47 +719,120 @@
         btn.addEventListener('click',()=>{
           for (const sibling of feedback.querySelectorAll('button')) sibling.setAttribute('aria-pressed','false');
           btn.setAttribute('aria-pressed','true');
-          statusEl.textContent='تم اختيار رأيك في هذه الصفحة فقط؛ لا توجد واجهة لحفظه حالياً.';
         });
         feedback.append(btn);
       }
       row.append(feedback);
     }
-    chatBox.append(row); scrollBottom(); return {row,bubble};
+    messages.append(row); scrollBottom(); return {row,bubble};
   }
   function addTyping() {
     const row=document.createElement('div'); row.className='message bot'; row.id='typingIndicator';
     const bubble=document.createElement('div'); bubble.className='bubble typing-bubble';
     bubble.setAttribute('role','status'); bubble.setAttribute('aria-label','هُدى تكتب الآن');
     for(let n=0;n<3;n++){const dot=document.createElement('span');dot.className='typing-dot';bubble.append(dot);}
-    row.append(bubble); chatBox.append(row); scrollBottom(); return row;
+    row.append(bubble); messages.append(row); scrollBottom(); return row;
   }
   const menus = {
     main: {title:'أهلاً! أنا هُدى، مساعدتك الذكية في المعهد العالي. كيف بقدر أساعدك اليوم؟', items:[
       ['ساعديني أختار تخصص','guidance'],['مواضيع التعليم','education'],
       ['التسجيل والاستشارة','registration'],['المعهد والفروع','college'],
       ['الدعم التقني','support'],['التواصل مع السكرتارية','secretary'],
-      ['خدمات الموظفين','staff'],['موضوع آخر / احكي مع هُدى','other']]},
+      ['خدمات الموظفين','staff'],['موضوع آخر / احكي مع هُدى','other'],
+      ['إنهاء المحادثة وتقييمها','end_chat']]},
     education:{title:'شو بتحب تعرف عن التعليم بالمعهد؟',items:[
-      ['مساقات الكلية','college_courses'],['المساقات الذهبية / المدمجة','golden'],['ألقاب جامعية','degrees'],['رجوع للقائمة الرئيسية','main']]},
+      ['مساقات الكلية','college_courses'],['المساقات الذهبية / المدمجة','golden'],['ألقاب جامعية','degrees'],['رجوع للقائمة الرئيسية','main'],['إنهاء المحادثة وتقييمها','end_chat']]},
     college:{title:'شو بتحب تعرف عن المعهد؟',items:[
-      ['الفروع','branches'],['معلومات عن المعهد','college_about'],['الموقع الرسمي','official_site'],['القائمة الرئيسية','main']]},
+      ['الفروع','branches'],['معلومات عن المعهد','college_about'],['الموقع الرسمي','official_site'],['القائمة الرئيسية','main'],['إنهاء المحادثة وتقييمها','end_chat']]},
     branches:{title:'اختار الفرع أو اسألني عن فرع آخر:',items:[
       ['الناصرة','branch_nazareth'],['شفاعمرو','branch_shefaram'],
       ['أم الفحم','branch_ummfahm'],['دالية الكرمل','branch_daliyat'],
-      ['فرع آخر','branch_other'],['رجوع','college']]}
+      ['فرع آخر','branch_other'],['رجوع','college'],['إنهاء المحادثة وتقييمها','end_chat']]}
   };
+  const branches = {
+    branch_nazareth:{name:'الناصرة - الفرع الرئيسي',hours:['الاثنين - السبت: 8:00 – 20:00','الأحد: مغلق'],image:'Branches/Nazareth.jpg',map:'https://share.google/Gl1Nsi9UFp3legJPb'},
+    branch_shefaram:{name:'شفاعمرو',hours:['الاثنين - الجمعة: 10:00 – 20:00','السبت: 10:00 – 14:00','الأحد: مغلق'],image:'Branches/Sh.jpg',map:'https://maps.app.goo.gl/XSaB43xGiMdi8KQW9?g_st=aw'},
+    branch_daliyat:{name:'دالية الكرمل',hours:['الأحد - الخميس: 8:00 – 20:00','الجمعة: 10:00 – 14:00','السبت: مغلق'],image:'Branches/Carmel.jpg',map:'https://maps.app.goo.gl/vBpv4VckYSahChS96?g_st=aw'},
+    branch_ummfahm:{name:'أم الفحم',hours:['السبت - الخميس: 8:00 – 15:00','الجمعة: مغلق'],image:'Branches/Am.jpg',map:'https://maps.app.goo.gl/yr8mBnrJUtRhcKCP7'}
+  };
+  const menuPaths = {
+    guidance:'M12 3 9 9l3 2 3-2-3-6Zm-7 9 4-2 3 2 3-2 4 2v8l-4-2-3 2-3-2-4 2v-8Z',
+    education:'M4 5h6a3 3 0 0 1 3 3v12a3 3 0 0 0-3-3H4V5Zm16 0h-4a3 3 0 0 0-3 3v12a3 3 0 0 1 3-3h4V5Z',
+    registration:'M7 3h10v18H7V3Zm3 5h4m-4 4h4m-4 4h3',
+    college:'M3 20h18M5 20V8l7-5 7 5v12M9 20v-6h6v6',
+    branches:'M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Zm0-8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',
+    support:'M4 14v-3a8 8 0 0 1 16 0v3M4 13h3v6H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2Zm13 0h3a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-3v-6Z',
+    secretary:'M4 5h16v12H8l-4 3V5Zm4 5h8m-8 4h5',
+    staff:'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 9v-2a7 7 0 0 1 14 0v2H2Zm15-9a4 4 0 0 0 0-8m1 11a6 6 0 0 1 4 6',
+    end_chat:'M5 5l14 14M19 5 5 19',
+    main:'M3 11 12 4l9 7M5 10v10h14V10M9 20v-6h6v6',
+    other:'M4 5h16v12H8l-4 3V5Z'
+  };
+  function addButtonContent(button,label,target) {
+    const content=document.createElement('span');
+    content.className='menu-btn-content';
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 24 24');
+    svg.setAttribute('aria-hidden','true');
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    const iconName=target?.startsWith('branch_') ? 'branches' :
+      ['college_courses','golden','degrees'].includes(target) ? 'education' : target;
+    path.setAttribute('d',menuPaths[iconName] || menuPaths.other);
+    svg.append(path);
+    const text=document.createElement('span');
+    text.textContent=label;
+    content.append(svg,text);
+    button.append(content);
+  }
+  function showBranch(target) {
+    const branch=branches[target];
+    if(!branch)return;
+    const row=document.createElement('div');
+    row.className='message bot branch-message';
+    const bubble=document.createElement('div');
+    bubble.className='bubble';
+    const card=document.createElement('div');
+    card.className='branch-card';
+    const details=document.createElement('div');
+    details.className='branch-details';
+    const title=document.createElement('strong');
+    title.textContent=branch.name;
+    const hours=document.createElement('div');
+    hours.className='branch-hours';
+    for(const line of branch.hours){
+      const span=document.createElement('div');
+      span.textContent=line;
+      hours.append(span);
+    }
+    const link=document.createElement('a');
+    link.href=branch.map;
+    link.target='_blank';
+    link.rel='noopener noreferrer';
+    link.textContent='للذهاب إلى الفرع';
+    details.append(title,hours,link);
+    const photo=document.createElement('img');
+    photo.className='branch-photo';
+    photo.src=branch.image;
+    photo.alt=branch.name;
+    photo.loading='lazy';
+    card.append(details,photo);
+    bubble.append(card);
+    row.append(bubble);
+    messages.append(row);
+    scrollBottom();
+  }
   function showMenu(key='main') {
     ensureSession();
     // Never append the same menu if it is already the last visible chat item.
-    if (chatBox.lastElementChild?.dataset.menuKey===key) return;
+    if (messages.lastElementChild?.dataset.menuKey===key) return;
     const menu=menus[key]; if(!menu) return;
     const {bubble}=addMessage(menu.title,'bot',{menuKey:key});
     const grid=document.createElement('div');grid.className='menu-grid';
     const wrapper=document.createElement('div');wrapper.className='menu';wrapper.append(grid);
     for(const [label,target] of menu.items){
       const btn=document.createElement('button');btn.type='button';btn.className='menu-btn';
-      btn.textContent=label;btn.addEventListener('click',()=>handleMenu(target,label));grid.append(btn);
+      addButtonContent(btn,label,target);
+      btn.addEventListener('click',()=>handleMenu(target,label));grid.append(btn);
     }
     bubble.append(wrapper);scrollBottom();
   }
@@ -705,7 +845,9 @@
   }
   async function handleMenu(target,label) {
     if (busy || ended) return;
+    if(target==='end_chat'){openRating();return;}
     if(menus[target]) {showMenu(target);return;}
+    if(branches[target]){addMessage(label,'user');showBranch(target);return;}
     if(target==='registration') {openForm();return;}
     if(target==='official_site') {addMessage('https://almahad-alali.com','bot');return;}
     if(target==='other'){input.focus();return;}
@@ -718,10 +860,6 @@
       secretary:'أريد التواصل مع السكرتارية',
       staff:'أريد معرفة خدمات الموظفين وما هي طريقة تسجيل الدخول الآمنة',
       college_about:'احكيلي عن المعهد العالي وفروعه',
-      branch_nazareth:'أريد معلومات فرع الناصرة: ساعات العمل والهاتف والخريطة',
-      branch_shefaram:'أريد معلومات فرع شفاعمرو: ساعات العمل والهاتف والخريطة',
-      branch_ummfahm:'أريد معلومات فرع أم الفحم: ساعات العمل والهاتف والخريطة',
-      branch_daliyat:'أريد معلومات فرع دالية الكرمل: ساعات العمل والهاتف والخريطة',
       branch_other:'ما هي باقي فروع المعهد العالي؟'
     };
     await sendMessage(questions[target]||label);
@@ -751,13 +889,14 @@
         const grid=document.createElement('div');grid.className='menu-grid';grid.style.marginTop='10px';
         for(const item of actions){
           const label=typeof item==='string'?item:item.label;
-          const btn=document.createElement('button');btn.className='menu-btn';btn.type='button';btn.textContent=label;
+          const btn=document.createElement('button');btn.className='menu-btn';btn.type='button';
+          addButtonContent(btn,label,item.action||item.id||'other');
           btn.addEventListener('click',()=>sendMessage(label));grid.append(btn);
         }
         bubble.append(grid);
       }
       if(data?.handoff && !suggestions.length){
-        const btn=document.createElement('button');btn.type='button';btn.className='menu-btn';btn.style.marginTop='9px';btn.textContent='فتح استمارة التواصل';btn.addEventListener('click',openForm);bubble.append(btn);
+        const btn=document.createElement('button');btn.type='button';btn.className='menu-btn';btn.style.marginTop='9px';addButtonContent(btn,'فتح استمارة التواصل','registration');btn.addEventListener('click',openForm);bubble.append(btn);
       }
       if(!response.ok)statusEl.textContent='تعذر إتمام الطلب.';
     }catch(error){
@@ -773,7 +912,6 @@
     ended=true;
     input.disabled=true;
     sendBtn.disabled=true;
-    $('endChatBtn').disabled=true;
     $('homeMenuBtn').disabled=true;
     $('ratingPanel').classList.add('open');
     statusEl.textContent='انتهت المحادثة. ابدأ محادثة جديدة للمتابعة.';
@@ -794,17 +932,15 @@
     selectedRating=0;
     input.disabled=false;
     sendBtn.disabled=false;
-    $('endChatBtn').disabled=false;
     $('homeMenuBtn').disabled=false;
     $('ratingComment').value='';
     for(const star of $('stars').children)star.classList.remove('selected');
-    chatBox.replaceChildren();
+    messages.replaceChildren();
     $('ratingPanel').classList.remove('open');
     statusEl.textContent='';
     showWelcome();
     input.focus();
   });
-  $('endChatBtn').addEventListener('click',openRating);
   $('closeRatingBtn').addEventListener('click',()=>{$('ratingPanel').classList.remove('open');});
   $('closeModalBtn').addEventListener('click',closeForm);
   $('closeModalTop').addEventListener('click',closeForm);
