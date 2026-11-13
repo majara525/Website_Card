@@ -202,7 +202,7 @@
     .bot .bubble {
       background:var(--red);
       color:#fff;
-      border-bottom-left-radius:5px
+      border-bottom-left-radius:0
     }
     .user .bubble {
       background:var(--gray);
@@ -216,9 +216,13 @@
       border:8px solid transparent
     }
     .bot .bubble::after {
-      left:-8px;
-      border-bottom-color:var(--red);
-      border-right-color:var(--red)
+      left:-12px;
+      bottom:-1px;
+      width:14px;
+      height:14px;
+      border:0;
+      background:var(--red);
+      clip-path:polygon(100% 0,100% 100%,0 100%)
     }
     .user .bubble::after {
       right:-8px;
@@ -272,6 +276,9 @@
       gap:7px;
       width:100%
     }
+    .menu-grid>.menu-btn:last-child:nth-child(odd) {
+      grid-column:1/-1
+    }
     .menu-btn {
       border:1px solid #ffffff7e;
       border-radius:9px;
@@ -310,7 +317,8 @@
       background:var(--red);
       color:#fff;
       border:1px solid var(--red);
-      border-radius:9px
+      border-radius:9px;
+      border-bottom-left-radius:0
     }
     .branch-card {
       display:grid;
@@ -391,7 +399,8 @@
     .social-links img {
       width:24px;
       height:24px;
-      object-fit:contain
+      object-fit:contain;
+      border-radius:7px
     }
     .menu-btn:hover {
       background:var(--yellow);
@@ -567,7 +576,7 @@
     .modal-frame {
       display:block;
       width:calc(100% + 56px);
-      height:calc(100% + 70px);
+      height:calc(100% + 126px);
       border:0;
       background:#f4f4f4;
       margin-inline:-28px;
@@ -582,7 +591,10 @@
       display:flex;
       gap:8px;
       padding:10px;
-      border-top:1px solid #ddd
+      border-top:1px solid #ddd;
+      background:#fff;
+      position:relative;
+      z-index:1
     }
     .modal-actions button,.modal-actions a {
       flex:1;
@@ -640,6 +652,19 @@
       color:var(--muted);
       margin-bottom:12px
     }
+    .rating-actions {
+      display:flex;
+      gap:8px;
+      justify-content:space-between
+    }
+    .rating-actions .tool {
+      flex:1
+    }
+    .rating-actions .primary {
+      background:var(--yellow);
+      border-color:var(--yellow);
+      font-weight:700
+    }
     @media(max-width:620px) {
       .page {
         padding:0;
@@ -682,6 +707,9 @@
       .composer-area {
         padding-bottom:max(10px,env(safe-area-inset-bottom))
       }
+      .modal-frame {
+        height:calc(100% + 98px)
+      }
     }
     @media(prefers-reduced-motion:reduce) {
       .tool,.send,.menu-btn,.feedback-btn,.stars button,.social-links a {
@@ -718,7 +746,7 @@
     </section>
     <div class="composer-area">
       <div class="composer">
-        <input id="messageInput" type="text" autocomplete="off" inputmode="text" maxlength="3000" placeholder="اكتب/ي سؤالك هنا..." aria-label="اكتب رسالتك إلى هدى">
+        <input id="messageInput" type="text" autocomplete="off" inputmode="text" maxlength="3000" placeholder="اكتب/ي سؤالك هنا ..." aria-label="اكتب رسالتك إلى هدى">
         <button type="button" class="send" id="sendBtn" aria-label="إرسال الرسالة" title="إرسال الرسالة">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3L10 14"/><path d="M21 3L14.5 21L10 14L3 9.5L21 3Z"/></svg>
         </button>
@@ -742,7 +770,10 @@
       <div class="stars" id="stars"></div>
       <textarea id="ratingComment" placeholder="ملاحظاتك لتحسين الخدمة (اختياري)"></textarea>
       <div class="rating-note">التقييم والملاحظات يبقيان في هذه الصفحة فقط؛ لا توجد واجهة لحفظهما في Cloudflare أو n8n حالياً.</div>
-      <button type="button" class="tool" id="closeRatingBtn">إغلاق التقييم</button>
+      <div class="rating-actions">
+        <button type="button" class="tool primary" id="submitRatingBtn" title="يحفظ التقييم في هذه الصفحة فقط، ثم يبدأ محادثة جديدة">إرسال وبدء محادثة جديدة</button>
+        <button type="button" class="tool" id="skipRatingBtn">تخطي التقييم</button>
+      </div>
     </section>
   </div>
 
@@ -759,7 +790,7 @@
   const statusEl = $('status'), modal = $('formModal'), frame = $('formFrame');
   const ratingModal = $('ratingModal');
   let busy = false, ended = false, lastFocus = null, selectedRating = 0, sessionId;
-  let ratingAction = null;
+  let ratingAction = null, lastLocalRating = null;
 
   function randomId() {
     if (globalThis.crypto?.randomUUID) return crypto.randomUUID();
@@ -838,16 +869,20 @@
       ['الدعم التقني','support'],['التواصل مع السكرتارية','secretary'],
       ['موضوع آخر / احكي مع هُدى','other']]},
     education:{title:'شو بتحب تعرف عن التعليم بالمعهد؟',items:[
-      ['ألقاب جامعية','degrees']]},
+      ['مواضيع الكلية ومساقات الكلية','courses'],['ألقاب جامعية','degrees']]},
     registration:{title:'كيف بقدر أساعدك في التسجيل والاستشارة؟',items:[
-      ['مساقات المعهد','courses'],['ساعديني أختار تخصص','guidance'],['التواصل مع مستشار بشري','contact_human']]},
+      ['مواضيع الكلية ومساقات الكلية','courses'],['ساعديني أختار تخصص','guidance'],
+      ['ألقاب جامعية','degrees'],['التواصل مع مستشار بشري','contact_human']]},
+    support:{title:'كيف بقدر أساعدك في الدعم التقني؟',items:[
+      ['التواصل مع الدعم التقني','support_contact'],['المساعدة بواسطة هُدى','support_huda'],
+      ['تقديم تقرير عن خلل','support_report']]},
     college:{title:'شو بتحب تعرف عن المعهد؟',items:[
       ['الفروع','branches'],['من نحن','college_about'],['مواقع التواصل الاجتماعية الخاصة بالكلية','social_links']]},
     branches:{title:'اختار الفرع أو اسألني عن فرع آخر:',items:[
       ['الناصرة','branch_nazareth'],['شفاعمرو','branch_shefaram'],
       ['أم الفحم','branch_ummfahm'],['دالية الكرمل','branch_daliyat'],
       ['فرع آخر','branch_other']]},
-    courses:{title:'في المعهد العالي مساقات متنوعة تجمع بين الدراسة والتطبيق. أيّ مساق من هذه المساقات تريد أن تعرف عنه أكثر؟',items:[
+    courses:{title:'تضم الكلية مواضيع ومساقات تجمع بين الدراسة والتطبيق. أيّ موضوع من مواضيع الكلية ومساقاتها تريد أن تعرف عنه أكثر؟',items:[
       ['كلية الحاسبة وإدارة الأعمال','course_business_computing'],
       ['كلية المهن التقنية والهايتك','course_technical'],
       ['كلية التمريض والطب المكمل','course_nursing'],
@@ -900,7 +935,8 @@
     svg.setAttribute('aria-hidden','true');
     const path=document.createElementNS('http://www.w3.org/2000/svg','path');
     const iconName=target?.startsWith('branch_') ? 'branches' :
-      target?.startsWith('course_') || target?.startsWith('degree_') || ['courses','degrees'].includes(target) ? 'education' : target;
+      target?.startsWith('course_') || target?.startsWith('degree_') || ['courses','degrees'].includes(target) ? 'education' :
+      target?.startsWith('support_') ? 'support' : target;
     path.setAttribute('d',menuPaths[iconName] || menuPaths.other);
     svg.append(path);
     const text=document.createElement('span');
@@ -980,6 +1016,35 @@
     bubble.append(grid);
     scrollBottom();
   }
+  function showSupportContacts(label,report=false) {
+    addMessage(label,'user');
+    const message=report?
+      'لتقديم تقرير عن خلل، اكتب وصف المشكلة في رسالة بريد إلكتروني. لن يُرسل التقرير إلا بعد إرسال الرسالة من بريدك.':
+      'يمكنك التواصل مع الكلية عبر البريد الإلكتروني أو واتساب أو الهاتف:';
+    const {bubble}=addMessage(message,'bot');
+    const grid=document.createElement('div');
+    grid.className='social-links';
+    const items=report?
+      [{label:'كتابة تقرير بالبريد',href:'mailto:info@almahad-alali.com?subject='+encodeURIComponent('تقرير عن خلل تقني'),icon:'Mail_New.png'}]:
+      socialLinks.filter(item=>['البريد الإلكتروني','واتساب','اتصل بنا'].includes(item.label));
+    for(const item of items){
+      const link=document.createElement('a');
+      link.href=item.href;
+      if(item.href.startsWith('https:')){
+        link.target='_blank';
+        link.rel='noopener noreferrer';
+      }
+      const icon=document.createElement('img');
+      icon.src='../Icons/'+item.icon;
+      icon.alt='';
+      const text=document.createElement('span');
+      text.textContent=item.label;
+      link.append(icon,text);
+      grid.append(link);
+    }
+    bubble.append(grid);
+    scrollBottom();
+  }
   function showMenu(key='main') {
     ensureSession();
     // Never append the same menu if it is already the last visible chat item.
@@ -1010,11 +1075,13 @@
     if(branches[target]){addMessage(label,'user');showBranch(target);return;}
     if(target==='college_about'){showAbout(label);return;}
     if(target==='social_links'){showSocialLinks(label);return;}
+    if(target==='support_contact'){showSupportContacts(label);return;}
+    if(target==='support_report'){showSupportContacts(label,true);return;}
+    if(target==='support_huda'){await sendMessage('أحتاج مساعدة من هُدى في مشكلة تقنية. ساعديني خطوة بخطوة.');return;}
     if(target==='contact_human') {openForm();return;}
     if(target==='other'){input.focus();return;}
     const questions={
       guidance:'ساعديني أختار تخصص مناسب، اسأليني عن اهتماماتي خطوة خطوة',
-      support:'أريد التواصل مع الدعم التقني',
       secretary:'أريد التواصل مع السكرتارية',
       branch_other:'ما هي باقي فروع المعهد العالي؟'
     };
@@ -1068,8 +1135,7 @@
     ratingAction=action;
     ratingModal.classList.add('open');
     ratingModal.setAttribute('aria-hidden','false');
-    $('closeRatingBtn').textContent=action==='new'?'ابدأ محادثة جديدة':'إغلاق التقييم';
-    $('closeRatingBtn').focus();
+    $('skipRatingBtn').focus();
   }
   function resetChat(){
     resetSession();
@@ -1086,13 +1152,16 @@
     showWelcome();
     input.focus();
   }
-  function finishRating(){
+  function finishRating(submitted=false){
     if(!ratingModal.classList.contains('open'))return;
+    if(submitted){
+      lastLocalRating={stars:selectedRating,comment:$('ratingComment').value.trim(),recordedAt:new Date().toISOString()};
+    }
     ratingModal.classList.remove('open');
     ratingModal.setAttribute('aria-hidden','true');
     const action=ratingAction;
     ratingAction=null;
-    if(action==='new'){
+    if(action==='new'||submitted){
       resetChat();
     }else{
       ended=true;
@@ -1114,15 +1183,16 @@
   $('homeMenuBtn').addEventListener('click',()=>showMenu('main'));
   $('newChatBtn').addEventListener('click',()=>openRating('new'));
   $('endChatBtn').addEventListener('click',()=>openRating('end'));
-  $('closeRatingBtn').addEventListener('click',finishRating);
-  ratingModal.addEventListener('click',e=>{if(e.target===ratingModal)finishRating();});
+  $('submitRatingBtn').addEventListener('click',()=>finishRating(true));
+  $('skipRatingBtn').addEventListener('click',()=>finishRating(false));
+  ratingModal.addEventListener('click',e=>{if(e.target===ratingModal)finishRating(false);});
   $('closeModalBtn').addEventListener('click',closeForm);
   $('closeModalTop').addEventListener('click',closeForm);
   modal.addEventListener('click',e=>{if(e.target===modal)closeForm();});
   document.addEventListener('keydown',e=>{
     if(e.key!=='Escape')return;
     if(modal.classList.contains('open'))closeForm();
-    else if(ratingModal.classList.contains('open'))finishRating();
+    else if(ratingModal.classList.contains('open'))finishRating(false);
   });
   document.querySelector('.avatar').addEventListener('error',e=>{e.target.style.display='none';});
   initSession();showWelcome();
