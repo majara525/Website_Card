@@ -171,7 +171,13 @@
       overscroll-behavior:contain;
       padding:20px 14px 24px;
       background:linear-gradient(#ffffffe0,#ffffffe0),url("Logo_Ar_Red.png") center center / 230px no-repeat;
-      scroll-behavior:smooth
+      scroll-behavior:smooth;
+      user-select:none;
+      -webkit-user-select:none
+    }
+    .chat-box * {
+      user-select:none;
+      -webkit-user-select:none
     }
     .message {
       display:flex;
@@ -217,12 +223,12 @@
     }
     .bot .bubble::after {
       left:-12px;
-      bottom:-1px;
+      bottom:7px;
       width:14px;
       height:14px;
       border:0;
       background:var(--red);
-      clip-path:polygon(100% 0,100% 100%,0 100%)
+      clip-path:polygon(100% 0,100% 100%,0 50%)
     }
     .user .bubble::after {
       right:-8px;
@@ -319,6 +325,10 @@
       border:1px solid var(--red);
       border-radius:9px;
       border-bottom-left-radius:0
+    }
+    .branch-message .bubble::after {
+      bottom:-1px;
+      clip-path:polygon(100% 0,100% 100%,0 100%)
     }
     .branch-card {
       display:grid;
@@ -868,10 +878,10 @@
       ['التسجيل والاستشارة','registration'],['المعهد والفروع','college'],
       ['الدعم التقني','support'],['التواصل مع السكرتارية','secretary'],
       ['موضوع آخر / احكي مع هُدى','other']]},
-    education:{title:'شو بتحب تعرف عن التعليم بالمعهد؟',items:[
-      ['مواضيع الكلية ومساقات الكلية','courses'],['ألقاب جامعية','degrees']]},
+    education:{title:'شو بتحب تعرف عن التعليم بالكلية؟',items:[
+      ['مساقات الكلية','courses'],['ألقاب جامعية','degrees']]},
     registration:{title:'كيف بقدر أساعدك في التسجيل والاستشارة؟',items:[
-      ['مواضيع الكلية ومساقات الكلية','courses'],['ساعديني أختار تخصص','guidance'],
+      ['مساقات الكلية','courses'],['ساعديني أختار تخصص','guidance'],
       ['ألقاب جامعية','degrees'],['التواصل مع مستشار بشري','contact_human']]},
     support:{title:'كيف بقدر أساعدك في الدعم التقني؟',items:[
       ['التواصل مع الدعم التقني','support_contact'],['المساعدة بواسطة هُدى','support_huda'],
@@ -882,7 +892,7 @@
       ['الناصرة','branch_nazareth'],['شفاعمرو','branch_shefaram'],
       ['أم الفحم','branch_ummfahm'],['دالية الكرمل','branch_daliyat'],
       ['فرع آخر','branch_other']]},
-    courses:{title:'تضم الكلية مواضيع ومساقات تجمع بين الدراسة والتطبيق. أيّ موضوع من مواضيع الكلية ومساقاتها تريد أن تعرف عنه أكثر؟',items:[
+    courses:{title:'تضم الكلية مساقات متنوعة تجمع بين الدراسة والتطبيق. أيّ مساق تريد أن تعرف عنه أكثر؟',items:[
       ['كلية الحاسبة وإدارة الأعمال','course_business_computing'],
       ['كلية المهن التقنية والهايتك','course_technical'],
       ['كلية التمريض والطب المكمل','course_nursing'],
@@ -893,7 +903,7 @@
       ['كلية التأمين وسوق العمل','course_insurance'],
       ['كلية قص الشعر والتجميل','course_beauty'],
       ['كلية البجروت والمناهج الثانوية','course_secondary']]},
-    degrees:{title:'تتوفر مساقات جامعية للقب أول وثانٍ في مجالات مختلفة. أيّ مساق جامعي تريد أن تعرف عنه أكثر؟',items:[
+    degrees:{title:'تتوفر مساقات جامعية للقب أول وثاني في مجالات مختلفة. أيّ مساق جامعي تريد أن تعرف عنه أكثر؟',items:[
       ['إدارة أعمال','degree_business'],['الإدارة الصحية','degree_health'],
       ['العلاقات العامة والإعلان','degree_public_relations'],['الإرشاد والصحة النفسية','degree_counseling'],
       ['أنظمة المعلومات الحاسوبية','degree_information_systems'],['الإدارة السياحية','degree_tourism']]}
@@ -1179,6 +1189,13 @@
     $('stars').append(btn);
   }
   $('sendBtn').addEventListener('click',()=>sendMessage());
+  chatBox.addEventListener('selectstart',e=>e.preventDefault());
+  chatBox.addEventListener('dragstart',e=>e.preventDefault());
+  chatBox.addEventListener('copy',e=>e.preventDefault());
+  document.addEventListener('copy',e=>{
+    const selection=window.getSelection();
+    if(selection?.rangeCount && selection.getRangeAt(0).intersectsNode(chatBox))e.preventDefault();
+  });
   input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();sendMessage();}});
   $('homeMenuBtn').addEventListener('click',()=>showMenu('main'));
   $('newChatBtn').addEventListener('click',()=>openRating('new'));
