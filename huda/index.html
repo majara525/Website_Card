@@ -1,6 +1,14 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
+  <!-- Google tag (gtag.js), matching chat.html -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PPFD0FVEP6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-PPFD0FVEP6');
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#b92b31">
@@ -168,8 +176,9 @@
       flex:1;
       min-height:0;
       overflow-y:auto;
+      overflow-x:hidden;
       overscroll-behavior:contain;
-      padding:20px 14px 24px;
+      padding:20px 22px 24px;
       background:linear-gradient(#ffffffe0,#ffffffe0),url("Logo_Ar_Red.png") center center / 230px no-repeat;
       scroll-behavior:smooth;
       user-select:none;
@@ -222,13 +231,13 @@
       border:8px solid transparent
     }
     .bot .bubble::after {
-      left:-12px;
-      bottom:7px;
-      width:14px;
-      height:14px;
+      left:-18px;
+      bottom:0;
+      width:20px;
+      height:18px;
       border:0;
       background:var(--red);
-      clip-path:polygon(100% 0,100% 100%,0 50%)
+      clip-path:polygon(100% 0,100% 100%,0 78%)
     }
     .user .bubble::after {
       right:-8px;
