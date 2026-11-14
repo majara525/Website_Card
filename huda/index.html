@@ -224,7 +224,7 @@
       color:var(--black);
       border-bottom-right-radius:5px
     }
-    .bot .bubble::after,.user .bubble::after {
+    .bot .bubble::after,.user .bubble::after,.agent .bubble::after {
       content:"";
       position:absolute;
       bottom:0;
@@ -239,6 +239,29 @@
       right:-8px;
       border-bottom-color:var(--gray);
       border-left-color:var(--gray)
+    }
+    .message.agent {
+      align-items:flex-end
+    }
+    .agent .bubble {
+      background:var(--yellow);
+      color:var(--black);
+      border-bottom-left-radius:5px
+    }
+    .agent .bubble::after {
+      left:-8px;
+      border-bottom-color:var(--yellow);
+      border-right-color:var(--yellow)
+    }
+    .message-time {
+      display:block;
+      margin-top:4px;
+      font-size:11px;
+      line-height:1.2;
+      color:inherit;
+      opacity:.7;
+      text-align:right;
+      direction:ltr
     }
     .message a {
       color:inherit;
@@ -705,12 +728,16 @@
         font-size:12px
       }
       .header {
+        display:grid;
+        grid-template-columns:37px 43px minmax(0,1fr);
+        align-items:center;
         padding:9px 11px;
-        min-height:66px;
-        flex-wrap:wrap
+        min-height:66px
       }
       .header-tools {
+        grid-column:1/-1;
         width:100%;
+        min-width:0;
         justify-content:center
       }
       .header-tools .tool {
@@ -759,7 +786,7 @@
       <div class="header-tools">
         <button type="button" class="tool" id="homeMenuBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>القائمة</button>
         <button type="button" class="tool" id="newChatBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>محادثة جديدة</button>
-        <button type="button" class="tool" id="endChatBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19"/></svg>إنهاء وتقييم</button>
+        <button type="button" class="tool" id="endChatBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19"/></svg><span id="endChatLabel">إنهاء وتقييم</span></button>
       </div>
     </header>
     <section class="chat-box" id="chatBox" aria-label="محادثة هدى" aria-live="polite" aria-relevant="additions">
@@ -804,6 +831,8 @@
   const WORKER_URL = 'https://chat-api.almahad-alali.com';
   const FORM_URL = 'https://portal.almahad-alali.com/forms/show/fb?logo=1';
   const ONE_HOUR = 60 * 60 * 1000;
+  const SUPPORT_STORAGE_KEY = 'huda_human_support_v1';
+  const SUPPORT_POLL_MS = 7000;
   const $ = id => document.getElementById(id);
   const chatBox = $('chatBox'), messages = $('messages');
   const input = $('messageInput'), sendBtn = $('sendBtn');
@@ -811,6 +840,8 @@
   const ratingModal = $('ratingModal');
   let busy = false, ended = false, lastFocus = null, selectedRating = 0, sessionId;
   let ratingAction = null, lastLocalRating = null;
+  let support = null, pollTimer = null, polling = false;
+  const displayedSupportIds = new Set();
 
   function randomId() {
     if (globalThis.crypto?.randomUUID) return crypto.randomUUID();
@@ -858,7 +889,14 @@
     const row=document.createElement('div'); row.className='message '+sender;
     if (options.menuKey) row.dataset.menuKey=options.menuKey;
     const bubble=document.createElement('div'); bubble.className='bubble';
-    appendTextWithLinks(bubble,text); row.append(bubble);
+    appendTextWithLinks(bubble,text);
+    if(options.time && (sender==='user'||sender==='agent')){
+      const time=document.createElement('small');
+      time.className='message-time';
+      time.textContent=options.time;
+      bubble.append(time);
+    }
+    row.append(bubble);
     if (sender==='bot') {
       const feedback=document.createElement('div'); feedback.className='message-feedback';
       for (const type of ['up','down']) {
@@ -886,13 +924,18 @@
     main: {title:'أهلاً! أنا هُدى، مساعدتك الذكية في المعهد العالي. كيف بقدر أساعدك اليوم؟', items:[
       ['مواضيع التعليم','education'],
       ['التسجيل والاستشارة','registration'],['المعهد والفروع','college'],
-      ['الدعم التقني','support'],['التواصل مع السكرتارية','secretary'],
+      ['التواصل مع الدعم','support_departments'],['مساعدة تقنية','support'],['التواصل مع السكرتارية','secretary'],
       ['موضوع آخر / احكي مع هُدى','other']]},
+    support_departments:{title:'مع أي قسم تريد التواصل؟',items:[
+      ['التواصل مع السكرتارية','support_secretary'],
+      ['التواصل مع الدعم التقني','support_it'],
+      ['التواصل مع مستشار','support_consultant']]},
     education:{title:'شو بتحب تعرف عن التعليم بالكلية؟',items:[
       ['مساقات الكلية','courses'],['ألقاب جامعية','degrees']]},
     registration:{title:'كيف بقدر أساعدك في التسجيل والاستشارة؟',items:[
       ['مساقات الكلية','courses'],['ساعديني أختار تخصص','guidance'],
-      ['ألقاب جامعية','degrees'],['التواصل مع مستشار بشري','contact_human']]},
+      ['ألقاب جامعية','degrees'],['التواصل مع مستشار بشري','contact_human'],
+      ['استمارة الاستشارة والتسجيل','open_form']]},
     support:{title:'كيف بقدر أساعدك في الدعم التقني؟',items:[
       ['التواصل مع الدعم التقني','support_contact'],['المساعدة بواسطة هُدى','support_huda'],
       ['تقديم تقرير عن خلل','support_report']]},
@@ -1065,6 +1108,175 @@
     bubble.append(grid);
     scrollBottom();
   }
+  const supportDepartments = {
+    secretary:{question:'أرغب في التواصل مع السكرتارية.',transfer:'جاري تحويلك إلى السكرتارية...',connected:'تم تحويلك إلى السكرتارية. يمكنك كتابة استفسارك هنا، وسيقوم أحد الموظفين بالرد عليك.'},
+    it:{question:'أرغب في التواصل مع قسم الدعم الفني.',transfer:'جاري تحويلك إلى قسم الدعم التقني...',connected:'تم تحويلك إلى فريق الدعم التقني. يرجى كتابة المشكلة التي تواجهك، وسيقوم أحد الموظفين بمساعدتك.'},
+    consultant:{question:'أرغب في التواصل مع مستشار.',transfer:'جاري تحويلك إلى قسم الإستشارة...',connected:'تم تحويلك إلى قسم الإستشارة. يمكنك كتابة إستفسارك هنا، وسيقوم أحد المستشارين بالرد عليك.'}
+  };
+  function supportTime(value){
+    const date=value?new Date(Number(value)*1000):new Date();
+    return new Intl.DateTimeFormat('ar',{hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(Number.isNaN(date.getTime())?new Date():date);
+  }
+  function saveSupport(){
+    if(support)sessionStorage.setItem(SUPPORT_STORAGE_KEY,JSON.stringify(support));
+    else sessionStorage.removeItem(SUPPORT_STORAGE_KEY);
+  }
+  function stopPolling(){
+    if(pollTimer)clearTimeout(pollTimer);
+    pollTimer=null;
+  }
+  function updateSupportControls(){
+    $('endChatLabel').textContent=support?'إنهاء الدعم':'إنهاء وتقييم';
+    $('homeMenuBtn').disabled=!!support||ended;
+  }
+  function clearSupport(message){
+    stopPolling();
+    support=null;
+    displayedSupportIds.clear();
+    saveSupport();
+    updateSupportControls();
+    if(message)addMessage(message,'bot');
+  }
+  function supportExpired(){
+    clearSupport('انتهت جلسة الدعم. يمكنك بدء طلب دعم جديد.');
+    showMenu('support_departments');
+  }
+  function isSupportExpired(response,data){
+    return [401,403,404,410].includes(response.status) ||
+      ['expired','closed','session_expired'].includes(data?.status) ||
+      /expir|invalid.*(session|token)|closed/i.test(String(data?.error_code||''));
+  }
+  async function supportRequest(body){
+    const response=await fetch(WORKER_URL,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body),cache:'no-store'
+    });
+    const data=await response.json().catch(()=>({}));
+    return {response,data};
+  }
+  async function startSupport(type){
+    const department=supportDepartments[type];
+    if(!department||busy||support||ended)return;
+    busy=true;
+    sendBtn.disabled=true;
+    input.disabled=true;
+    const typing=addTyping();
+    await new Promise(resolve=>setTimeout(resolve,400));
+    typing.remove();
+    addMessage(department.transfer,'bot');
+    try{
+      const {response,data}=await supportRequest({
+        action:'support_start',support_type:type,
+        question:department.question,user_type:'student'
+      });
+      if(!response.ok||data?.status==='error'||!data?.session_id||!data?.support_token)throw new Error('support_start_failed');
+      support={sessionId:String(data.session_id),token:String(data.support_token),lastSeenTs:'0',type};
+      saveSupport();
+      updateSupportControls();
+      addMessage(department.connected,'bot');
+      schedulePoll();
+    }catch{
+      addMessage('تعذر تحويلك إلى الموظف حالياً. يرجى المحاولة مرة أخرى.','bot');
+    }finally{
+      busy=false;
+      sendBtn.disabled=false;
+      input.disabled=false;
+      input.focus();
+    }
+  }
+  async function sendSupportMessage(text){
+    if(busy||!support)return;
+    const current=support;
+    busy=true;
+    sendBtn.disabled=true;
+    input.disabled=true;
+    addMessage(text,'user',{time:supportTime()});
+    input.value='';
+    try{
+      const {response,data}=await supportRequest({
+        action:'support_message',session_id:current.sessionId,
+        support_token:current.token,question:text
+      });
+      if(isSupportExpired(response,data)){supportExpired();return;}
+      if(!response.ok||data?.status==='error')throw new Error('support_message_failed');
+    }catch{
+      input.value=text;
+      addMessage('تعذر تأكيد إرسال رسالتك إلى الدعم. يمكنك إعادة المحاولة.','bot');
+    }finally{
+      busy=false;
+      sendBtn.disabled=false;
+      input.disabled=false;
+      input.focus();
+    }
+  }
+  function schedulePoll(delay=SUPPORT_POLL_MS){
+    stopPolling();
+    if(support)pollTimer=setTimeout(pollSupport,delay);
+  }
+  async function pollSupport(){
+    if(polling||!support)return;
+    polling=true;
+    pollTimer=null;
+    const current=support;
+    try{
+      const {response,data}=await supportRequest({
+        action:'support_poll',session_id:current.sessionId,
+        support_token:current.token,last_seen_ts:current.lastSeenTs
+      });
+      if(support!==current||busy)return;
+      if(isSupportExpired(response,data)){supportExpired();return;}
+      if(!response.ok||data?.status==='error')throw new Error('support_poll_failed');
+      statusEl.textContent='';
+      const replies=Array.isArray(data?.messages)?data.messages:[];
+      for(const message of replies){
+        if(support!==current)break;
+        const id=String(message?.id||'');
+        if(!id||message?.sender!=='human_agent'||typeof message?.text!=='string')continue;
+        if(!displayedSupportIds.has(id)){
+          addMessage('موظف الدعم: '+message.text,'agent',{time:supportTime(id)});
+          displayedSupportIds.add(id);
+        }
+        try{
+          const ack=await supportRequest({
+            action:'support_ack',session_id:current.sessionId,
+            support_token:current.token,slack_message_ts:id
+          });
+          if(support!==current)break;
+          if(isSupportExpired(ack.response,ack.data)){supportExpired();break;}
+          if(!ack.response.ok||ack.data?.status==='error')break;
+          current.lastSeenTs=id;
+          saveSupport();
+        }catch{break;}
+      }
+    }catch{
+      if(support===current)statusEl.textContent='تعذر تحديث ردود الدعم مؤقتاً. ستتم إعادة المحاولة.';
+    }finally{
+      polling=false;
+      if(support)schedulePoll();
+    }
+  }
+  async function closeSupport(next='ai'){
+    if(!support||busy)return false;
+    if(!confirm('هل تريد إنهاء محادثة الدعم البشري؟'))return false;
+    busy=true;
+    const current=support;
+    stopPolling();
+    try{
+      const {response,data}=await supportRequest({
+        action:'support_close',session_id:current.sessionId,support_token:current.token
+      });
+      if((!response.ok||data?.status==='error')&&!isSupportExpired(response,data))throw new Error('support_close_failed');
+      clearSupport('انتهت محادثة الدعم. يمكنك متابعة الحديث مع هُدى.');
+      busy=false;
+      if(next==='new')openRating('new');
+      else showMenu('main');
+      return true;
+    }catch{
+      statusEl.textContent='تعذر إغلاق جلسة الدعم. يرجى المحاولة مرة أخرى.';
+      schedulePoll();
+      return false;
+    }finally{busy=false;}
+  }
   function showMenu(key='main') {
     ensureSession();
     // Never append the same menu if it is already the last visible chat item.
@@ -1088,27 +1300,35 @@
     lastFocus?.focus();addMessage('إذا أرسلت الاستمارة وظهرت رسالة نجاح، فينا نكمل هون. هل في شي ثاني بقدر أساعدك فيه؟','bot');
   }
   async function handleMenu(target,label) {
-    if (busy || ended) return;
+    if (busy || ended || support) return;
+    if(target==='secretary'||target==='support_secretary'){await startSupport('secretary');return;}
+    if(target==='support_it'||target==='support_contact'){await startSupport('it');return;}
+    if(target==='support_consultant'||target==='contact_human'){await startSupport('consultant');return;}
     if(menus[target]) {showMenu(target);return;}
     if(target.startsWith('course_')){await sendMessage(`أريد معلومات عن ${label}: مدة الدراسة، شروط القبول، والمحتوى التعليمي`);return;}
     if(target.startsWith('degree_')){await sendMessage(`أريد معلومات عن مساق ${label} الجامعي: شروط القبول، مدة الدراسة، والشهادة`);return;}
     if(branches[target]){addMessage(label,'user');showBranch(target);return;}
     if(target==='college_about'){showAbout(label);return;}
     if(target==='social_links'){showSocialLinks(label);return;}
-    if(target==='support_contact'){showSupportContacts(label);return;}
     if(target==='support_report'){showSupportContacts(label,true);return;}
     if(target==='support_huda'){await sendMessage('أحتاج مساعدة من هُدى في مشكلة تقنية. ساعديني خطوة بخطوة.');return;}
-    if(target==='contact_human') {openForm();return;}
+    if(target==='open_form'){openForm();return;}
     if(target==='other'){input.focus();return;}
     const questions={
       guidance:'ساعديني أختار تخصص مناسب، اسأليني عن اهتماماتي خطوة خطوة',
-      secretary:'أريد التواصل مع السكرتارية',
       branch_other:'ما هي باقي فروع المعهد العالي؟'
     };
     await sendMessage(questions[target]||label);
   }
   async function sendMessage(value=null) {
     if (busy || ended) return;
+    if(support){
+      if(value!==null)return;
+      const supportText=String(value===null?input.value:value).trim();
+      if(supportText)await sendSupportMessage(supportText);
+      else input.focus();
+      return;
+    }
     ensureSession();
     const text=String(value===null?input.value:value).trim();
     if(!text){input.focus();return;}
@@ -1151,7 +1371,7 @@
     }
   }
   function openRating(action){
-    if (busy || ratingModal.classList.contains('open')) return;
+    if (busy || support || ratingModal.classList.contains('open')) return;
     ratingAction=action;
     ratingModal.classList.add('open');
     ratingModal.setAttribute('aria-hidden','false');
@@ -1214,9 +1434,15 @@
     if(selection?.rangeCount && [chatBox,modal,ratingModal].some(area=>selection.getRangeAt(0).intersectsNode(area)))e.preventDefault();
   });
   input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();sendMessage();}});
-  $('homeMenuBtn').addEventListener('click',()=>showMenu('main'));
-  $('newChatBtn').addEventListener('click',()=>openRating('new'));
-  $('endChatBtn').addEventListener('click',()=>openRating('end'));
+  $('homeMenuBtn').addEventListener('click',()=>{if(!support)showMenu('main');});
+  $('newChatBtn').addEventListener('click',async()=>{
+    if(support)await closeSupport('new');
+    else openRating('new');
+  });
+  $('endChatBtn').addEventListener('click',async()=>{
+    if(support)await closeSupport();
+    else openRating('end');
+  });
   $('submitRatingBtn').addEventListener('click',()=>finishRating(true));
   $('skipRatingBtn').addEventListener('click',()=>finishRating(false));
   ratingModal.addEventListener('click',e=>{if(e.target===ratingModal)finishRating(false);});
@@ -1229,7 +1455,16 @@
     else if(ratingModal.classList.contains('open'))finishRating(false);
   });
   document.querySelector('.avatar').addEventListener('error',e=>{e.target.style.display='none';});
-  initSession();showWelcome();
+  initSession();
+  try{
+    const saved=JSON.parse(sessionStorage.getItem(SUPPORT_STORAGE_KEY)||'null');
+    if(saved?.sessionId&&saved?.token&&supportDepartments[saved.type]){
+      support={sessionId:String(saved.sessionId),token:String(saved.token),lastSeenTs:String(saved.lastSeenTs||'0'),type:saved.type};
+      updateSupportControls();
+      addMessage('تمت استعادة جلسة الدعم. يمكنك متابعة المحادثة هنا.','bot');
+      schedulePoll(0);
+    }else{sessionStorage.removeItem(SUPPORT_STORAGE_KEY);showWelcome();}
+  }catch{sessionStorage.removeItem(SUPPORT_STORAGE_KEY);showWelcome();}
 })();
 </script>
 </body>
