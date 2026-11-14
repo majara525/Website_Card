@@ -92,10 +92,10 @@
     }
     .avatar-wrap {
       position:relative;
-      width:48px;
+      width:54px;
       height:48px;
       flex-shrink:0;
-      border-radius:50%;
+      border-radius:8px;
       background:#f1f1f1;
       border:1px solid #ddd;
       overflow:hidden;
@@ -113,7 +113,7 @@
       width:100%;
       height:100%;
       border:0;
-      border-radius:50%;
+      border-radius:8px;
       padding:0;
       background:white;
       object-fit:cover;
@@ -604,7 +604,7 @@
       border-radius:13px;
       max-width:780px;
       width:100%;
-      height:min(628px,calc(100dvh - 24px));
+      height:min(640px,calc(100dvh - 24px));
       display:flex;
       flex-direction:column;
       overflow:hidden;
@@ -623,16 +623,26 @@
     .modal-frame {
       display:block;
       width:calc(100% + 56px);
-      height:calc(100% + 126px);
+      height:calc(100% + 114px);
       border:0;
       background:#f4f4f4;
       margin-inline:-28px;
-      transform:translateY(-70px)
+      transform:translateY(-58px)
     }
     .modal-frame-viewport {
+      position:relative;
       flex:1;
       min-height:0;
       overflow:hidden
+    }
+    .modal-frame-viewport::before {
+      content:"";
+      position:absolute;
+      inset:0 0 auto;
+      height:12px;
+      background:#fff;
+      pointer-events:none;
+      z-index:1
     }
     .modal-actions {
       display:flex;
@@ -729,7 +739,7 @@
       }
       .header {
         display:grid;
-        grid-template-columns:37px 43px minmax(0,1fr);
+        grid-template-columns:37px 49px minmax(0,1fr);
         align-items:center;
         padding:9px 11px;
         min-height:66px
@@ -746,7 +756,7 @@
         font-size:11px
       }
       .avatar-wrap {
-        width:43px;
+        width:49px;
         height:43px
       }
       .tool {
@@ -756,7 +766,7 @@
         padding-bottom:max(10px,env(safe-area-inset-bottom))
       }
       .modal-frame {
-        height:calc(100% + 98px)
+        height:calc(100% + 86px)
       }
     }
     @media(prefers-reduced-motion:reduce) {
@@ -782,7 +792,7 @@
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
       </a>
       <div class="avatar-wrap"><span class="avatar-fallback" aria-hidden="true">ه</span><img class="avatar" src="Huda.png" alt="هُدى"></div>
-      <div class="header-info"><strong>هُدى</strong><small>المعهد العالي - شبكة كُلّيات قُطرية</small></div>
+      <div class="header-info"><strong id="chatHeaderName">هُدى</strong><small>المعهد العالي - شبكة كُلّيات قُطرية</small></div>
       <div class="header-tools">
         <button type="button" class="tool" id="homeMenuBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>القائمة</button>
         <button type="button" class="tool" id="newChatBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>محادثة جديدة</button>
@@ -804,11 +814,11 @@
     </div>
   </div></main>
 
-  <div class="modal" id="formModal" role="dialog" aria-modal="true" aria-label="استمارة استشارة المعهد" aria-hidden="true">
+  <div class="modal" id="formModal" role="dialog" aria-modal="true" aria-label="إستمارة الإستشارة والتسجيل" aria-hidden="true">
     <div class="modal-panel">
-      <div class="modal-header"><strong>إستمارة الإستشارة والتسجيل</strong><button type="button" class="tool" id="closeModalTop" aria-label="إغلاق الاستمارة">✕</button></div>
-      <div class="modal-frame-viewport"><iframe class="modal-frame" id="formFrame" title="الاستمارة الرسمية للمعهد العالي" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
-      <div class="modal-actions"><button type="button" id="closeModalBtn">رجوع للمحادثة</button><a class="yellow" href="https://portal.almahad-alali.com/forms/show/fb?logo=1" target="_blank" rel="noopener noreferrer">فتح الاستمارة في صفحة جديدة</a></div>
+      <div class="modal-header"><strong>إستمارة الإستشارة والتسجيل</strong><button type="button" class="tool" id="closeModalTop" aria-label="إغلاق الإستمارة">✕</button></div>
+      <div class="modal-frame-viewport"><iframe class="modal-frame" id="formFrame" title="الإستمارة الرسمية للمعهد العالي" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+      <div class="modal-actions"><button type="button" id="closeModalBtn">رجوع للمحادثة</button><a class="yellow" href="https://portal.almahad-alali.com/forms/show/fb?logo=1" target="_blank" rel="noopener noreferrer">فتح الإستمارة في صفحة جديدة</a></div>
     </div>
   </div>
 
@@ -922,9 +932,8 @@
   }
   const menus = {
     main: {title:'أهلاً! أنا هُدى، مساعدتك الذكية في المعهد العالي. كيف بقدر أساعدك اليوم؟', items:[
-      ['مواضيع التعليم','education'],
-      ['التسجيل والاستشارة','registration'],['المعهد والفروع','college'],
-      ['التواصل مع الدعم','support_departments'],['مساعدة تقنية','support'],['التواصل مع السكرتارية','secretary'],
+      ['مواضيع التعليم والإستشارة','registration'],['الكلية والفروع','college'],
+      ['مساعدة تقنية','support'],['التواصل مع السكرتارية','secretary'],
       ['موضوع آخر / احكي مع هُدى','other']]},
     support_departments:{title:'مع أي قسم تريد التواصل؟',items:[
       ['التواصل مع السكرتارية','support_secretary'],
@@ -932,15 +941,15 @@
       ['التواصل مع مستشار','support_consultant']]},
     education:{title:'شو بتحب تعرف عن التعليم بالكلية؟',items:[
       ['مساقات الكلية','courses'],['ألقاب جامعية','degrees']]},
-    registration:{title:'كيف بقدر أساعدك في التسجيل والاستشارة؟',items:[
-      ['مساقات الكلية','courses'],['ساعديني أختار تخصص','guidance'],
-      ['ألقاب جامعية','degrees'],['التواصل مع مستشار بشري','contact_human'],
-      ['استمارة الاستشارة والتسجيل','open_form']]},
+    registration:{title:'كيف بقدر أساعدك في التسجيل والإستشارة؟',items:[
+      ['مساقات الكلية','courses'],['ألقاب جامعية','degrees'],
+      ['ساعديني أختار تخصص','guidance'],['التواصل مع مستشار بشري','contact_human'],
+      ['إستمارة الإستشارة والتسجيل','open_form']]},
     support:{title:'كيف بقدر أساعدك في الدعم التقني؟',items:[
       ['التواصل مع الدعم التقني','support_contact'],['المساعدة بواسطة هُدى','support_huda'],
       ['تقديم تقرير عن خلل','support_report']]},
     college:{title:'شو بتحب تعرف عن الكلية؟',items:[
-      ['الفروع','branches'],['من نحن','college_about'],['مواقع التواصل الاجتماعية الخاصة بالكلية','social_links']]},
+      ['الفروع','branches'],['من نحن','college_about'],['مواقع التواصل الاجتماعية','social_links']]},
     branches:{title:'اختار الفرع أو اسألني عن فرع آخر:',items:[
       ['الناصرة','branch_nazareth'],['شفاعمرو','branch_shefaram'],
       ['أم الفحم','branch_ummfahm'],['دالية الكرمل','branch_daliyat'],
@@ -1003,11 +1012,7 @@
     path.setAttribute('d',menuPaths[iconName] || menuPaths.other);
     svg.append(path);
     const text=document.createElement('span');
-    if(target==='social_links'){
-      text.append('مواقع التواصل الاجتماعية',document.createElement('br'),'الخاصة بالكلية');
-    }else{
-      text.textContent=label;
-    }
+    text.textContent=label;
     content.append(svg,text);
     button.append(content);
   }
@@ -1054,7 +1059,7 @@
   }
   function showAbout(label) {
     addMessage(label,'user');
-    addMessage('كلية تعليمية تنفرد بتدريس مسارات تأهيل، برامج دبلوم متقدمه وحتى تعليم جامعي يواكب متطلبات سوق العمل.\n\nتميّزت الكلية، ومنذ انطلاقتها سنة 1990، بطابع خاص يجمع بين المهنية، الجودة العالية والمصداقية العلمية، وركزّت جلّ اهتمامها على النقاط التالية:\n\n• مستوى تعليمي عالٍ ومتميّز.\n• شهادات رسمية تضمن لك التميّز والتفوّق.\n• فروع عديدة مجهّزة بأحدث التقنيات، وقريبة من بيتك.\n• توجيه دراسي ومهني على أيدي خبراء في مجالي التعليم والعمل.\n• دمج مواد تطبيقية في المناهج التعليمية لتسهيل انخراط الخريجين في سوق العمل.\n\nالمعهد العالي... مسيرة طويلة، خبرة، مهنية، وتجدّد.','bot');
+    addMessage('كلية تعليمية تنفرد بتدريس مسارات تأهيل، وبرامج دبلوم متقدّمة، وتعليم جامعي يواكب متطلبات سوق العمل.\n\nتميّزت الكلية، منذ انطلاقتها سنة 1990، بطابع خاص يجمع بين المهنية والجودة العالية والمصداقية العلمية، وركّزت جلّ اهتمامها على النقاط التالية:\n\n• مستوى تعليمي عالٍ ومتميّز.\n• شهادات رسمية تضمن لك التميّز والتفوّق.\n• فروع عديدة مجهّزة بأحدث التقنيات، وقريبة من بيتك.\n• توجيه دراسي ومهني على أيدي خبراء في مجالي التعليم والعمل.\n• دمج مواد تطبيقية في المناهج التعليمية لتسهيل انخراط الخريجين في سوق العمل.\n\nالمعهد العالي... مسيرة طويلة، خبرة، مهنية، وتجدّد.','bot');
   }
   function showSocialLinks(label) {
     addMessage(label,'user');
@@ -1109,9 +1114,9 @@
     scrollBottom();
   }
   const supportDepartments = {
-    secretary:{question:'أرغب في التواصل مع السكرتارية.',transfer:'جاري تحويلك إلى السكرتارية...',connected:'تم تحويلك إلى السكرتارية. يمكنك كتابة استفسارك هنا، وسيقوم أحد الموظفين بالرد عليك.'},
-    it:{question:'أرغب في التواصل مع قسم الدعم الفني.',transfer:'جاري تحويلك إلى قسم الدعم التقني...',connected:'تم تحويلك إلى فريق الدعم التقني. يرجى كتابة المشكلة التي تواجهك، وسيقوم أحد الموظفين بمساعدتك.'},
-    consultant:{question:'أرغب في التواصل مع مستشار.',transfer:'جاري تحويلك إلى قسم الإستشارة...',connected:'تم تحويلك إلى قسم الإستشارة. يمكنك كتابة إستفسارك هنا، وسيقوم أحد المستشارين بالرد عليك.'}
+    secretary:{name:'سكريتارية',image:'Sec.jpg',question:'أرغب في التواصل مع السكرتارية.',transfer:'جارٍ تحويلك إلى السكرتارية...',connected:'تمّ تحويلك إلى السكرتارية. يمكنك كتابة استفسارك هنا، وسيقوم أحد الموظفين بالرد عليك.'},
+    it:{name:'موظف الدعم التقني',image:'IT.png',question:'أرغب في التواصل مع قسم الدعم التقني.',transfer:'جارٍ تحويلك إلى قسم الدعم التقني...',connected:'تمّ تحويلك إلى فريق الدعم التقني. يُرجى كتابة المشكلة التي تواجهك، وسيقوم أحد الموظفين بمساعدتك.'},
+    consultant:{name:'مستشار/ة',image:'Cons.png',question:'أرغب في التواصل مع مستشار.',transfer:'جارٍ تحويلك إلى قسم الإستشارة...',connected:'تمّ تحويلك إلى قسم الإستشارة. يمكنك كتابة استفسارك هنا، وسيقوم أحد المستشارين بالرد عليك.'}
   };
   function supportTime(value){
     const date=value?new Date(Number(value)*1000):new Date();
@@ -1128,6 +1133,14 @@
   function updateSupportControls(){
     $('endChatLabel').textContent=support?'إنهاء الدعم':'إنهاء وتقييم';
     $('homeMenuBtn').disabled=!!support||ended;
+    const department=support&&supportDepartments[support.type];
+    const name=department?.name||'هُدى';
+    const avatar=document.querySelector('.avatar');
+    $('chatHeaderName').textContent=name;
+    avatar.alt=name;
+    avatar.style.display='';
+    avatar.src=department?.image||'Huda.png';
+    document.querySelector('.avatar-fallback').textContent=name.charAt(0);
   }
   function clearSupport(message){
     stopPolling();
@@ -1176,7 +1189,7 @@
       addMessage(department.connected,'bot');
       schedulePoll();
     }catch{
-      addMessage('تعذر تحويلك إلى الموظف حالياً. يرجى المحاولة مرة أخرى.','bot');
+      addMessage('تعذّر تحويلك إلى الموظف حالياً. يُرجى المحاولة مرة أخرى.','bot');
     }finally{
       busy=false;
       sendBtn.disabled=false;
@@ -1201,7 +1214,7 @@
       if(!response.ok||data?.status==='error')throw new Error('support_message_failed');
     }catch{
       input.value=text;
-      addMessage('تعذر تأكيد إرسال رسالتك إلى الدعم. يمكنك إعادة المحاولة.','bot');
+      addMessage('تعذّر تأكيد إرسال رسالتك إلى الدعم. يمكنك إعادة المحاولة.','bot');
     }finally{
       busy=false;
       sendBtn.disabled=false;
@@ -1233,7 +1246,7 @@
         const id=String(message?.id||'');
         if(!id||message?.sender!=='human_agent'||typeof message?.text!=='string')continue;
         if(!displayedSupportIds.has(id)){
-          addMessage('موظف الدعم: '+message.text,'agent',{time:supportTime(id)});
+          addMessage(message.text,'agent',{time:supportTime(id)});
           displayedSupportIds.add(id);
         }
         try{
@@ -1249,7 +1262,7 @@
         }catch{break;}
       }
     }catch{
-      if(support===current)statusEl.textContent='تعذر تحديث ردود الدعم مؤقتاً. ستتم إعادة المحاولة.';
+      if(support===current)statusEl.textContent='تعذّر تحديث ردود الدعم مؤقتاً. ستتمّ إعادة المحاولة.';
     }finally{
       polling=false;
       if(support)schedulePoll();
@@ -1272,7 +1285,7 @@
       else showMenu('main');
       return true;
     }catch{
-      statusEl.textContent='تعذر إغلاق جلسة الدعم. يرجى المحاولة مرة أخرى.';
+      statusEl.textContent='تعذّر إغلاق جلسة الدعم. يُرجى المحاولة مرة أخرى.';
       schedulePoll();
       return false;
     }finally{busy=false;}
@@ -1297,7 +1310,7 @@
   function closeForm() {
     if(!modal.classList.contains('open'))return;
     modal.classList.remove('open');modal.setAttribute('aria-hidden','true');frame.removeAttribute('src');
-    lastFocus?.focus();addMessage('إذا أرسلت الاستمارة وظهرت رسالة نجاح، فينا نكمل هون. هل في شي ثاني بقدر أساعدك فيه؟','bot');
+    lastFocus?.focus();addMessage('إذا أرسلت الإستمارة وظهرت رسالة نجاح، فينا نكمل هون. هل في شي ثاني بقدر أساعدك فيه؟','bot');
   }
   async function handleMenu(target,label) {
     if (busy || ended || support) return;
@@ -1311,7 +1324,12 @@
     if(target==='college_about'){showAbout(label);return;}
     if(target==='social_links'){showSocialLinks(label);return;}
     if(target==='support_report'){showSupportContacts(label,true);return;}
-    if(target==='support_huda'){await sendMessage('أحتاج مساعدة من هُدى في مشكلة تقنية. ساعديني خطوة بخطوة.');return;}
+    if(target==='support_huda'){
+      addMessage(label,'user');
+      addMessage('ما المشكلة التقنية التي تواجهك؟ اكتبها هنا وسأحاول مساعدتك. لا ترسل كلمات المرور أو رقم الهوية أو أي معلومات حسّاسة.','bot');
+      input.focus();
+      return;
+    }
     if(target==='open_form'){openForm();return;}
     if(target==='other'){input.focus();return;}
     const questions={
@@ -1343,7 +1361,7 @@
       typing.remove();
       const answer=typeof data?.answer==='string' && data.answer.trim()?data.answer.trim():
         !response.ok && typeof data?.message==='string' && data.message.trim()?data.message.trim():
-        response.ok?'لم يتم استلام رد صالح من الخادم.':'تعذر الحصول على رد حالياً. يرجى المحاولة لاحقاً.';
+        response.ok?'لم يُستلم ردّ صالح من الخادم.':'تعذّر الحصول على ردّ حالياً. يُرجى المحاولة لاحقاً.';
       const {bubble}=addMessage(answer,'bot');
       // Show only explicit backend actions; never make up a successful handoff.
       const suggestions=Array.isArray(data?.suggestions)?data.suggestions.slice(0,6):[];
@@ -1359,11 +1377,11 @@
         bubble.append(grid);
       }
       if(data?.handoff && !suggestions.length){
-        const btn=document.createElement('button');btn.type='button';btn.className='menu-btn';btn.style.marginTop='9px';addButtonContent(btn,'فتح استمارة التواصل','registration');btn.addEventListener('click',openForm);bubble.append(btn);
+        const btn=document.createElement('button');btn.type='button';btn.className='menu-btn';btn.style.marginTop='9px';addButtonContent(btn,'فتح إستمارة التواصل','registration');btn.addEventListener('click',openForm);bubble.append(btn);
       }
-      if(!response.ok)statusEl.textContent='تعذر إتمام الطلب.';
+      if(!response.ok)statusEl.textContent='تعذّر إتمام الطلب.';
     }catch(error){
-      typing.remove();addMessage('تعذر الاتصال بهُدى حالياً. حاول مرة ثانية.','bot');
+      typing.remove();addMessage('تعذّر الاتصال بهُدى حالياً. حاول مرة ثانية.','bot');
       statusEl.textContent='مشكلة مؤقتة في الاتصال.';
       console.warn('Huda request failed (details omitted).');
     }finally{
