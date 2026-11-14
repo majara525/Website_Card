@@ -217,7 +217,7 @@
     .bot .bubble {
       background:var(--red);
       color:#fff;
-      border-bottom-left-radius:0
+      border-bottom-left-radius:5px
     }
     .user .bubble {
       background:var(--gray);
@@ -231,13 +231,9 @@
       border:8px solid transparent
     }
     .bot .bubble::after {
-      left:-18px;
-      bottom:0;
-      width:20px;
-      height:18px;
-      border:0;
-      background:var(--red);
-      clip-path:polygon(100% 0,100% 100%,0 78%)
+      left:-8px;
+      border-bottom-color:var(--red);
+      border-right-color:var(--red)
     }
     .user .bubble::after {
       right:-8px;
@@ -336,7 +332,12 @@
       border-bottom-left-radius:0
     }
     .branch-message .bubble::after {
+      left:-18px;
       bottom:-1px;
+      width:20px;
+      height:18px;
+      border:0;
+      background:var(--red);
       clip-path:polygon(100% 0,100% 100%,0 100%)
     }
     .branch-card {
@@ -571,6 +572,10 @@
     .modal.open {
       display:flex
     }
+    .modal,.modal * {
+      user-select:none;
+      -webkit-user-select:none
+    }
     .modal-panel {
       background:#fff;
       border-radius:13px;
@@ -664,12 +669,9 @@
       margin:10px 0;
       padding:9px;
       border-radius:8px;
-      border:1px solid #bbb
-    }
-    .rating-note {
-      font-size:12px;
-      color:var(--muted);
-      margin-bottom:12px
+      border:1px solid #bbb;
+      user-select:text;
+      -webkit-user-select:text
     }
     .rating-actions {
       display:flex;
@@ -788,7 +790,6 @@
       <h2>كيف كانت تجربتك مع هُدى؟</h2>
       <div class="stars" id="stars"></div>
       <textarea id="ratingComment" placeholder="ملاحظاتك لتحسين الخدمة (اختياري)"></textarea>
-      <div class="rating-note">التقييم والملاحظات يبقيان في هذه الصفحة فقط؛ لا توجد واجهة لحفظهما في Cloudflare أو n8n حالياً.</div>
       <div class="rating-actions">
         <button type="button" class="tool primary" id="submitRatingBtn" title="يحفظ التقييم في هذه الصفحة فقط، ثم يبدأ محادثة جديدة">إرسال وبدء محادثة جديدة</button>
         <button type="button" class="tool" id="skipRatingBtn">تخطي التقييم</button>
@@ -895,7 +896,7 @@
     support:{title:'كيف بقدر أساعدك في الدعم التقني؟',items:[
       ['التواصل مع الدعم التقني','support_contact'],['المساعدة بواسطة هُدى','support_huda'],
       ['تقديم تقرير عن خلل','support_report']]},
-    college:{title:'شو بتحب تعرف عن المعهد؟',items:[
+    college:{title:'شو بتحب تعرف عن الكلية؟',items:[
       ['الفروع','branches'],['من نحن','college_about'],['مواقع التواصل الاجتماعية الخاصة بالكلية','social_links']]},
     branches:{title:'اختار الفرع أو اسألني عن فرع آخر:',items:[
       ['الناصرة','branch_nazareth'],['شفاعمرو','branch_shefaram'],
@@ -1201,9 +1202,16 @@
   chatBox.addEventListener('selectstart',e=>e.preventDefault());
   chatBox.addEventListener('dragstart',e=>e.preventDefault());
   chatBox.addEventListener('copy',e=>e.preventDefault());
+  for(const popup of [modal,ratingModal]){
+    popup.addEventListener('selectstart',e=>{
+      if(!e.target.closest?.('textarea,input'))e.preventDefault();
+    });
+    popup.addEventListener('dragstart',e=>e.preventDefault());
+    popup.addEventListener('copy',e=>e.preventDefault());
+  }
   document.addEventListener('copy',e=>{
     const selection=window.getSelection();
-    if(selection?.rangeCount && selection.getRangeAt(0).intersectsNode(chatBox))e.preventDefault();
+    if(selection?.rangeCount && [chatBox,modal,ratingModal].some(area=>selection.getRangeAt(0).intersectsNode(area)))e.preventDefault();
   });
   input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();sendMessage();}});
   $('homeMenuBtn').addEventListener('click',()=>showMenu('main'));
