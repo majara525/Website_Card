@@ -23,7 +23,8 @@
       --gray:#d1d5db;
       --muted:#686868;
       --line:#dedede;
-      --white:#fff
+      --white:#fff;
+      --font-bump:0px
     }
     * {
       box-sizing:border-box
@@ -37,6 +38,7 @@
       height:100dvh;
       overflow:hidden;
       font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
+      font-size:calc(16px + var(--font-bump));
       color:var(--black);
       background:linear-gradient(150deg,var(--red),var(--yellow) 64%,#e7e7e7);
       -webkit-tap-highlight-color:transparent
@@ -104,7 +106,7 @@
     }
     .avatar-fallback {
       position:absolute;
-      font-size:24px;
+      font-size:calc(24px + var(--font-bump));
       color:var(--red);
       font-weight:700
     }
@@ -125,11 +127,11 @@
     }
     .header-info strong {
       display:block;
-      font-size:18px
+      font-size:calc(18px + var(--font-bump))
     }
     .header-info small {
       display:block;
-      font-size:12px;
+      font-size:calc(12px + var(--font-bump));
       color:var(--muted);
       margin-top:2px
     }
@@ -142,7 +144,10 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      gap:5px
+      gap:5px;
+      min-width:0;
+      line-height:1.25;
+      white-space:normal
     }
     .header-tools svg {
       width:16px;
@@ -160,7 +165,7 @@
       border-radius:8px;
       min-height:36px;
       padding:6px 10px;
-      font-size:12px;
+      font-size:calc(12px + var(--font-bump));
       color:#222
     }
     .tool,.send,.menu-btn,.feedback-btn,.stars button {
@@ -211,7 +216,7 @@
       overflow-wrap:anywhere;
       line-height:1.75;
       box-shadow:0 3px 10px #00000012;
-      font-size:15px;
+      font-size:calc(15px + var(--font-bump));
       text-align:right
     }
     .bot .bubble {
@@ -256,7 +261,7 @@
     .message-time {
       display:block;
       margin-top:4px;
-      font-size:11px;
+      font-size:calc(11px + var(--font-bump));
       line-height:1.2;
       color:inherit;
       opacity:.7;
@@ -322,7 +327,7 @@
       min-height:45px;
       line-height:1.4;
       text-align:center;
-      font-size:13px;
+      font-size:calc(13px + var(--font-bump));
       font-weight:650;
       white-space:normal;
       overflow-wrap:anywhere
@@ -383,17 +388,17 @@
       text-align:right
     }
     .branch-details strong {
-      font-size:14px
+      font-size:calc(14px + var(--font-bump))
     }
     .branch-hours {
       color:#6b7280;
-      font-size:12px;
+      font-size:calc(12px + var(--font-bump));
       line-height:1.6
     }
     .branch-details a {
       margin-top:auto;
       color:var(--red);
-      font-size:12px;
+      font-size:calc(12px + var(--font-bump));
       font-weight:700;
       text-decoration:none
     }
@@ -409,7 +414,7 @@
     .branch-followup {
       margin:8px 4px 0;
       color:#fff;
-      font-size:13px
+      font-size:calc(13px + var(--font-bump))
     }
     .social-links {
       display:grid;
@@ -427,7 +432,7 @@
       border-radius:8px;
       background:#fff;
       color:var(--black);
-      font-size:12px;
+      font-size:calc(12px + var(--font-bump));
       font-weight:600;
       text-decoration:none;
       transition:transform .18s ease, background-color .18s ease
@@ -462,7 +467,7 @@
     }
     .menu .menu-label {
       font-weight:700;
-      font-size:14px
+      font-size:calc(14px + var(--font-bump))
     }
     .typing-bubble {
       display:flex;
@@ -499,7 +504,7 @@
       }
     }
     .typing-caption {
-      font-size:11px;
+      font-size:calc(11px + var(--font-bump));
       color:var(--muted);
       margin:4px 6px 0
     }
@@ -522,7 +527,7 @@
       border-radius:8px;
       padding:12px 14px;
       text-align:right;
-      font-size:16px;
+      font-size:calc(16px + var(--font-bump));
       color:var(--black);
       background:white
     }
@@ -555,7 +560,7 @@
       transform:translate(2px,1px) rotate(-45deg) scaleX(-1)
     }
     .status {
-      font-size:12px;
+      font-size:calc(12px + var(--font-bump));
       color:var(--muted);
       margin-top:2px;
       text-align:center
@@ -564,11 +569,141 @@
       display:none
     }
     .disclaimer {
-      font-size:10px;
+      font-size:calc(10px + var(--font-bump));
       line-height:1.5;
       color:#555;
       text-align:center;
       margin:3px 3px 0
+    }
+    .legal-link {
+      border:0;
+      padding:0;
+      margin-inline-start:7px;
+      background:none;
+      color:inherit;
+      font-size:inherit;
+      text-decoration:underline;
+      text-underline-offset:2px;
+      cursor:pointer
+    }
+    .accessibility-btn {
+      min-width:36px;
+      padding-inline:7px
+    }
+    .sr-only {
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap;
+      border:0
+    }
+    .info-panel {
+      display:flex;
+      flex-direction:column;
+      width:min(100%,640px);
+      max-height:min(82dvh,680px);
+      background:#fff;
+      border-radius:13px;
+      overflow:hidden;
+      box-shadow:0 16px 60px #0005
+    }
+    .info-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 16px;
+      border-bottom:1px solid var(--line)
+    }
+    .info-header h2 {
+      margin:0;
+      font-size:calc(18px + var(--font-bump))
+    }
+    .info-body {
+      overflow-y:auto;
+      padding:14px 20px 20px;
+      line-height:1.75;
+      font-size:calc(14px + var(--font-bump));
+      overscroll-behavior:contain
+    }
+    .info-body h3 {
+      margin:14px 0 4px;
+      font-size:calc(15px + var(--font-bump))
+    }
+    .info-body h3:first-child {
+      margin-top:0
+    }
+    .info-body p {
+      margin:0 0 9px
+    }
+    .info-body a {
+      color:#8c161d;
+      text-decoration:underline;
+      overflow-wrap:anywhere
+    }
+    .accessibility-controls {
+      display:grid;
+      gap:14px
+    }
+    .accessibility-controls fieldset {
+      border:1px solid var(--line);
+      border-radius:9px;
+      padding:10px
+    }
+    .accessibility-controls legend {
+      padding:0 5px;
+      font-weight:700
+    }
+    .accessibility-options {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px
+    }
+    .accessibility-options button {
+      border:1px solid #777;
+      border-radius:8px;
+      padding:8px 12px;
+      background:#fff;
+      color:var(--black)
+    }
+    .accessibility-options button[aria-pressed="true"] {
+      border-color:#111;
+      background:#242424;
+      color:#fff
+    }
+    html[data-high-contrast="true"] {
+      --red:#820912;
+      --yellow:#ffe36c;
+      --gray:#e9e9e9;
+      --muted:#333;
+      --line:#555
+    }
+    html[data-high-contrast="true"] body {
+      background:#fff
+    }
+    html[data-high-contrast="true"] .card,
+    html[data-high-contrast="true"] .avatar-wrap {
+      border-color:#111
+    }
+    html[data-high-contrast="true"] .disclaimer {
+      color:#111
+    }
+    html[data-high-contrast="true"] button:focus-visible,
+    html[data-high-contrast="true"] a:focus-visible,
+    html[data-high-contrast="true"] input:focus-visible,
+    html[data-high-contrast="true"] textarea:focus-visible {
+      outline-color:#111
+    }
+    html[data-reduced-motion="true"] *,
+    html[data-reduced-motion="true"] *::before,
+    html[data-reduced-motion="true"] *::after {
+      scroll-behavior:auto!important;
+      animation-duration:.01ms!important;
+      transition-duration:.01ms!important
     }
     .chat-link {
       display:inline-flex;
@@ -618,7 +753,7 @@
       border-bottom:1px solid #ddd
     }
     .modal-header strong {
-      font-size:16px
+      font-size:calc(16px + var(--font-bump))
     }
     .modal-frame {
       display:block;
@@ -662,7 +797,7 @@
       background:white;
       padding:10px;
       text-decoration:none;
-      font-size:13px
+      font-size:calc(13px + var(--font-bump))
     }
     .modal-actions .yellow {
       background:var(--yellow);
@@ -672,11 +807,13 @@
       background:#fff;
       padding:20px;
       width:min(100%,440px);
+      max-height:calc(100dvh - 24px);
+      overflow-y:auto;
       border-radius:13px;
       box-shadow:0 16px 60px #0005
     }
     .rating h2 {
-      font-size:16px;
+      font-size:calc(16px + var(--font-bump));
       margin:0 0 10px
     }
     .stars {
@@ -688,7 +825,7 @@
     .stars button {
       background:transparent;
       border:0;
-      font-size:30px;
+      font-size:calc(30px + var(--font-bump));
       color:#9a9a9a
     }
     .stars button.selected {
@@ -729,13 +866,13 @@
       }
       .bubble {
         max-width:91%;
-        font-size:14px
+        font-size:calc(14px + var(--font-bump))
       }
       .menu-grid {
         grid-template-columns:1fr 1fr
       }
       .menu-btn {
-        font-size:12px
+        font-size:calc(12px + var(--font-bump))
       }
       .header {
         display:grid;
@@ -753,7 +890,10 @@
       .header-tools .tool {
         flex:1;
         padding:6px 3px;
-        font-size:11px
+        font-size:calc(11px + var(--font-bump))
+      }
+      .header-tools .accessibility-btn {
+        flex:0 0 36px
       }
       .avatar-wrap {
         width:49px;
@@ -797,6 +937,7 @@
         <button type="button" class="tool" id="homeMenuBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>القائمة</button>
         <button type="button" class="tool" id="newChatBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>محادثة جديدة</button>
         <button type="button" class="tool" id="endChatBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19"/></svg><span id="endChatLabel">إنهاء وتقييم</span></button>
+        <button type="button" class="tool accessibility-btn" id="accessibilityBtn" aria-label="إعدادات إمكانية الوصول" aria-haspopup="dialog" aria-controls="accessibilityModal" aria-expanded="false" title="إمكانية الوصول"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4" r="2"/><path d="M4 8l8 2 8-2M12 10v10m0-7-5 8m5-8 5 8"/></svg><span class="sr-only">إمكانية الوصول</span></button>
       </div>
     </header>
     <section class="chat-box" id="chatBox" aria-label="محادثة هدى" aria-live="polite" aria-relevant="additions">
@@ -810,7 +951,7 @@
         </button>
       </div>
       <div id="status" class="status" role="status"></div>
-      <div class="disclaimer">هُدى مساعدة ذكية وقد تخطئ أحياناً. للمعلومات الرسمية والمؤكدة، يُرجى التواصل مع سكرتارية الكلية.</div>
+      <div class="disclaimer">هُدى مساعدة ذكية وقد تخطئ أحياناً. للمعلومات الرسمية والمؤكدة، يُرجى التواصل مع سكرتارية الكلية.<button type="button" class="legal-link" id="privacyBtn" aria-haspopup="dialog" aria-controls="legalModal">سياسة الخصوصية</button><button type="button" class="legal-link" id="termsBtn" aria-haspopup="dialog" aria-controls="legalModal">قوانين الموقع</button></div>
     </div>
   </div></main>
 
@@ -834,6 +975,53 @@
     </section>
   </div>
 
+  <div class="modal" id="legalModal" role="dialog" aria-modal="true" aria-labelledby="legalTitle" aria-hidden="true">
+    <section class="info-panel">
+      <div class="info-header"><h2 id="legalTitle"></h2><button type="button" class="tool" id="closeLegalBtn" aria-label="إغلاق النافذة">✕</button></div>
+      <div class="info-body" id="legalBody">
+        <article id="privacyContent" hidden>
+          <h3>عن هذه الصفحة</h3>
+          <p>توضح هذه المعلومات كيف تعمل محادثة هُدى في هذه الصفحة. يمكنك أيضاً قراءة <a href="https://www.almahad-alali.com/item.aspx?catid=112" target="_blank" rel="noopener noreferrer">سياسة الخصوصية المنشورة على موقع الكلية</a>، وهي صفحة منفصلة عن هذا الإشعار الخاص بهُدى.</p>
+          <h3>المعلومات التي تُستخدم</h3>
+          <p>عند كتابة رسالة، يُرسل نصها ومعرّف جلسة عشوائي إلى خدمة المحادثة للردّ عليك. وعند طلب مساعدة بشرية، تُرسل الرسالة الأولى التي تكتبها، ثم رسائلك التالية، إلى القسم الذي تختاره. قد تتضمن الرسائل معلومات شخصية إذا كتبتها بنفسك، وقد تظهر لخدمات التشغيل بيانات تقنية مثل وقت الطلب وعنوان الإنترنت ونوع المتصفح. لذلك لا تُرسل كلمة مرور، أو رقم هوية، أو بيانات مالية، أو معلومات حسّاسة.</p>
+          <h3>أغراض الاستخدام</h3>
+          <p>تُستخدم الرسائل لتقديم إجابات هُدى أو توجيه طلبك إلى موظف الدعم، وتُستخدم بيانات الزيارة لفهم استخدام الصفحة وتحسين عملها. لا يرسل هذا الملف نص المحادثة إلى Google Analytics.</p>
+          <h3>الخدمات المستخدمة</h3>
+          <p>تتصل هذه الصفحة بخدمة المحادثة عبر Cloudflare، وقد تمرّ الرسائل في مسار المعالجة عبر n8n. تُعرض رسائل الدعم البشري للموظفين عبر Slack. وتستخدم الصفحة Google Analytics لقياس زيارات الموقع؛ وقد يستخدم ملفات تعريف الارتباط ومعلومات عن الجهاز والزيارة. قد تُعالَج البيانات لدى هؤلاء المزوّدين وفق إعدادات خدماتهم. يمكنك إدارة ملفات تعريف الارتباط من إعدادات متصفحك.</p>
+          <h3>التخزين والتقييم</h3>
+          <p>يُحفظ معرّف المحادثة، وعند الدعم البشري رمز الجلسة، في تخزين التبويب بالمتصفح لاستئناف الجلسة عند تحديث الصفحة. لا تُرسل نجوم التقييم أو الملاحظات المكتوبة فيه من هذه الصفحة إلى Cloudflare أو n8n؛ تبقى في ذاكرة الصفحة الحالية. قد تحتفظ الخدمات الخارجية برسائل أو سجلات تشغيل بحسب إعداداتها، ولا تعرض هذه الصفحة مدة الاحتفاظ بها.</p>
+          <h3>الاستمارة والروابط الخارجية</h3>
+          <p>تفتح استمارة التسجيل من بوابة الكلية في إطار داخل الصفحة أو في تبويب جديد. البيانات التي تكتبها هناك تخضع لإجراءات البوابة. كذلك تخضع صفحات التواصل الاجتماعي لسياسات الجهات التي تديرها.</p>
+          <h3>الاستفسارات والطلبات</h3>
+          <p>للسؤال عن بياناتك أو طلب الاطلاع عليها أو تصحيحها أو حذفها، تواصل مع الكلية عبر <a href="mailto:info@almahad-alali.com">info@almahad-alali.com</a>. قد تخضع الاستجابة للمتطلبات القانونية وإعدادات الأنظمة المرتبطة بالخدمة.</p>
+        </article>
+        <article id="termsContent" hidden>
+          <h3>استخدام هُدى</h3>
+          <p>هُدى وسيلة للمعلومات العامة والمساعدة الأولية. قد تكون الإجابات غير دقيقة أو غير محدّثة؛ أكّد مواعيد الدراسة، شروط القبول، الأسعار، والقرارات الرسمية مع سكرتارية الكلية أو من خلال القنوات الرسمية.</p>
+          <h3>التواصل مع الموظفين</h3>
+          <p>عند اختيار قسم بشري، اكتب رسالتك الأولى قبل إرسال طلب التحويل. يعتمد الردّ على توفّر الموظفين وساعات عملهم. لا يعني بدء جلسة الدعم قبول طلب تسجيل أو اتخاذ قرار رسمي.</p>
+          <h3>الاستخدام المسؤول</h3>
+          <p>استخدم المحادثة لأغراض مشروعة ومحترمة. لا تُرسل محتوى مسيئاً أو ضاراً، أو معلومات تخصّ شخصاً آخر من دون إذنه، أو كلمات مرور وبيانات دفع. لا تحاول تعطيل الخدمة أو إساءة استخدام قنوات الدعم.</p>
+          <h3>الاستمارات والروابط</h3>
+          <p>تُقدَّم الاستمارات والخدمات المرتبطة بها عبر بوابة الكلية، وقد تكون لها شروط إضافية. الروابط إلى مواقع خارجية، ومنها شبكات التواصل، تنقلك إلى خدمات تديرها جهات أخرى.</p>
+          <h3>الشروط الرسمية والتواصل</h3>
+          <p>هذه قواعد مختصرة لصفحة المحادثة. يمكنك أيضاً قراءة <a href="https://www.almahad-alali.com/item.aspx?catid=159" target="_blank" rel="noopener noreferrer">شروط موقع الكلية المنشورة</a>. للاستفسار، تواصل عبر <a href="mailto:info@almahad-alali.com">البريد الإلكتروني للكلية</a>.</p>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal" id="accessibilityModal" role="dialog" aria-modal="true" aria-labelledby="accessibilityTitle" aria-hidden="true">
+    <section class="info-panel">
+      <div class="info-header"><h2 id="accessibilityTitle">إعدادات إمكانية الوصول</h2><button type="button" class="tool" id="closeAccessibilityBtn" aria-label="إغلاق إعدادات إمكانية الوصول">✕</button></div>
+      <div class="info-body accessibility-controls">
+        <fieldset><legend>حجم النص</legend><div class="accessibility-options" id="fontSizeOptions"><button type="button" data-font-bump="0" aria-pressed="true">عادي</button><button type="button" data-font-bump="2" aria-pressed="false">أكبر</button><button type="button" data-font-bump="4" aria-pressed="false">كبير جداً</button></div></fieldset>
+        <fieldset><legend>العرض والحركة</legend><div class="accessibility-options"><button type="button" id="contrastBtn" aria-pressed="false">تباين عالٍ</button><button type="button" id="motionBtn" aria-pressed="false">تقليل الحركة</button></div></fieldset>
+        <p>يمكنك أيضاً التنقّل بين الأزرار بمفتاح Tab واستخدام Enter أو المسافة لتفعيلها. تُحفظ هذه التفضيلات في هذا التبويب فقط.</p>
+      </div>
+    </section>
+  </div>
+
 <script>
 (() => {
   'use strict';
@@ -842,15 +1030,19 @@
   const FORM_URL = 'https://portal.almahad-alali.com/forms/show/fb?logo=1';
   const ONE_HOUR = 60 * 60 * 1000;
   const SUPPORT_STORAGE_KEY = 'huda_human_support_v1';
+  const ACCESSIBILITY_STORAGE_KEY = 'huda_accessibility_v1';
   const SUPPORT_POLL_MS = 7000;
   const $ = id => document.getElementById(id);
   const chatBox = $('chatBox'), messages = $('messages');
   const input = $('messageInput'), sendBtn = $('sendBtn');
   const statusEl = $('status'), modal = $('formModal'), frame = $('formFrame');
   const ratingModal = $('ratingModal');
+  const legalModal = $('legalModal'), accessibilityModal = $('accessibilityModal');
   let busy = false, ended = false, lastFocus = null, selectedRating = 0, sessionId;
   let ratingAction = null, lastLocalRating = null;
-  let support = null, pollTimer = null, polling = false;
+  let support = null, pendingSupportType = null, pollTimer = null, polling = false;
+  let extraModalFocus = null;
+  const accessibility = {fontBump:0,highContrast:false,reducedMotion:false};
   const displayedSupportIds = new Set();
 
   function randomId() {
@@ -879,6 +1071,50 @@
     if (!sessionId) resetSession();
   }
   function scrollBottom() { requestAnimationFrame(() => { chatBox.scrollTop = chatBox.scrollHeight; }); }
+  function applyAccessibility(){
+    document.documentElement.style.setProperty('--font-bump',accessibility.fontBump+'px');
+    document.documentElement.dataset.highContrast=String(accessibility.highContrast);
+    document.documentElement.dataset.reducedMotion=String(accessibility.reducedMotion);
+    for(const button of $('fontSizeOptions').querySelectorAll('button')){
+      button.setAttribute('aria-pressed',String(Number(button.dataset.fontBump)===accessibility.fontBump));
+    }
+    $('contrastBtn').setAttribute('aria-pressed',String(accessibility.highContrast));
+    $('motionBtn').setAttribute('aria-pressed',String(accessibility.reducedMotion));
+    try{sessionStorage.setItem(ACCESSIBILITY_STORAGE_KEY,JSON.stringify(accessibility));}catch{}
+  }
+  function loadAccessibility(){
+    try{
+      const saved=JSON.parse(sessionStorage.getItem(ACCESSIBILITY_STORAGE_KEY)||'null');
+      if(saved){
+        if([0,2,4].includes(saved.fontBump))accessibility.fontBump=saved.fontBump;
+        accessibility.highContrast=saved.highContrast===true;
+        accessibility.reducedMotion=saved.reducedMotion===true;
+      }
+    }catch{}
+    applyAccessibility();
+  }
+  function openExtraModal(popup,closeButton){
+    extraModalFocus=document.activeElement;
+    popup.classList.add('open');
+    popup.setAttribute('aria-hidden','false');
+    if(popup===accessibilityModal)$('accessibilityBtn').setAttribute('aria-expanded','true');
+    closeButton.focus();
+  }
+  function closeExtraModal(popup){
+    if(!popup.classList.contains('open'))return;
+    popup.classList.remove('open');
+    popup.setAttribute('aria-hidden','true');
+    if(popup===accessibilityModal)$('accessibilityBtn').setAttribute('aria-expanded','false');
+    extraModalFocus?.focus();
+    extraModalFocus=null;
+  }
+  function openLegal(kind){
+    $('legalTitle').textContent=kind==='privacy'?'سياسة الخصوصية':'قوانين الموقع';
+    $('privacyContent').hidden=kind!=='privacy';
+    $('termsContent').hidden=kind!=='terms';
+    $('legalBody').scrollTop=0;
+    openExtraModal(legalModal,$('closeLegalBtn'));
+  }
   function isSafeUrl(url) { try {return /^https?:$/.test(new URL(url).protocol);} catch {return false;} }
   function appendTextWithLinks(target, text) {
     const parts = String(text).split(/(https?:\/\/[^\s<>]+)/g);
@@ -982,7 +1218,7 @@
     {label:'تيك توك',href:'https://www.tiktok.com/@alm3had_al3ali?_t=8paRr5PIFya&_r=1',icon:'Tiktok.png'},
     {label:'لينكد إن',href:'https://www.linkedin.com/company/almahad-alali/about/',icon:'Linkedin.png'},
     {label:'يوتيوب',href:'https://youtube.com/channel/UCKZOzm07d7_0kQd1xu5YcSw',icon:'Youtube.png'},
-    {label:'موقع المعهد العالي',href:'https://almahad-alali.com',icon:'Website.png'},
+    {label:'موقع الكلية',href:'https://almahad-alali.com',icon:'Website.png'},
     {label:'البريد الإلكتروني',href:'mailto:info@almahad-alali.com',icon:'Mail_New.png'},
     {label:'واتساب',href:'https://api.whatsapp.com/send/?phone=972526734002&text&type=phone_number&app_absent=0',icon:'Whatsapp.png'},
     {label:'اتصل بنا',href:'tel:046000645',icon:'Phone.png'}
@@ -1063,7 +1299,7 @@
   }
   function showSocialLinks(label) {
     addMessage(label,'user');
-    const {bubble}=addMessage('روابط المعهد العالي:','bot');
+    const {bubble}=addMessage('روابط الكلية:','bot');
     const grid=document.createElement('div');
     grid.className='social-links';
     for(const item of socialLinks){
@@ -1114,13 +1350,17 @@
     scrollBottom();
   }
   const supportDepartments = {
-    secretary:{name:'سكريتارية',image:'Sec.jpg',question:'أرغب في التواصل مع السكرتارية.',transfer:'جارٍ تحويلك إلى السكرتارية...',connected:'تمّ تحويلك إلى السكرتارية. يمكنك كتابة استفسارك هنا، وسيقوم أحد الموظفين بالرد عليك.'},
-    it:{name:'موظف الدعم التقني',image:'IT.png',question:'أرغب في التواصل مع قسم الدعم التقني.',transfer:'جارٍ تحويلك إلى قسم الدعم التقني...',connected:'تمّ تحويلك إلى فريق الدعم التقني. يُرجى كتابة المشكلة التي تواجهك، وسيقوم أحد الموظفين بمساعدتك.'},
-    consultant:{name:'مستشار/ة',image:'Cons.png',question:'أرغب في التواصل مع مستشار.',transfer:'جارٍ تحويلك إلى قسم الإستشارة...',connected:'تمّ تحويلك إلى قسم الإستشارة. يمكنك كتابة استفسارك هنا، وسيقوم أحد المستشارين بالرد عليك.'}
+    secretary:{name:'سكريتارية',image:'Sec.jpg',transfer:'جارٍ إرسال رسالتك إلى السكرتارية...',connected:'تمّ إرسال رسالتك إلى السكرتارية. يمكنك كتابة رسائل إضافية هنا.'},
+    it:{name:'موظف الدعم التقني',image:'IT.png',transfer:'جارٍ إرسال رسالتك إلى الدعم التقني...',connected:'تمّ إرسال رسالتك إلى فريق الدعم التقني. يمكنك كتابة رسائل إضافية هنا.'},
+    consultant:{name:'مستشار/ة',image:'Cons.png',transfer:'جارٍ إرسال رسالتك إلى المستشار/ة...',connected:'تمّ إرسال رسالتك إلى المستشار/ة. يمكنك كتابة رسائل إضافية هنا.'}
   };
   function supportTime(value){
     const date=value?new Date(Number(value)*1000):new Date();
     return new Intl.DateTimeFormat('ar',{hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(Number.isNaN(date.getTime())?new Date():date);
+  }
+  function setComposerRecipient(name=null){
+    input.placeholder=name?'اكتب رسالتك إلى '+name+' ...':'اكتب/ي سؤالك هنا ...';
+    input.setAttribute('aria-label',name?'اكتب رسالتك إلى '+name:'اكتب رسالتك إلى هُدى');
   }
   function saveSupport(){
     if(support)sessionStorage.setItem(SUPPORT_STORAGE_KEY,JSON.stringify(support));
@@ -1137,6 +1377,8 @@
     const name=department?.name||'هُدى';
     const avatar=document.querySelector('.avatar');
     $('chatHeaderName').textContent=name;
+    chatBox.setAttribute('aria-label','محادثة '+name);
+    setComposerRecipient(department?.name);
     avatar.alt=name;
     avatar.style.display='';
     avatar.src=department?.image||'Huda.png';
@@ -1167,29 +1409,42 @@
     const data=await response.json().catch(()=>({}));
     return {response,data};
   }
-  async function startSupport(type){
+  function askForSupportMessage(type,label){
     const department=supportDepartments[type];
     if(!department||busy||support||ended)return;
+    pendingSupportType=type;
+    addMessage(label,'user');
+    addMessage(`ما الرسالة التي تريد إرسالها إلى ${department.name}؟ اكتب سؤالك أو صف المشكلة هنا قبل التحويل. لا تُرسل كلمات مرور أو أرقام هوية أو معلومات حسّاسة.`,'bot');
+    setComposerRecipient(department.name);
+    input.focus();
+  }
+  async function startSupport(type,firstMessage){
+    const department=supportDepartments[type];
+    if(!department||!firstMessage||busy||support||ended)return;
     busy=true;
     sendBtn.disabled=true;
     input.disabled=true;
-    const typing=addTyping();
-    await new Promise(resolve=>setTimeout(resolve,400));
-    typing.remove();
-    addMessage(department.transfer,'bot');
+    const firstRow=addMessage(firstMessage,'user',{time:supportTime()}).row;
+    const transferRow=addMessage(department.transfer,'bot').row;
+    input.value='';
     try{
       const {response,data}=await supportRequest({
         action:'support_start',support_type:type,
-        question:department.question,user_type:'student'
+        question:firstMessage,user_type:'student'
       });
       if(!response.ok||data?.status==='error'||!data?.session_id||!data?.support_token)throw new Error('support_start_failed');
       support={sessionId:String(data.session_id),token:String(data.support_token),lastSeenTs:'0',type};
+      pendingSupportType=null;
       saveSupport();
       updateSupportControls();
+      transferRow.remove();
       addMessage(department.connected,'bot');
       schedulePoll();
     }catch{
-      addMessage('تعذّر تحويلك إلى الموظف حالياً. يُرجى المحاولة مرة أخرى.','bot');
+      firstRow.remove();
+      transferRow.remove();
+      input.value=firstMessage;
+      addMessage('تعذّر إرسال رسالتك إلى القسم. ما زالت رسالتك في حقل الكتابة؛ حاول مجدداً.','bot');
     }finally{
       busy=false;
       sendBtn.disabled=false;
@@ -1314,9 +1569,11 @@
   }
   async function handleMenu(target,label) {
     if (busy || ended || support) return;
-    if(target==='secretary'||target==='support_secretary'){await startSupport('secretary');return;}
-    if(target==='support_it'||target==='support_contact'){await startSupport('it');return;}
-    if(target==='support_consultant'||target==='contact_human'){await startSupport('consultant');return;}
+    pendingSupportType=null;
+    setComposerRecipient();
+    if(target==='secretary'||target==='support_secretary'){askForSupportMessage('secretary',label);return;}
+    if(target==='support_it'||target==='support_contact'){askForSupportMessage('it',label);return;}
+    if(target==='support_consultant'||target==='contact_human'){askForSupportMessage('consultant',label);return;}
     if(menus[target]) {showMenu(target);return;}
     if(target.startsWith('course_')){await sendMessage(`أريد معلومات عن ${label}: مدة الدراسة، شروط القبول، والمحتوى التعليمي`);return;}
     if(target.startsWith('degree_')){await sendMessage(`أريد معلومات عن مساق ${label} الجامعي: شروط القبول، مدة الدراسة، والشهادة`);return;}
@@ -1340,6 +1597,13 @@
   }
   async function sendMessage(value=null) {
     if (busy || ended) return;
+    if(pendingSupportType){
+      if(value!==null){input.focus();return;}
+      const firstMessage=String(input.value).trim();
+      if(firstMessage)await startSupport(pendingSupportType,firstMessage);
+      else input.focus();
+      return;
+    }
     if(support){
       if(value!==null)return;
       const supportText=String(value===null?input.value:value).trim();
@@ -1398,6 +1662,8 @@
   function resetChat(){
     resetSession();
     ended=false;
+    pendingSupportType=null;
+    setComposerRecipient();
     selectedRating=0;
     input.disabled=false;
     sendBtn.disabled=false;
@@ -1440,7 +1706,7 @@
   chatBox.addEventListener('selectstart',e=>e.preventDefault());
   chatBox.addEventListener('dragstart',e=>e.preventDefault());
   chatBox.addEventListener('copy',e=>e.preventDefault());
-  for(const popup of [modal,ratingModal]){
+  for(const popup of [modal,ratingModal,legalModal,accessibilityModal]){
     popup.addEventListener('selectstart',e=>{
       if(!e.target.closest?.('textarea,input'))e.preventDefault();
     });
@@ -1449,10 +1715,36 @@
   }
   document.addEventListener('copy',e=>{
     const selection=window.getSelection();
-    if(selection?.rangeCount && [chatBox,modal,ratingModal].some(area=>selection.getRangeAt(0).intersectsNode(area)))e.preventDefault();
+    if(selection?.rangeCount && [chatBox,modal,ratingModal,legalModal,accessibilityModal].some(area=>selection.getRangeAt(0).intersectsNode(area)))e.preventDefault();
+  });
+  $('privacyBtn').addEventListener('click',()=>openLegal('privacy'));
+  $('termsBtn').addEventListener('click',()=>openLegal('terms'));
+  $('closeLegalBtn').addEventListener('click',()=>closeExtraModal(legalModal));
+  legalModal.addEventListener('click',e=>{if(e.target===legalModal)closeExtraModal(legalModal);});
+  $('accessibilityBtn').addEventListener('click',()=>openExtraModal(accessibilityModal,$('closeAccessibilityBtn')));
+  $('closeAccessibilityBtn').addEventListener('click',()=>closeExtraModal(accessibilityModal));
+  accessibilityModal.addEventListener('click',e=>{if(e.target===accessibilityModal)closeExtraModal(accessibilityModal);});
+  $('fontSizeOptions').addEventListener('click',e=>{
+    const button=e.target.closest('button[data-font-bump]');
+    if(!button)return;
+    accessibility.fontBump=Number(button.dataset.fontBump);
+    applyAccessibility();
+  });
+  $('contrastBtn').addEventListener('click',()=>{
+    accessibility.highContrast=!accessibility.highContrast;
+    applyAccessibility();
+  });
+  $('motionBtn').addEventListener('click',()=>{
+    accessibility.reducedMotion=!accessibility.reducedMotion;
+    applyAccessibility();
   });
   input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();sendMessage();}});
-  $('homeMenuBtn').addEventListener('click',()=>{if(!support)showMenu('main');});
+  $('homeMenuBtn').addEventListener('click',()=>{
+    if(support)return;
+    pendingSupportType=null;
+    setComposerRecipient();
+    showMenu('main');
+  });
   $('newChatBtn').addEventListener('click',async()=>{
     if(support)await closeSupport('new');
     else openRating('new');
@@ -1468,11 +1760,24 @@
   $('closeModalTop').addEventListener('click',closeForm);
   modal.addEventListener('click',e=>{if(e.target===modal)closeForm();});
   document.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){
+      const popup=[legalModal,accessibilityModal].find(item=>item.classList.contains('open'));
+      if(!popup)return;
+      const controls=[...popup.querySelectorAll('button,a[href]')].filter(item=>!item.closest('[hidden]')&&!item.disabled);
+      if(!controls.length)return;
+      const first=controls[0],last=controls.at(-1);
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+      return;
+    }
     if(e.key!=='Escape')return;
-    if(modal.classList.contains('open'))closeForm();
+    if(legalModal.classList.contains('open'))closeExtraModal(legalModal);
+    else if(accessibilityModal.classList.contains('open'))closeExtraModal(accessibilityModal);
+    else if(modal.classList.contains('open'))closeForm();
     else if(ratingModal.classList.contains('open'))finishRating(false);
   });
   document.querySelector('.avatar').addEventListener('error',e=>{e.target.style.display='none';});
+  loadAccessibility();
   initSession();
   try{
     const saved=JSON.parse(sessionStorage.getItem(SUPPORT_STORAGE_KEY)||'null');
