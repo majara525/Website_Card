@@ -88,8 +88,8 @@
       place-items:center;
       color:var(--red);
       text-decoration:none;
-      border:1px solid #ddd;
-      border-radius:9px;
+      border:0;
+      background:transparent;
       flex-shrink:0
     }
     .avatar-wrap {
@@ -588,7 +588,14 @@
     }
     .accessibility-btn {
       min-width:36px;
-      padding-inline:7px
+      padding-inline:7px;
+      background:#1669b2;
+      border-color:#1669b2;
+      color:#fff
+    }
+    .accessibility-btn:hover:not(:disabled) {
+      background:#0c4f8b;
+      border-color:#0c4f8b
     }
     .sr-only {
       position:absolute;
@@ -674,6 +681,131 @@
       border-color:#111;
       background:#242424;
       color:#fff
+    }
+    .guidance-panel {
+      width:min(100%,690px);
+      max-height:min(92dvh,780px)
+    }
+    .guidance-body {
+      min-height:0;
+      flex:1
+    }
+    .guidance-intro {
+      margin:0 0 10px;
+      color:var(--muted)
+    }
+    .guidance-progress {
+      margin-bottom:14px;
+      color:var(--red-dark);
+      font-weight:700
+    }
+    .guidance-question {
+      padding:11px 0;
+      border-top:1px solid var(--line)
+    }
+    .guidance-question-header {
+      display:flex;
+      align-items:flex-start;
+      justify-content:flex-start;
+      gap:8px;
+      margin-bottom:7px
+    }
+    .guidance-question label {
+      font-weight:600
+    }
+    .guidance-info {
+      flex-shrink:0;
+      width:27px;
+      height:27px;
+      border:1px solid var(--red);
+      border-radius:50%;
+      background:#fff;
+      color:var(--red-dark);
+      font-weight:700;
+      line-height:1
+    }
+    .guidance-info[aria-expanded="true"] {
+      background:var(--red);
+      color:#fff
+    }
+    .guidance-help {
+      margin:4px 0 8px!important;
+      padding:7px 9px;
+      border-radius:7px;
+      background:#f5f5f5;
+      color:#333
+    }
+    .guidance-select {
+      display:block;
+      width:min(100%,190px);
+      min-height:39px;
+      padding:6px 10px;
+      border:1px solid #777;
+      border-radius:8px;
+      background:#fff;
+      color:var(--black);
+      font:inherit
+    }
+    .guidance-select:focus-visible,.guidance-info:focus-visible {
+      outline:3px solid var(--yellow);
+      outline-offset:2px
+    }
+    .guidance-select.is-invalid {
+      border:2px solid var(--red)
+    }
+    .guidance-error {
+      min-height:1.5em;
+      color:var(--red-dark);
+      font-weight:700
+    }
+    .guidance-actions {
+      display:flex;
+      gap:8px;
+      padding:10px 16px;
+      border-top:1px solid var(--line);
+      background:#fff
+    }
+    .guidance-actions button {
+      flex:1;
+      min-height:40px;
+      border:1px solid var(--line);
+      border-radius:8px;
+      background:#fff;
+      color:var(--black)
+    }
+    .guidance-actions .primary {
+      background:var(--yellow);
+      border-color:var(--yellow);
+      font-weight:700
+    }
+    .guidance-result h3 {
+      margin-top:16px
+    }
+    .guidance-result-list {
+      display:grid;
+      gap:8px;
+      margin:14px 0
+    }
+    .guidance-result-row {
+      display:grid;
+      grid-template-columns:minmax(0,1fr) minmax(90px,2fr) 34px;
+      align-items:center;
+      gap:8px
+    }
+    .guidance-result-track {
+      height:9px;
+      border-radius:20px;
+      background:#e4e4e4;
+      overflow:hidden
+    }
+    .guidance-result-track span {
+      display:block;
+      height:100%;
+      background:var(--red)
+    }
+    .guidance-source {
+      margin-top:16px!important;
+      font-size:calc(12px + var(--font-bump))
     }
     html[data-high-contrast="true"] {
       --red:#820912;
@@ -989,7 +1121,7 @@
           <h3>الخدمات المستخدمة</h3>
           <p>تتصل هذه الصفحة بخدمة المحادثة عبر Cloudflare، وقد تمرّ الرسائل في مسار المعالجة عبر n8n. تُعرض رسائل الدعم البشري للموظفين عبر Slack. وتستخدم الصفحة Google Analytics لقياس زيارات الموقع؛ وقد يستخدم ملفات تعريف الارتباط ومعلومات عن الجهاز والزيارة. قد تُعالَج البيانات لدى هؤلاء المزوّدين وفق إعدادات خدماتهم. يمكنك إدارة ملفات تعريف الارتباط من إعدادات متصفحك.</p>
           <h3>التخزين والتقييم</h3>
-          <p>يُحفظ معرّف المحادثة، وعند الدعم البشري رمز الجلسة، في تخزين التبويب بالمتصفح لاستئناف الجلسة عند تحديث الصفحة. لا تُرسل نجوم التقييم أو الملاحظات المكتوبة فيه من هذه الصفحة إلى Cloudflare أو n8n؛ تبقى في ذاكرة الصفحة الحالية. قد تحتفظ الخدمات الخارجية برسائل أو سجلات تشغيل بحسب إعداداتها، ولا تعرض هذه الصفحة مدة الاحتفاظ بها.</p>
+          <p>يُحفظ معرّف المحادثة، وعند الدعم البشري رمز الجلسة، في تخزين التبويب بالمتصفح لاستئناف الجلسة عند تحديث الصفحة. تُحسب إجابات استبيان اختيار المساق داخل المتصفح ولا تُرسل إلى Cloudflare أو n8n؛ وتظهر النتيجة في المحادثة الحالية فقط. كذلك لا تُرسل نجوم التقييم أو ملاحظاته من هذه الصفحة إلى هذه الخدمات. قد تحتفظ الخدمات الخارجية برسائل أو سجلات تشغيل بحسب إعداداتها، ولا تعرض هذه الصفحة مدة الاحتفاظ بها.</p>
           <h3>الاستمارة والروابط الخارجية</h3>
           <p>تفتح استمارة التسجيل من بوابة الكلية في إطار داخل الصفحة أو في تبويب جديد. البيانات التي تكتبها هناك تخضع لإجراءات البوابة. كذلك تخضع صفحات التواصل الاجتماعي لسياسات الجهات التي تديرها.</p>
           <h3>الاستفسارات والطلبات</h3>
@@ -1022,6 +1154,17 @@
     </section>
   </div>
 
+  <div class="modal" id="guidanceModal" role="dialog" aria-modal="true" aria-labelledby="guidanceTitle" aria-hidden="true">
+    <section class="info-panel guidance-panel">
+      <div class="info-header"><h2 id="guidanceTitle">استبيان اختيار المساق</h2><button type="button" class="tool" id="closeGuidanceBtn" aria-label="إغلاق استبيان اختيار المساق">✕</button></div>
+      <div class="info-body guidance-body" id="guidanceBody"></div>
+      <div class="guidance-actions" id="guidanceActions">
+        <button type="button" id="guidancePrevBtn">السابق</button>
+        <button type="button" class="primary" id="guidanceNextBtn">متابعة</button>
+      </div>
+    </section>
+  </div>
+
 <script>
 (() => {
   'use strict';
@@ -1037,10 +1180,11 @@
   const input = $('messageInput'), sendBtn = $('sendBtn');
   const statusEl = $('status'), modal = $('formModal'), frame = $('formFrame');
   const ratingModal = $('ratingModal');
-  const legalModal = $('legalModal'), accessibilityModal = $('accessibilityModal');
+  const legalModal = $('legalModal'), accessibilityModal = $('accessibilityModal'), guidanceModal = $('guidanceModal');
   let busy = false, ended = false, lastFocus = null, selectedRating = 0, sessionId;
   let ratingAction = null, lastLocalRating = null;
   let support = null, pendingSupportType = null, pollTimer = null, polling = false;
+  let pendingGuidanceConsent = false, guidanceStep = 0, guidanceAnswers = [];
   let extraModalFocus = null;
   const accessibility = {fontBump:0,highContrast:false,reducedMotion:false};
   const displayedSupportIds = new Set();
@@ -1354,6 +1498,236 @@
     it:{name:'موظف الدعم التقني',image:'IT.png',transfer:'جارٍ إرسال رسالتك إلى الدعم التقني...',connected:'تمّ إرسال رسالتك إلى فريق الدعم التقني. يمكنك كتابة رسائل إضافية هنا.'},
     consultant:{name:'مستشار/ة',image:'Cons.png',transfer:'جارٍ إرسال رسالتك إلى المستشار/ة...',connected:'تمّ إرسال رسالتك إلى المستشار/ة. يمكنك كتابة رسائل إضافية هنا.'}
   };
+  // Eight original prompts per direction, scored with the source questionnaire's 1–10 averages.
+  const guidanceGroups = [
+    {key:'social',title:'الميل الاجتماعي والتربوي',questions:[
+      ['أرغب في شرح ما أعرفه لمن يحتاج إلى المساعدة.','فكّر في رغبتك بالشرح حتى لو احتاج الطرف الآخر إلى أكثر من محاولة.'],
+      ['أمنح الآخرين وقتاً لأستمع إلى ما يشغلهم.','المقصود الإصغاء باهتمام قبل تقديم رأي أو حل.'],
+      ['أفضّل مهاماً تتضمن لقاء الناس والتحدث معهم.','قيّم راحتك في التواصل المباشر خلال يوم العمل.'],
+      ['أتحمّس للمشاركة في نشاط يفيد المجتمع.','مثل مبادرة محلية أو مساعدة مجموعة تحتاج دعماً.'],
+      ['أجد طريقة بسيطة لعرض فكرة يصعب فهمها.','هل تستمتع بتغيير أسلوب الشرح حتى تصبح الفكرة واضحة؟'],
+      ['أحافظ على صبري حين يتعلم طفل أو زميل ببطء.','فكّر في موقف يتطلب تكرار التوجيه بهدوء.'],
+      ['أعمل براحة مع فريق هدفه مساعدة أشخاص آخرين.','السؤال عن التعاون من أجل خدمة الناس، لا عن العمل الجماعي وحده.'],
+      ['يسعدني تقدّم شخص ساعدته على التعلّم.','هل يمنحك نمو الآخرين شعوراً بالإنجاز؟']
+    ]},
+    {key:'research',title:'الميل التحليلي والبحثي',questions:[
+      ['أبحث عن تفسير الظواهر قبل أن أكتفي بمعرفة نتيجتها.','هل تسأل نفسك لماذا حدث الشيء وكيف حدث؟'],
+      ['أقارن أكثر من مصدر قبل أن أصل إلى رأي.','فكّر في طريقتك عندما تجد معلومات مختلفة عن الموضوع نفسه.'],
+      ['أستمتع بمسألة تحتاج إلى تحليل وخطوات تفكير.','المقصود حلّ المشكلات بالفهم، لا بالحفظ السريع.'],
+      ['أقرأ بتعمّق عندما يثير موضوع ما فضولي.','قيّم استعدادك لقضاء وقت في فهم التفاصيل.'],
+      ['ألاحظ فروقاً صغيرة قد تغيّر فهم المشكلة.','مثل رقم أو شرط أو استثناء يمرّ عليه الآخرون.'],
+      ['أرتّب ملاحظاتي أو بياناتي كي أرى العلاقات بينها.','هل يساعدك الجدول أو التصنيف على الوصول إلى استنتاج؟'],
+      ['أحب اختبار فكرة ثم مراقبة ما يحدث.','فكّر في التجربة والملاحظة بدلاً من التخمين.'],
+      ['أفضّل الدراسة التي تسمح بالسؤال والتحقق من الإجابة.','هل تستمتع بمراجعة الدليل وراء المعلومة؟']
+    ]},
+    {key:'technical',title:'الميل التقني والرقمي',questions:[
+      ['أستخدم الأدوات الرقمية لتسهيل مهمة يومية.','مثل تنظيم معلومات أو إنجاز عمل أسرع بالحاسوب.'],
+      ['أستمتع بتعلّم تطبيق أو برنامج لم أستخدمه من قبل.','قيّم فضولك تجاه الأدوات الجديدة، لا مستوى خبرتك الحالي.'],
+      ['أتساءل كيف بُني موقع أو تطبيق أستخدمه.','المقصود الاهتمام بما يجري خلف الشاشة.'],
+      ['أجرّب حلولاً تقنية حتى إن لم أنجح من المحاولة الأولى.','فكّر في قدرتك على المحاولة والتعلّم من الخطأ.'],
+      ['أرتّب خطوات المشكلة التقنية حتى أجد سببها.','هل تحب تتبّع المشكلة خطوة خطوة؟'],
+      ['أميل إلى إنشاء تصميم أو برنامج أو نظام رقمي.','قيّم اهتمامك بصنع شيء رقمي، لا بمجرد استخدامه.'],
+      ['ألاحظ كيف يمكن تحسين واجهة أو أداء أداة رقمية.','مثل تسهيل استخدام صفحة أو تسريع عملية متكررة.'],
+      ['أفضّل تعلّماً ينتج عنه مشروع رقمي يمكن عرضه.','مثلاً ملف أو تصميم أو حلّ تقني واضح.']
+    ]},
+    {key:'administrative',title:'الميل الإداري والتنظيمي',questions:[
+      ['أضع ترتيباً واضحاً للمهام قبل أن أبدأ العمل.','هل تساعدك الخطة على معرفة الأولويات؟'],
+      ['أتابع المواعيد والإجراءات بدقّة.','فكّر في الالتزام بالوقت والتفاصيل الصغيرة.'],
+      ['أرتاح عندما تكون الملفات والمعلومات مرتّبة.','هل تستمتع بإنشاء نظام يسهل الرجوع إليه؟'],
+      ['أستطيع متابعة مهام متعددة دون نسيان الهدف العام.','المقصود التنسيق والمتابعة، لا العمل بسرعة فقط.'],
+      ['لا أمانع التعامل مع جداول أو نماذج أو أرقام بسيطة.','قيّم راحتك مع أدوات التنظيم اليومية.'],
+      ['أفضل معرفة المسؤوليات والخطوات المطلوبة مسبقاً.','هل تناسبك بيئة فيها إجراءات وأدوار واضحة؟'],
+      ['أنسّق بين أشخاص وخطوات كي يكتمل العمل.','مثل متابعة مهمة بين قسمين أو أكثر.'],
+      ['أشعر بالرضا عندما أنهي عملاً منظماً بلا أخطاء.','فكّر في قيمة الدقة والاكتمال بالنسبة إليك.']
+    ]},
+    {key:'practical',title:'الميل العملي والمهني التطبيقي',questions:[
+      ['أفهم المهارة أسرع عندما أمارسها بنفسي.','قارن التعلّم بالتطبيق مع الاكتفاء بالشرح النظري.'],
+      ['أستمتع بالعمل بأداة أو جهاز أو مادة ملموسة.','مثل أدوات الورشة أو المختبر أو المهنة.'],
+      ['أفضّل عملاً أستطيع رؤية نتيجته أمامي.','هل يحمّسك وجود منتج أو إصلاح أو خدمة ملموسة؟'],
+      ['يساعدني مشاهدة عرض عملي على إتقان خطوة جديدة.','فكّر في أثر المثال المباشر على تعلّمك.'],
+      ['أحاول إصلاح الأشياء أو تركيبها أو تحسينها.','لا يشترط أن تكون خبيراً؛ قيّم رغبتك بالتجربة.'],
+      ['أرتاح للمهام التي تتضمن حركة أو عملاً ميدانياً.','قارن ذلك بالجلوس الطويل وراء مكتب.'],
+      ['أريد إتقان مهارة أستطيع استخدامها مباشرة.','مثل مهارة مهنية تُمارَس بعد التدريب.'],
+      ['أفضل برنامجاً يتضمن تدريباً عملياً متكرراً.','هل الممارسة جزء مهم من دراستك المفضلة؟']
+    ]},
+    {key:'entrepreneurial',title:'الميل المبادر والريادي',questions:[
+      ['أطرح فكرة جديدة ثم أفكّر في أول خطوة لتنفيذها.','المقصود تحويل الفكرة إلى عمل، لا التفكير وحده.'],
+      ['أشرح فكرتي للآخرين بثقة عندما أؤمن بها.','قيّم راحتك في عرض فكرتك وإقناع الآخرين بها.'],
+      ['يحمّسني بدء مشروع أو نشاط من نقطة الصفر.','هل تستمتع ببناء شيء لم يكن موجوداً؟'],
+      ['أفضّل مساحة تسمح لي بالمبادرة واتخاذ قرار.','فكّر في مقدار الاستقلالية الذي يناسبك.'],
+      ['أبحث عمّا يحتاجه الناس قبل أن أقترح حلاً.','هل تبدأ بفهم المشكلة أو الزبون؟'],
+      ['أستمتع بعرض منتج أو فكرة أمام مجموعة.','يشمل ذلك التسويق والعروض والتحدث أمام الآخرين.'],
+      ['أتحمّل مسؤولية قرار اتخذته بعد دراسة الخيارات.','قيّم استعدادك لتحمّل النتائج والتعلّم منها.'],
+      ['أميل إلى تنسيق فريق أو قيادة مبادرة صغيرة.','هل تحب جمع الناس حول هدف وتنظيم خطواتهم؟']
+    ]}
+  ];
+  const guidanceDirections = {
+    social:{title:'الاتجاه الاجتماعي والتربوي',studies:'قد تلائمك التربية، الإرشاد، رعاية الطفولة، أو العمل المجتمعي والخدمات التي تتطلب تواصلاً مع الناس.',advice:'جرّب نشاطاً تطوعياً أو تدريباً قصيراً يتيح لك مساعدة أشخاص مباشرة، ثم قيّم شعورك تجاه التجربة.'},
+    research:{title:'الاتجاه التحليلي والبحثي',studies:'قد تلائمك الدراسة المتعمقة، تحليل البيانات، البحث العلمي، أو مجالات تعتمد على الملاحظة والاستنتاج.',advice:'اختر موضوعاً يثير فضولك، قارن مصادره واكتب ملخصاً يشرح ما توصلت إليه.'},
+    technical:{title:'الاتجاه التقني والرقمي',studies:'قد تلائمك الحوسبة، البرمجة، التصميم الرقمي، الدعم التقني، أو تشغيل الأنظمة الحديثة.',advice:'نفّذ تجربة رقمية صغيرة، مثل صفحة ويب أو تصميم أو حلّ لمشكلة تقنية، لتختبر اهتمامك العملي.'},
+    administrative:{title:'الاتجاه الإداري والتنظيمي',studies:'قد تلائمك الإدارة، المحاسبة، السكرتارية، الموارد البشرية، أو تنسيق المشروعات والعمل المكتبي.',advice:'جرّب إعداد خطة عمل أو تنظيم ملف بيانات، ولاحظ مدى راحتك مع الدقة والمتابعة.'},
+    practical:{title:'الاتجاه العملي والمهني التطبيقي',studies:'قد تلائمك المسارات المهنية ذات التدريب الميداني، مثل المهن التقنية أو المجالات الصحية المساندة والحِرَف.',advice:'ابحث عن تدريب يسمح لك بممارسة المهارة ورؤية نتيجة عملك، ولو لمدة قصيرة.'},
+    entrepreneurial:{title:'الاتجاه المبادر والريادي',studies:'قد تلائمك إدارة الأعمال، التسويق، المبيعات، قيادة الفرق، أو بناء مبادرة ومشروع صغير.',advice:'اختر فكرة بسيطة، تحدّث إلى من قد يستفيد منها، ثم حوّلها إلى خطوة قابلة للتجربة.'}
+  };
+  function guidanceElement(tag,className,textContent){
+    const element=document.createElement(tag);
+    if(className)element.className=className;
+    if(textContent!==undefined)element.textContent=textContent;
+    return element;
+  }
+  function askGuidanceConsent(label){
+    pendingGuidanceConsent=true;
+    addMessage(label,'user');
+    const {bubble}=addMessage('يمكنني مساعدتك باختيار اتجاه دراسي من خلال استبيان يستغرق عادةً نحو 5 دقائق. ستختار رقماً من 1 إلى 10 لكل عبارة، ثم أعرض لك الاتجاهين الأقرب إلى ميولك. لا يحتاج الاستبيان إلى اسمك أو رقم هاتفك. هل تودّ تعبئته؟','bot');
+    const buttons=guidanceElement('div','menu-grid');
+    buttons.style.marginTop='10px';
+    for(const [answer,accepted] of [['نعم، ابدأ الاستبيان',true],['لا، أريد المساعدة هنا',false]]){
+      const button=guidanceElement('button','menu-btn');
+      button.type='button';
+      addButtonContent(button,answer,accepted?'guidance':'other');
+      button.addEventListener('click',()=>answerGuidanceConsent(accepted,answer));
+      buttons.append(button);
+    }
+    bubble.append(buttons);
+    scrollBottom();
+  }
+  function answerGuidanceConsent(accepted,answer){
+    if(!pendingGuidanceConsent)return;
+    pendingGuidanceConsent=false;
+    addMessage(answer,'user');
+    if(accepted)openGuidanceWizard();
+    else{
+      addMessage('تمام. أخبرني ما المجالات التي تهمّك، وما نوع الدراسة أو العمل الذي تفضّله، وسنبدأ من هناك.','bot');
+      input.focus();
+    }
+  }
+  function renderGuidanceStep(){
+    const group=guidanceGroups[guidanceStep];
+    const body=$('guidanceBody');
+    body.replaceChildren();
+    body.append(
+      guidanceElement('p','guidance-progress',`القسم ${guidanceStep+1} من ${guidanceGroups.length}: ${group.title}`),
+      guidanceElement('p','guidance-intro','1 يعني لا ينطبق عليّ أبداً، و10 يعني ينطبق عليّ كثيراً. اضغط على علامة المعلومات بجانب أي عبارة لتوضيحها.')
+    );
+    group.questions.forEach(([question,explanation],questionIndex)=>{
+      const number=guidanceStep*8+questionIndex+1;
+      const id='guidanceQuestion'+number;
+      const helpId=id+'Help';
+      const wrapper=guidanceElement('div','guidance-question');
+      const heading=guidanceElement('div','guidance-question-header');
+      const label=guidanceElement('label','',`${number}. ${question}`);
+      label.htmlFor=id;
+      const info=guidanceElement('button','guidance-info','i');
+      info.type='button';
+      info.setAttribute('aria-label',`شرح السؤال ${number}`);
+      info.setAttribute('aria-controls',helpId);
+      info.setAttribute('aria-expanded','false');
+      const help=guidanceElement('p','guidance-help',explanation);
+      help.id=helpId;
+      help.hidden=true;
+      info.addEventListener('click',()=>{
+        help.hidden=!help.hidden;
+        info.setAttribute('aria-expanded',String(!help.hidden));
+      });
+      heading.append(label,info);
+      const select=guidanceElement('select','guidance-select');
+      select.id=id;
+      select.setAttribute('aria-label',`تقييم السؤال ${number} من 1 إلى 10`);
+      select.required=true;
+      const placeholder=guidanceElement('option','','اختر رقماً');
+      placeholder.value='';
+      select.append(placeholder);
+      for(let score=1;score<=10;score++){
+        const option=guidanceElement('option','',String(score));
+        option.value=String(score);
+        select.append(option);
+      }
+      select.value=guidanceAnswers[guidanceStep][questionIndex] || '';
+      select.addEventListener('change',()=>{
+        guidanceAnswers[guidanceStep][questionIndex]=Number(select.value)||null;
+        select.classList.remove('is-invalid');
+        $('guidanceError').textContent='';
+      });
+      wrapper.append(heading,help,select);
+      body.append(wrapper);
+    });
+    const error=guidanceElement('p','guidance-error');
+    error.id='guidanceError';
+    error.setAttribute('role','alert');
+    body.append(error);
+    $('guidancePrevBtn').hidden=guidanceStep===0;
+    $('guidanceNextBtn').textContent=guidanceStep===guidanceGroups.length-1?'عرض النتيجة':'متابعة';
+    body.scrollTop=0;
+  }
+  function openGuidanceWizard(){
+    guidanceStep=0;
+    guidanceAnswers=guidanceGroups.map(group=>Array(group.questions.length).fill(null));
+    renderGuidanceStep();
+    openExtraModal(guidanceModal,$('closeGuidanceBtn'));
+  }
+  function closeGuidanceWizard(){
+    closeExtraModal(guidanceModal);
+  }
+  function renderGuidanceResult(){
+    const scores=guidanceGroups.map((group,index)=>({
+      key:group.key,
+      average:guidanceAnswers[index].reduce((sum,value)=>sum+value,0)/group.questions.length
+    })).sort((a,b)=>b.average-a.average);
+    const [top,second]=scores;
+    const best=guidanceDirections[top.key],next=guidanceDirections[second.key];
+    const body=$('guidanceBody');
+    body.replaceChildren();
+    const result=guidanceElement('div','guidance-result');
+    result.append(
+      guidanceElement('h3','',`النتيجة الأقرب لك: ${best.title}`),
+      guidanceElement('p','',best.studies),
+      guidanceElement('h3','',`اتجاه ثانٍ يستحق الانتباه: ${next.title}`),
+      guidanceElement('p','',next.studies),
+      guidanceElement('h3','','نصيحة عملية'),
+      guidanceElement('p','',best.advice)
+    );
+    const list=guidanceElement('div','guidance-result-list');
+    list.setAttribute('aria-label','نتائج الاتجاهات الستة من 10');
+    for(const score of scores){
+      const row=guidanceElement('div','guidance-result-row');
+      const name=guidanceElement('span','',guidanceDirections[score.key].title.replace('الاتجاه ',''));
+      const track=guidanceElement('div','guidance-result-track');
+      const bar=guidanceElement('span');
+      bar.style.width=(score.average*10)+'%';
+      track.setAttribute('role','img');
+      track.setAttribute('aria-label',`${guidanceDirections[score.key].title}: ${score.average.toFixed(1)} من 10`);
+      track.append(bar);
+      row.append(name,track,guidanceElement('strong','',score.average.toFixed(1)));
+      list.append(row);
+    }
+    result.append(list,guidanceElement('p','','هذه نتيجة إرشادية أولية. افحص شروط القبول، وجرّب المجال عملياً، وتحدّث مع مستشار قبل اتخاذ قرار الدراسة.'));
+    const source=guidanceElement('p','guidance-source','طريقة التقييم مستوحاة من استبيان جمعية أمل للتوجيه المهني والأكاديمي.');
+    const sourceLink=guidanceElement('a','','الاستبيان الأصلي');
+    sourceLink.href='https://aml-edu.org/ar/stu_help.html';
+    sourceLink.target='_blank';
+    sourceLink.rel='noopener noreferrer';
+    source.append(' ',sourceLink);
+    result.append(source);
+    body.append(result);
+    $('guidancePrevBtn').hidden=true;
+    $('guidanceNextBtn').textContent='إغلاق';
+    guidanceStep=guidanceGroups.length;
+    body.scrollTop=0;
+    addMessage(`نتيجتك الإرشادية: ${best.title} (${top.average.toFixed(1)} من 10).\n${best.studies}\nاتجاه آخر يستحق الانتباه: ${next.title} (${second.average.toFixed(1)} من 10).\n${best.advice}\nهذه النتيجة تساعدك على بدء الاختيار، ولا تحلّ محلّ تجربة المجال أو استشارة المختصّين.`,'bot');
+  }
+  function advanceGuidance(){
+    if(guidanceStep===guidanceGroups.length){closeGuidanceWizard();return;}
+    const missing=guidanceAnswers[guidanceStep].findIndex(value=>!Number.isInteger(value)||value<1||value>10);
+    if(missing!==-1){
+      $('guidanceError').textContent='اختر رقماً من 1 إلى 10 لكل عبارة قبل المتابعة.';
+      const select=$('guidanceQuestion'+(guidanceStep*8+missing+1));
+      select.classList.add('is-invalid');
+      select.focus();
+      return;
+    }
+    if(guidanceStep===guidanceGroups.length-1)renderGuidanceResult();
+    else{guidanceStep++;renderGuidanceStep();}
+  }
   function supportTime(value){
     const date=value?new Date(Number(value)*1000):new Date();
     return new Intl.DateTimeFormat('ar',{hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(Number.isNaN(date.getTime())?new Date():date);
@@ -1570,6 +1944,7 @@
   async function handleMenu(target,label) {
     if (busy || ended || support) return;
     pendingSupportType=null;
+    pendingGuidanceConsent=false;
     setComposerRecipient();
     if(target==='secretary'||target==='support_secretary'){askForSupportMessage('secretary',label);return;}
     if(target==='support_it'||target==='support_contact'){askForSupportMessage('it',label);return;}
@@ -1587,16 +1962,33 @@
       input.focus();
       return;
     }
+    if(target==='guidance'){askGuidanceConsent(label);return;}
     if(target==='open_form'){openForm();return;}
     if(target==='other'){input.focus();return;}
     const questions={
-      guidance:'ساعديني أختار تخصص مناسب، اسأليني عن اهتماماتي خطوة خطوة',
       branch_other:'ما هي باقي فروع المعهد العالي؟'
     };
     await sendMessage(questions[target]||label);
   }
   async function sendMessage(value=null) {
     if (busy || ended) return;
+    if(pendingGuidanceConsent){
+      if(value!==null){input.focus();return;}
+      const answer=input.value.trim();
+      if(!answer){input.focus();return;}
+      const normalized=answer.normalize('NFKC').replace(/[\u064B-\u065F]/g,'').toLowerCase();
+      if(/^(نعم|اجل|اوافق|موافق|تمام|اه|اي|yes|ok|okay)([\s،,.!؟]|$)/.test(normalized)){
+        input.value='';
+        answerGuidanceConsent(true,answer);
+        return;
+      }
+      if(/^(لا|كلا|no)([\s،,.!؟]|$)/.test(normalized)){
+        input.value='';
+        answerGuidanceConsent(false,answer);
+        return;
+      }
+      pendingGuidanceConsent=false;
+    }
     if(pendingSupportType){
       if(value!==null){input.focus();return;}
       const firstMessage=String(input.value).trim();
@@ -1663,6 +2055,7 @@
     resetSession();
     ended=false;
     pendingSupportType=null;
+    pendingGuidanceConsent=false;
     setComposerRecipient();
     selectedRating=0;
     input.disabled=false;
@@ -1706,7 +2099,7 @@
   chatBox.addEventListener('selectstart',e=>e.preventDefault());
   chatBox.addEventListener('dragstart',e=>e.preventDefault());
   chatBox.addEventListener('copy',e=>e.preventDefault());
-  for(const popup of [modal,ratingModal,legalModal,accessibilityModal]){
+  for(const popup of [modal,ratingModal,legalModal,accessibilityModal,guidanceModal]){
     popup.addEventListener('selectstart',e=>{
       if(!e.target.closest?.('textarea,input'))e.preventDefault();
     });
@@ -1715,7 +2108,7 @@
   }
   document.addEventListener('copy',e=>{
     const selection=window.getSelection();
-    if(selection?.rangeCount && [chatBox,modal,ratingModal,legalModal,accessibilityModal].some(area=>selection.getRangeAt(0).intersectsNode(area)))e.preventDefault();
+    if(selection?.rangeCount && [chatBox,modal,ratingModal,legalModal,accessibilityModal,guidanceModal].some(area=>selection.getRangeAt(0).intersectsNode(area)))e.preventDefault();
   });
   $('privacyBtn').addEventListener('click',()=>openLegal('privacy'));
   $('termsBtn').addEventListener('click',()=>openLegal('terms'));
@@ -1738,10 +2131,17 @@
     accessibility.reducedMotion=!accessibility.reducedMotion;
     applyAccessibility();
   });
+  $('closeGuidanceBtn').addEventListener('click',closeGuidanceWizard);
+  guidanceModal.addEventListener('click',e=>{if(e.target===guidanceModal)closeGuidanceWizard();});
+  $('guidancePrevBtn').addEventListener('click',()=>{
+    if(guidanceStep>0&&guidanceStep<guidanceGroups.length){guidanceStep--;renderGuidanceStep();}
+  });
+  $('guidanceNextBtn').addEventListener('click',advanceGuidance);
   input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();sendMessage();}});
   $('homeMenuBtn').addEventListener('click',()=>{
     if(support)return;
     pendingSupportType=null;
+    pendingGuidanceConsent=false;
     setComposerRecipient();
     showMenu('main');
   });
@@ -1761,7 +2161,7 @@
   modal.addEventListener('click',e=>{if(e.target===modal)closeForm();});
   document.addEventListener('keydown',e=>{
     if(e.key==='Tab'){
-      const popup=[legalModal,accessibilityModal].find(item=>item.classList.contains('open'));
+      const popup=[legalModal,accessibilityModal,guidanceModal].find(item=>item.classList.contains('open'));
       if(!popup)return;
       const controls=[...popup.querySelectorAll('button,a[href]')].filter(item=>!item.closest('[hidden]')&&!item.disabled);
       if(!controls.length)return;
@@ -1773,6 +2173,7 @@
     if(e.key!=='Escape')return;
     if(legalModal.classList.contains('open'))closeExtraModal(legalModal);
     else if(accessibilityModal.classList.contains('open'))closeExtraModal(accessibilityModal);
+    else if(guidanceModal.classList.contains('open'))closeGuidanceWizard();
     else if(modal.classList.contains('open'))closeForm();
     else if(ratingModal.classList.contains('open'))finishRating(false);
   });
