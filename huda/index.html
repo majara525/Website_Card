@@ -159,6 +159,15 @@
       stroke-linecap:round;
       stroke-linejoin:round
     }
+    .header-tools .icon-only {
+      width:36px;
+      height:36px;
+      padding:6px
+    }
+    .header-tools .icon-only svg {
+      width:19px;
+      height:19px
+    }
     .tool {
       background:#f3f3f3;
       border:1px solid #ddd;
@@ -785,6 +794,8 @@
     .guidance-error {
       color:var(--red-dark);
       font-weight:700;
+      text-align:center;
+      padding:0 16px 10px;
       margin:0!important
     }
     .guidance-error:empty {
@@ -1108,8 +1119,8 @@
       <div class="header-info"><strong id="chatHeaderName">هُدى</strong><small>المعهد العالي - شبكة كُلّيات قُطرية</small></div>
       <div class="header-tools">
         <button type="button" class="tool" id="homeMenuBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>القائمة</button>
-        <button type="button" class="tool" id="newChatBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>محادثة جديدة</button>
-        <button type="button" class="tool" id="endChatBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19"/></svg><span id="endChatLabel">إنهاء وتقييم</span></button>
+        <button type="button" class="tool icon-only" id="newChatBtn" aria-label="محادثة جديدة" title="محادثة جديدة"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M20 12a8 8 0 1 0-2.4 5.7"/></svg></button>
+        <button type="button" class="tool icon-only" id="endChatBtn" aria-label="إنهاء وتقييم" title="إنهاء وتقييم"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1L12 2Z"/></svg></button>
         <button type="button" class="tool accessibility-btn" id="accessibilityBtn" aria-label="إعدادات إمكانية الوصول" aria-haspopup="dialog" aria-controls="accessibilityModal" aria-expanded="false" title="إمكانية الوصول"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4" r="2"/><path d="M4 8l8 2 8-2M12 10v10m0-7-5 8m5-8 5 8"/></svg><span class="sr-only">إمكانية الوصول</span></button>
       </div>
     </header>
@@ -1160,9 +1171,9 @@
           <h3>أغراض الاستخدام</h3>
           <p>تُستخدم الرسائل لتقديم إجابات هُدى أو توجيه طلبك إلى موظف الدعم، وتُستخدم بيانات الزيارة لفهم استخدام الصفحة وتحسين عملها. لا يرسل هذا الملف نص المحادثة إلى Google Analytics.</p>
           <h3>الخدمات المستخدمة</h3>
-          <p>تتصل هذه الصفحة بخدمة المحادثة عبر Cloudflare، وقد تمرّ الرسائل في مسار المعالجة عبر n8n. تُعرض رسائل الدعم البشري للموظفين عبر Slack. وتستخدم الصفحة Google Analytics لقياس زيارات الموقع؛ وقد يستخدم ملفات تعريف الارتباط ومعلومات عن الجهاز والزيارة. قد تُعالَج البيانات لدى هؤلاء المزوّدين وفق إعدادات خدماتهم. يمكنك إدارة ملفات تعريف الارتباط من إعدادات متصفحك.</p>
+          <p>تتصل هذه الصفحة بخدمة المحادثة لتقديم الردود، وتُعرض رسائل الدعم البشري في التطبيق الذي يستخدمه الموظفون للردّ عليك. وتستخدم الصفحة خدمة إحصاءات لقياس زيارات الموقع؛ وقد تستخدم ملفات تعريف الارتباط ومعلومات عن الجهاز والزيارة. قد تُعالَج البيانات لدى الجهات المشغّلة لهذه الخدمات وفق إعداداتها. يمكنك إدارة ملفات تعريف الارتباط من إعدادات متصفحك.</p>
           <h3>التخزين والتقييم</h3>
-          <p>يُحفظ معرّف المحادثة، وعند الدعم البشري رمز الجلسة، في تخزين التبويب بالمتصفح لاستئناف الجلسة عند تحديث الصفحة. تُحسب إجابات استبيان اختيار المساق داخل المتصفح ولا تُرسل إلى Cloudflare أو n8n؛ وتظهر النتيجة في المحادثة الحالية فقط. كذلك لا تُرسل نجوم التقييم أو ملاحظاته من هذه الصفحة إلى هذه الخدمات. قد تحتفظ الخدمات الخارجية برسائل أو سجلات تشغيل بحسب إعداداتها، ولا تعرض هذه الصفحة مدة الاحتفاظ بها.</p>
+          <p>يُحفظ معرّف المحادثة، وعند الدعم البشري رمز الجلسة، في تخزين التبويب بالمتصفح لاستئناف الجلسة عند تحديث الصفحة. تُحسب إجابات استبيان اختيار المساق داخل المتصفح، وتظهر النتيجة في المحادثة الحالية فقط. كذلك يبقى التقييم وملاحظاته في هذه الصفحة ولا يُرسلان مع رسائل المحادثة. قد تحتفظ الخدمات المرتبطة بالمحادثة برسائل أو سجلات تشغيل بحسب إعداداتها، ولا تعرض هذه الصفحة مدة الاحتفاظ بها.</p>
           <h3>الاستمارة والروابط الخارجية</h3>
           <p>تفتح استمارة التسجيل من بوابة الكلية في إطار داخل الصفحة أو في تبويب جديد. البيانات التي تكتبها هناك تخضع لإجراءات البوابة. كذلك تخضع صفحات التواصل الاجتماعي لسياسات الجهات التي تديرها.</p>
           <h3>الاستفسارات والطلبات</h3>
@@ -1203,6 +1214,7 @@
         <button type="button" id="guidancePrevBtn">السابق</button>
         <button type="button" class="primary" id="guidanceNextBtn">متابعة</button>
       </div>
+      <p class="guidance-error" id="guidanceError" role="alert" aria-live="assertive"></p>
     </section>
   </div>
 
@@ -1223,7 +1235,7 @@
   const ratingModal = $('ratingModal');
   const legalModal = $('legalModal'), accessibilityModal = $('accessibilityModal'), guidanceModal = $('guidanceModal');
   let busy = false, ended = false, lastFocus = null, selectedRating = 0, sessionId;
-  let ratingAction = null, lastLocalRating = null;
+  let ratingAction = null, lastLocalRating = null, pendingLeaveUrl = null, allowUnload = false;
   let support = null, pendingSupportType = null, pollTimer = null, polling = false;
   let pendingGuidanceConsent = false, guidanceStep = 0, guidanceAnswers = [];
   let guidanceStartedAt = 0, guidanceTimerId = null;
@@ -1922,7 +1934,7 @@
             button.setAttribute('aria-checked',String(button===option));
             button.tabIndex=button===option?0:-1;
           }
-          $('guidanceError').textContent='';
+          if($('guidanceError').textContent)showMissingGuidanceQuestions();
         });
         ratings.append(option);
       }
@@ -1942,10 +1954,7 @@
       wrapper.append(heading,help,ratings,scale);
       body.append(wrapper);
     });
-    const error=guidanceElement('p','guidance-error');
-    error.id='guidanceError';
-    error.setAttribute('role','alert');
-    body.append(error);
+    $('guidanceError').textContent='';
     $('guidancePrevBtn').hidden=guidanceStep===0;
     $('guidanceNextBtn').textContent=guidanceStep===guidanceGroups.length-1?'عرض النتيجة':'متابعة';
     body.scrollTop=0;
@@ -2007,6 +2016,7 @@
     body.append(result);
     $('guidancePrevBtn').hidden=true;
     $('guidanceNextBtn').textContent='إغلاق';
+    $('guidanceError').textContent='';
     guidanceStep=guidanceGroups.length;
     body.scrollTop=0;
     addMessage(`نتيجتك الإرشادية: ${best.title} (${top.average.toFixed(1)} من 10).\n${best.studies}\nاتجاه آخر يستحق الانتباه: ${next.title} (${second.average.toFixed(1)} من 10).\n${best.advice}\nهذه النتيجة تساعدك على بدء الاختيار، ولا تحلّ محلّ تجربة المجال أو استشارة المختصّين.`,'bot');
@@ -2039,14 +2049,16 @@
   }
   function advanceGuidance(){
     if(guidanceStep===guidanceGroups.length){closeGuidanceWizard();return;}
-    const missing=guidanceAnswers[guidanceStep].findIndex(value=>!Number.isInteger(value)||value<1||value>10);
-    if(missing!==-1){
-      $('guidanceError').textContent='اختر رقماً من 1 إلى 10 لكل عبارة قبل المتابعة.';
-      $('guidanceQuestion'+(guidanceStep*8+missing+1)).querySelector('button').focus();
-      return;
-    }
+    if(showMissingGuidanceQuestions())return;
     if(guidanceStep===guidanceGroups.length-1)renderGuidanceResult();
     else{guidanceStep++;renderGuidanceStep();}
+  }
+  function showMissingGuidanceQuestions(){
+    const missing=guidanceAnswers[guidanceStep]
+      .map((value,index)=>Number.isInteger(value)&&value>=1&&value<=10?null:guidanceStep*8+index+1)
+      .filter(value=>value!==null);
+    $('guidanceError').textContent=missing.length?`لم تُجب عن ${missing.length===1?'السؤال':'الأسئلة'}: ${missing.join('، ')}. اختر رقماً لكل سؤال قبل المتابعة.`:'';
+    return missing.length>0;
   }
   function supportTime(value){
     const date=value?new Date(Number(value)*1000):new Date();
@@ -2065,7 +2077,8 @@
     pollTimer=null;
   }
   function updateSupportControls(){
-    $('endChatLabel').textContent=support?'إنهاء الدعم':'إنهاء وتقييم';
+    $('endChatBtn').setAttribute('aria-label',support?'إنهاء الدعم وتقييمه':'إنهاء وتقييم');
+    $('endChatBtn').title=support?'إنهاء الدعم وتقييمه':'إنهاء وتقييم';
     $('homeMenuBtn').disabled=!!support||ended;
     const department=support&&supportDepartments[support.type];
     const name=department?.name||'هُدى';
@@ -2230,7 +2243,7 @@
       if((!response.ok||data?.status==='error')&&!isSupportExpired(response,data))throw new Error('support_close_failed');
       clearSupport('انتهت محادثة الدعم. يمكنك متابعة الحديث مع هُدى.');
       busy=false;
-      if(next==='new')openRating('new');
+      if(next==='new'||next==='leave'||next==='end')openRating(next);
       else showMenu('main');
       return true;
     }catch{
@@ -2367,6 +2380,8 @@
   function openRating(action){
     if (busy || support || ratingModal.classList.contains('open')) return;
     ratingAction=action;
+    $('submitRatingBtn').textContent=action==='leave'?'إرسال التقييم والعودة للموقع':'إرسال وبدء محادثة جديدة';
+    $('skipRatingBtn').textContent=action==='leave'?'تخطي التقييم والعودة للموقع':'تخطي التقييم';
     ratingModal.classList.add('open');
     ratingModal.setAttribute('aria-hidden','false');
     $('skipRatingBtn').focus();
@@ -2398,6 +2413,11 @@
     ratingModal.setAttribute('aria-hidden','true');
     const action=ratingAction;
     ratingAction=null;
+    if(action==='leave'&&pendingLeaveUrl){
+      allowUnload=true;
+      window.location.assign(pendingLeaveUrl);
+      return;
+    }
     if(action==='new'||submitted){
       resetChat();
     }else{
@@ -2465,13 +2485,25 @@
     setComposerRecipient();
     showMenu('main');
   });
+  document.querySelector('.header .back').addEventListener('click',async event=>{
+    event.preventDefault();
+    if(busy)return;
+    pendingLeaveUrl=event.currentTarget.href;
+    if(support)await closeSupport('leave');
+    else openRating('leave');
+  });
   $('newChatBtn').addEventListener('click',async()=>{
     if(support)await closeSupport('new');
     else openRating('new');
   });
   $('endChatBtn').addEventListener('click',async()=>{
-    if(support)await closeSupport();
+    if(support)await closeSupport('end');
     else openRating('end');
+  });
+  window.addEventListener('beforeunload',event=>{
+    if(allowUnload||ended||(!support&&messages.childElementCount<=1))return;
+    event.preventDefault();
+    event.returnValue='';
   });
   $('submitRatingBtn').addEventListener('click',()=>finishRating(true));
   $('skipRatingBtn').addEventListener('click',()=>finishRating(false));
