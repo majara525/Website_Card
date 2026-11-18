@@ -688,16 +688,26 @@
     }
     .guidance-body {
       min-height:0;
-      flex:1
-    }
-    .guidance-intro {
-      margin:0 0 10px;
-      color:var(--muted)
+      flex:1;
+      padding-bottom:0
     }
     .guidance-progress {
-      margin-bottom:14px;
+      margin-top:4px;
       color:var(--red-dark);
-      font-weight:700
+      font-weight:700;
+      font-size:calc(12px + var(--font-bump))
+    }
+    .guidance-title-row {
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:10px
+    }
+    .guidance-timer {
+      direction:ltr;
+      font-variant-numeric:tabular-nums;
+      color:var(--muted);
+      font-size:calc(13px + var(--font-bump))
     }
     .guidance-question {
       padding:11px 0;
@@ -710,8 +720,11 @@
       gap:8px;
       margin-bottom:7px
     }
-    .guidance-question label {
+    .guidance-question-header span {
       font-weight:600
+    }
+    .guidance-question:last-of-type {
+      padding-bottom:0
     }
     .guidance-info {
       flex-shrink:0;
@@ -735,28 +748,47 @@
       background:#f5f5f5;
       color:#333
     }
-    .guidance-select {
-      display:block;
-      width:min(100%,190px);
-      min-height:39px;
-      padding:6px 10px;
-      border:1px solid #777;
-      border-radius:8px;
-      background:#fff;
-      color:var(--black);
-      font:inherit
+    .guidance-rating-row {
+      display:grid;
+      grid-template-columns:repeat(10,minmax(0,1fr));
+      gap:4px
     }
-    .guidance-select:focus-visible,.guidance-info:focus-visible {
+    .guidance-rating {
+      min-width:0;
+      min-height:34px;
+      border:1px solid #888;
+      border-radius:7px;
+      background:#fff;
+      color:var(--black)
+    }
+    .guidance-rating[aria-checked="true"] {
+      background:var(--red);
+      border-color:var(--red);
+      color:#fff;
+      font-weight:700
+    }
+    .guidance-scale {
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      margin-top:4px;
+      color:var(--muted);
+      font-size:calc(11px + var(--font-bump))
+    }
+    .guidance-scale span {
+      max-width:48%
+    }
+    .guidance-rating:focus-visible,.guidance-info:focus-visible {
       outline:3px solid var(--yellow);
       outline-offset:2px
     }
-    .guidance-select.is-invalid {
-      border:2px solid var(--red)
-    }
     .guidance-error {
-      min-height:1.5em;
       color:var(--red-dark);
-      font-weight:700
+      font-weight:700;
+      margin:0!important
+    }
+    .guidance-error:empty {
+      display:none
     }
     .guidance-actions {
       display:flex;
@@ -781,6 +813,9 @@
     .guidance-result h3 {
       margin-top:16px
     }
+    .guidance-result {
+      padding-bottom:14px
+    }
     .guidance-result-list {
       display:grid;
       gap:8px;
@@ -803,9 +838,15 @@
       height:100%;
       background:var(--red)
     }
-    .guidance-source {
-      margin-top:16px!important;
-      font-size:calc(12px + var(--font-bump))
+    @media(max-width:420px) {
+      .guidance-rating-row {
+        gap:2px
+      }
+      .guidance-rating {
+        min-height:31px;
+        padding:0;
+        font-size:calc(11px + var(--font-bump))
+      }
     }
     html[data-high-contrast="true"] {
       --red:#820912;
@@ -1156,7 +1197,7 @@
 
   <div class="modal" id="guidanceModal" role="dialog" aria-modal="true" aria-labelledby="guidanceTitle" aria-hidden="true">
     <section class="info-panel guidance-panel">
-      <div class="info-header"><h2 id="guidanceTitle">استبيان اختيار المساق</h2><button type="button" class="tool" id="closeGuidanceBtn" aria-label="إغلاق استبيان اختيار المساق">✕</button></div>
+      <div class="info-header"><div><div class="guidance-title-row"><h2 id="guidanceTitle">استبيان اختيار المساق</h2><time class="guidance-timer" id="guidanceTimer" role="timer" aria-live="off">00:00</time></div><div class="guidance-progress" id="guidanceProgress"></div></div><button type="button" class="tool" id="closeGuidanceBtn" aria-label="إغلاق استبيان اختيار المساق">✕</button></div>
       <div class="info-body guidance-body" id="guidanceBody"></div>
       <div class="guidance-actions" id="guidanceActions">
         <button type="button" id="guidancePrevBtn">السابق</button>
@@ -1185,6 +1226,7 @@
   let ratingAction = null, lastLocalRating = null;
   let support = null, pendingSupportType = null, pollTimer = null, polling = false;
   let pendingGuidanceConsent = false, guidanceStep = 0, guidanceAnswers = [];
+  let guidanceStartedAt = 0, guidanceTimerId = null;
   let extraModalFocus = null;
   const accessibility = {fontBump:0,highContrast:false,reducedMotion:false};
   const displayedSupportIds = new Set();
@@ -1464,6 +1506,33 @@
     bubble.append(grid);
     scrollBottom();
   }
+  function facultyLabel(key){
+    return menus.courses.items.find(([,target])=>target===key)?.[0]||'مساقات الكلية';
+  }
+  function askHudaAboutCourse(facultyKey,courseIndex){
+    const faculty=facultyCourses[facultyKey];
+    const course=faculty?.courses[courseIndex];
+    if(!course)return;
+    const question=`أريد معلومات عن مساق «${course}» ضمن ${facultyLabel(facultyKey)} في الكلية. صفحة الكلية الرسمية لهذا القسم: ${faculty.url}. اشرح هدف المساق وما يتعلمه الطالب. اذكر مدة الدراسة وشروط القبول فقط إذا كانت معلوماتهما متاحة ومؤكدة، وإلا فقل إنهما يحتاجان إلى تأكيد من السكرتارية.`;
+    sendMessage(question,course);
+  }
+  function showFacultyCourses(key,label){
+    const faculty=facultyCourses[key];
+    if(!faculty)return;
+    addMessage(label,'user');
+    const {bubble}=addMessage(`هذه المساقات المنشورة ضمن ${label}. أيّ مساق تريد أن تعرف عنه أكثر؟`,'bot');
+    const grid=guidanceElement('div','menu-grid');
+    grid.style.marginTop='10px';
+    faculty.courses.forEach((course,index)=>{
+      const button=guidanceElement('button','menu-btn');
+      button.type='button';
+      addButtonContent(button,course,'courses');
+      button.addEventListener('click',()=>askHudaAboutCourse(key,index));
+      grid.append(button);
+    });
+    bubble.append(grid);
+    scrollBottom();
+  }
   function showSupportContacts(label,report=false) {
     addMessage(label,'user');
     const message=report?
@@ -1498,68 +1567,277 @@
     it:{name:'موظف الدعم التقني',image:'IT.png',transfer:'جارٍ إرسال رسالتك إلى الدعم التقني...',connected:'تمّ إرسال رسالتك إلى فريق الدعم التقني. يمكنك كتابة رسائل إضافية هنا.'},
     consultant:{name:'مستشار/ة',image:'Cons.png',transfer:'جارٍ إرسال رسالتك إلى المستشار/ة...',connected:'تمّ إرسال رسالتك إلى المستشار/ة. يمكنك كتابة رسائل إضافية هنا.'}
   };
-  // Eight original prompts per direction, scored with the source questionnaire's 1–10 averages.
-  const guidanceGroups = [
-    {key:'social',title:'الميل الاجتماعي والتربوي',questions:[
-      ['أرغب في شرح ما أعرفه لمن يحتاج إلى المساعدة.','فكّر في رغبتك بالشرح حتى لو احتاج الطرف الآخر إلى أكثر من محاولة.'],
-      ['أمنح الآخرين وقتاً لأستمع إلى ما يشغلهم.','المقصود الإصغاء باهتمام قبل تقديم رأي أو حل.'],
-      ['أفضّل مهاماً تتضمن لقاء الناس والتحدث معهم.','قيّم راحتك في التواصل المباشر خلال يوم العمل.'],
-      ['أتحمّس للمشاركة في نشاط يفيد المجتمع.','مثل مبادرة محلية أو مساعدة مجموعة تحتاج دعماً.'],
-      ['أجد طريقة بسيطة لعرض فكرة يصعب فهمها.','هل تستمتع بتغيير أسلوب الشرح حتى تصبح الفكرة واضحة؟'],
-      ['أحافظ على صبري حين يتعلم طفل أو زميل ببطء.','فكّر في موقف يتطلب تكرار التوجيه بهدوء.'],
-      ['أعمل براحة مع فريق هدفه مساعدة أشخاص آخرين.','السؤال عن التعاون من أجل خدمة الناس، لا عن العمل الجماعي وحده.'],
-      ['يسعدني تقدّم شخص ساعدته على التعلّم.','هل يمنحك نمو الآخرين شعوراً بالإنجاز؟']
+  // Course lists follow the college's published faculty pages; menu order remains unchanged.
+  const facultyCourses = {
+    course_business_computing:{url:'https://www.almahad-alali.com/item.aspx?catid=3',courses:[
+      'دبلوم إدارة الأعمال','محاسب كبير','مستشار ضرائب','محاسب أجور كبير','مدير حسابات رئيسي (درجة 3)','مدير حسابات درجة 1+2'
     ]},
-    {key:'research',title:'الميل التحليلي والبحثي',questions:[
-      ['أبحث عن تفسير الظواهر قبل أن أكتفي بمعرفة نتيجتها.','هل تسأل نفسك لماذا حدث الشيء وكيف حدث؟'],
-      ['أقارن أكثر من مصدر قبل أن أصل إلى رأي.','فكّر في طريقتك عندما تجد معلومات مختلفة عن الموضوع نفسه.'],
-      ['أستمتع بمسألة تحتاج إلى تحليل وخطوات تفكير.','المقصود حلّ المشكلات بالفهم، لا بالحفظ السريع.'],
-      ['أقرأ بتعمّق عندما يثير موضوع ما فضولي.','قيّم استعدادك لقضاء وقت في فهم التفاصيل.'],
-      ['ألاحظ فروقاً صغيرة قد تغيّر فهم المشكلة.','مثل رقم أو شرط أو استثناء يمرّ عليه الآخرون.'],
-      ['أرتّب ملاحظاتي أو بياناتي كي أرى العلاقات بينها.','هل يساعدك الجدول أو التصنيف على الوصول إلى استنتاج؟'],
-      ['أحب اختبار فكرة ثم مراقبة ما يحدث.','فكّر في التجربة والملاحظة بدلاً من التخمين.'],
-      ['أفضّل الدراسة التي تسمح بالسؤال والتحقق من الإجابة.','هل تستمتع بمراجعة الدليل وراء المعلومة؟']
+    course_technical:{url:'https://www.almahad-alali.com/item.aspx?catid=108',courses:[
+      'صيانة وتصليح أجهزة هواتف خلوية وذكية','فنّي وتقني أجهزة حاسوب ثابتة ونقّالة','فنّي وتقني كاميرات مراقبة'
     ]},
-    {key:'technical',title:'الميل التقني والرقمي',questions:[
-      ['أستخدم الأدوات الرقمية لتسهيل مهمة يومية.','مثل تنظيم معلومات أو إنجاز عمل أسرع بالحاسوب.'],
-      ['أستمتع بتعلّم تطبيق أو برنامج لم أستخدمه من قبل.','قيّم فضولك تجاه الأدوات الجديدة، لا مستوى خبرتك الحالي.'],
-      ['أتساءل كيف بُني موقع أو تطبيق أستخدمه.','المقصود الاهتمام بما يجري خلف الشاشة.'],
-      ['أجرّب حلولاً تقنية حتى إن لم أنجح من المحاولة الأولى.','فكّر في قدرتك على المحاولة والتعلّم من الخطأ.'],
-      ['أرتّب خطوات المشكلة التقنية حتى أجد سببها.','هل تحب تتبّع المشكلة خطوة خطوة؟'],
-      ['أميل إلى إنشاء تصميم أو برنامج أو نظام رقمي.','قيّم اهتمامك بصنع شيء رقمي، لا بمجرد استخدامه.'],
-      ['ألاحظ كيف يمكن تحسين واجهة أو أداء أداة رقمية.','مثل تسهيل استخدام صفحة أو تسريع عملية متكررة.'],
-      ['أفضّل تعلّماً ينتج عنه مشروع رقمي يمكن عرضه.','مثلاً ملف أو تصميم أو حلّ تقني واضح.']
+    course_nursing:{url:'https://www.almahad-alali.com/item.aspx?catid=12',courses:[
+      'مساعدون طبيّون','مساعدون طبيّون مع إجراء فحوصات دم','معالجون بالأعشاب الطبية وزهور باخ','معالجون مؤهلون بالتدليك السويدي والحجارة الساخنة'
     ]},
-    {key:'administrative',title:'الميل الإداري والتنظيمي',questions:[
-      ['أضع ترتيباً واضحاً للمهام قبل أن أبدأ العمل.','هل تساعدك الخطة على معرفة الأولويات؟'],
-      ['أتابع المواعيد والإجراءات بدقّة.','فكّر في الالتزام بالوقت والتفاصيل الصغيرة.'],
-      ['أرتاح عندما تكون الملفات والمعلومات مرتّبة.','هل تستمتع بإنشاء نظام يسهل الرجوع إليه؟'],
-      ['أستطيع متابعة مهام متعددة دون نسيان الهدف العام.','المقصود التنسيق والمتابعة، لا العمل بسرعة فقط.'],
-      ['لا أمانع التعامل مع جداول أو نماذج أو أرقام بسيطة.','قيّم راحتك مع أدوات التنظيم اليومية.'],
-      ['أفضل معرفة المسؤوليات والخطوات المطلوبة مسبقاً.','هل تناسبك بيئة فيها إجراءات وأدوار واضحة؟'],
-      ['أنسّق بين أشخاص وخطوات كي يكتمل العمل.','مثل متابعة مهمة بين قسمين أو أكثر.'],
-      ['أشعر بالرضا عندما أنهي عملاً منظماً بلا أخطاء.','فكّر في قيمة الدقة والاكتمال بالنسبة إليك.']
+    course_tourism:{url:'https://www.almahad-alali.com/item.aspx?catid=11',courses:[
+      'وكيل ومستشار سياحة وسفر','مرافق مجموعات للخارج','إدارة فنادق','إدارة مكتب سياحة وسفر'
     ]},
-    {key:'practical',title:'الميل العملي والمهني التطبيقي',questions:[
-      ['أفهم المهارة أسرع عندما أمارسها بنفسي.','قارن التعلّم بالتطبيق مع الاكتفاء بالشرح النظري.'],
-      ['أستمتع بالعمل بأداة أو جهاز أو مادة ملموسة.','مثل أدوات الورشة أو المختبر أو المهنة.'],
-      ['أفضّل عملاً أستطيع رؤية نتيجته أمامي.','هل يحمّسك وجود منتج أو إصلاح أو خدمة ملموسة؟'],
-      ['يساعدني مشاهدة عرض عملي على إتقان خطوة جديدة.','فكّر في أثر المثال المباشر على تعلّمك.'],
-      ['أحاول إصلاح الأشياء أو تركيبها أو تحسينها.','لا يشترط أن تكون خبيراً؛ قيّم رغبتك بالتجربة.'],
-      ['أرتاح للمهام التي تتضمن حركة أو عملاً ميدانياً.','قارن ذلك بالجلوس الطويل وراء مكتب.'],
-      ['أريد إتقان مهارة أستطيع استخدامها مباشرة.','مثل مهارة مهنية تُمارَس بعد التدريب.'],
-      ['أفضل برنامجاً يتضمن تدريباً عملياً متكرراً.','هل الممارسة جزء مهم من دراستك المفضلة؟']
+    course_design:{url:'https://www.almahad-alali.com/item.aspx?catid=10',courses:[
+      'تصميم جرافي','تصميم وديكور داخلي','تصوير فوتوغرافي وفيديو','بناء مواقع إنترنت','تصميم أزياء وخياطة','تصميم مناسبات وتنسيق زهور','أشغال يدوية وفنون'
     ]},
-    {key:'entrepreneurial',title:'الميل المبادر والريادي',questions:[
-      ['أطرح فكرة جديدة ثم أفكّر في أول خطوة لتنفيذها.','المقصود تحويل الفكرة إلى عمل، لا التفكير وحده.'],
-      ['أشرح فكرتي للآخرين بثقة عندما أؤمن بها.','قيّم راحتك في عرض فكرتك وإقناع الآخرين بها.'],
-      ['يحمّسني بدء مشروع أو نشاط من نقطة الصفر.','هل تستمتع ببناء شيء لم يكن موجوداً؟'],
-      ['أفضّل مساحة تسمح لي بالمبادرة واتخاذ قرار.','فكّر في مقدار الاستقلالية الذي يناسبك.'],
-      ['أبحث عمّا يحتاجه الناس قبل أن أقترح حلاً.','هل تبدأ بفهم المشكلة أو الزبون؟'],
-      ['أستمتع بعرض منتج أو فكرة أمام مجموعة.','يشمل ذلك التسويق والعروض والتحدث أمام الآخرين.'],
-      ['أتحمّل مسؤولية قرار اتخذته بعد دراسة الخيارات.','قيّم استعدادك لتحمّل النتائج والتعلّم منها.'],
-      ['أميل إلى تنسيق فريق أو قيادة مبادرة صغيرة.','هل تحب جمع الناس حول هدف وتنظيم خطواتهم؟']
+    course_office:{url:'https://www.almahad-alali.com/item.aspx?catid=5',courses:[
+      'مدير/ة مكتب عام','حسابات وإدارة مكتب','سكرتارية طبيّة','سكرتارية تأمين','سكرتارية قضائية','سكرتير/ة متعدد/ة المجالات'
+    ]},
+    course_education:{url:'https://www.almahad-alali.com/item.aspx?catid=8',courses:[
+      'مربيات أطفال درجة 1 لأجيال 0–3','مساعدات بساتين','مساعدات تعليم ابتدائي وتعليم خاص','مرشدات فنون وإبداع','مرشد رقص وحركة لجيل الطفولة والمدارس','مديرة حضانة للطفولة المبكرة','إسعاف أولي','مضمّد مؤهل'
+    ]},
+    course_insurance:{url:'https://www.almahad-alali.com/item.aspx?catid=4',courses:[
+      'وكيل تأمين – أملاك وحوادث','وكيل تأمين – حياة وتقاعد','تخمين ممتلكات','مستشار تأمين'
+    ]},
+    course_beauty:{url:'https://www.almahad-alali.com/item.aspx?catid=9',courses:[
+      'قص وتصفيف شعر درجة 1','قص وتصفيف شعر درجة 2','قص وتصفيف شعر درجة 3','تجميل وكوسماتيكا','ماكياج مهني','بناء ورسم على الأظافر','منيكور وبديكور','تصميم حواجب'
+    ]},
+    course_secondary:{url:'https://www.almahad-alali.com/item.aspx?catid=13',courses:[
+      'تعليم مناهج ابتدائية وثانوية حتى الثاني عشر','بجروت كامل / جزئي','مدرسة مسائية ودروس تقوية'
     ]}
+  };
+  const guidanceCourseMatches = {
+    social:[['course_education',2],['course_education',0],['course_education',3]],
+    research:[['course_business_computing',2],['course_insurance',2],['course_business_computing',5]],
+    technical:[['course_technical',1],['course_technical',0],['course_design',3]],
+    administrative:[['course_office',0],['course_office',1],['course_business_computing',5]],
+    practical:[['course_nursing',0],['course_beauty',0],['course_technical',2]],
+    entrepreneurial:[['course_business_computing',0],['course_tourism',3],['course_design',5]]
+  };
+  // Eight questionnaire statements per direction, scored by their 1–10 averages.
+  const guidanceGroups = [
+    {
+      "key": "social",
+      "title": "الميل الاجتماعي والتربوي",
+      "questions": [
+        [
+          "أحب مساعدة الآخرين عندما يواجهون صعوبة في الفهم أو الاختيار.",
+          "فكّر في رغبتك بالشرح حتى لو احتاج الطرف الآخر إلى أكثر من محاولة."
+        ],
+        [
+          "أشعر بالراحة عندما أستمع لمشكلة شخص وأحاول توجيهه بهدوء.",
+          "المقصود الإصغاء باهتمام قبل تقديم رأي أو حل."
+        ],
+        [
+          "أفضل العمل الذي يتضمن تواصلاً مباشراً مع الناس.",
+          "قيّم راحتك في التواصل المباشر خلال يوم العمل."
+        ],
+        [
+          "أهتم بالأنشطة التي تخدم المجتمع أو تدعم فئة تحتاج للمساندة.",
+          "مثل مبادرة محلية أو مساعدة مجموعة تحتاج دعماً."
+        ],
+        [
+          "أستمتع بتبسيط فكرة معقدة لشخص آخر.",
+          "هل تستمتع بتغيير أسلوب الشرح حتى تصبح الفكرة واضحة؟"
+        ],
+        [
+          "أستطيع الصبر مع الأطفال أو الطلاب أثناء التعلم.",
+          "فكّر في موقف يتطلب تكرار التوجيه بهدوء."
+        ],
+        [
+          "أحب العمل ضمن فريق يحاول تحسين حياة الآخرين.",
+          "السؤال عن التعاون من أجل خدمة الناس، لا عن العمل الجماعي وحده."
+        ],
+        [
+          "أشعر بالإنجاز عندما أرى شخصاً يتقدم بفضل مساعدة قدمتها.",
+          "هل يمنحك نمو الآخرين شعوراً بالإنجاز؟"
+        ]
+      ]
+    },
+    {
+      "key": "research",
+      "title": "الميل التحليلي والبحثي",
+      "questions": [
+        [
+          "أحب أن أفهم سبب حدوث الأشياء وليس النتيجة فقط.",
+          "هل تسأل نفسك لماذا حدث الشيء وكيف حدث؟"
+        ],
+        [
+          "أستمتع بالبحث والمقارنة بين المعلومات قبل اتخاذ قرار.",
+          "فكّر في طريقتك عندما تجد معلومات مختلفة عن الموضوع نفسه."
+        ],
+        [
+          "أفضل حل الأسئلة التي تحتاج إلى تفكير وتحليل.",
+          "المقصود حلّ المشكلات بالفهم، لا بالحفظ السريع."
+        ],
+        [
+          "أحب قراءة شرح عميق عن موضوع يثير فضولي.",
+          "قيّم استعدادك لقضاء وقت في فهم التفاصيل."
+        ],
+        [
+          "أنتبه للتفاصيل الصغيرة التي قد يتركها الآخرون.",
+          "مثل رقم أو شرط أو استثناء يمرّ عليه الآخرون."
+        ],
+        [
+          "أستمتع بتنظيم المعلومات في جداول أو ملاحظات واضحة.",
+          "هل يساعدك الجدول أو التصنيف على الوصول إلى استنتاج؟"
+        ],
+        [
+          "أحب التجربة والملاحظة واستخلاص النتيجة.",
+          "فكّر في التجربة والملاحظة بدلاً من التخمين."
+        ],
+        [
+          "أفضل الدراسة التي تمنحني فرصة للسؤال والتحقق.",
+          "هل تستمتع بمراجعة الدليل وراء المعلومة؟"
+        ]
+      ]
+    },
+    {
+      "key": "technical",
+      "title": "الميل التقني والرقمي",
+      "questions": [
+        [
+          "أحب استخدام الحاسوب أو الهاتف لإنجاز مهام بطريقة أفضل.",
+          "مثل تنظيم معلومات أو إنجاز عمل أسرع بالحاسوب."
+        ],
+        [
+          "أستمتع بتعلم برنامج أو أداة رقمية جديدة.",
+          "قيّم فضولك تجاه الأدوات الجديدة، لا مستوى خبرتك الحالي."
+        ],
+        [
+          "أحاول فهم طريقة عمل التطبيقات أو المواقع.",
+          "المقصود الاهتمام بما يجري خلف الشاشة."
+        ],
+        [
+          "لا أخاف من تجربة خطوات تقنية جديدة حتى لو أخطأت في البداية.",
+          "فكّر في قدرتك على المحاولة والتعلّم من الخطأ."
+        ],
+        [
+          "أحب حل المشكلات التي تحتاج إلى ترتيب منطقي.",
+          "هل تحب تتبّع المشكلة خطوة خطوة؟"
+        ],
+        [
+          "أميل إلى التصميم أو البرمجة أو التعامل مع الأنظمة الرقمية.",
+          "قيّم اهتمامك بصنع شيء رقمي، لا بمجرد استخدامه."
+        ],
+        [
+          "أستمتع بتحسين شكل أو أداء شيء رقمي.",
+          "مثل تسهيل استخدام صفحة أو تسريع عملية متكررة."
+        ],
+        [
+          "أفضل التعلم الذي ينتج عنه ملف أو تصميم أو حل تقني واضح.",
+          "مثلاً ملف أو تصميم أو حلّ تقني واضح."
+        ]
+      ]
+    },
+    {
+      "key": "administrative",
+      "title": "الميل الإداري والتنظيمي",
+      "questions": [
+        [
+          "أحب ترتيب المهام ووضع خطة واضحة للعمل.",
+          "هل تساعدك الخطة على معرفة الأولويات؟"
+        ],
+        [
+          "أنتبه للمواعيد والتفاصيل والإجراءات.",
+          "فكّر في الالتزام بالوقت والتفاصيل الصغيرة."
+        ],
+        [
+          "أرتاح عندما تكون الملفات والمعلومات منظمة.",
+          "هل تستمتع بإنشاء نظام يسهل الرجوع إليه؟"
+        ],
+        [
+          "أستطيع متابعة أكثر من مهمة دون أن أفقد الصورة العامة.",
+          "المقصود التنسيق والمتابعة، لا العمل بسرعة فقط."
+        ],
+        [
+          "أحب التعامل مع الجداول، النماذج، أو الميزانيات البسيطة.",
+          "قيّم راحتك مع أدوات التنظيم اليومية."
+        ],
+        [
+          "أفضل بيئة عمل فيها قواعد ومسؤوليات واضحة.",
+          "هل تناسبك بيئة فيها إجراءات وأدوار واضحة؟"
+        ],
+        [
+          "أستطيع التنسيق بين أشخاص أو خطوات للوصول إلى نتيجة.",
+          "مثل متابعة مهمة بين قسمين أو أكثر."
+        ],
+        [
+          "أشعر بالإنجاز عندما أنهي عملاً منظماً بدقة.",
+          "فكّر في قيمة الدقة والاكتمال بالنسبة إليك."
+        ]
+      ]
+    },
+    {
+      "key": "practical",
+      "title": "الميل العملي والمهني التطبيقي",
+      "questions": [
+        [
+          "أفضل التعلم من خلال التطبيق العملي وليس الشرح النظري فقط.",
+          "قارن التعلّم بالتطبيق مع الاكتفاء بالشرح النظري."
+        ],
+        [
+          "أحب استخدام الأدوات أو الأجهزة أو المواد بيدي.",
+          "مثل أدوات الورشة أو المختبر أو المهنة."
+        ],
+        [
+          "أشعر بالراحة في الأعمال التي يظهر فيها الناتج بشكل ملموس.",
+          "هل يحمّسك وجود منتج أو إصلاح أو خدمة ملموسة؟"
+        ],
+        [
+          "أتعلم بسرعة عندما أرى مثالاً عملياً أمامي.",
+          "فكّر في أثر المثال المباشر على تعلّمك."
+        ],
+        [
+          "أحب إصلاح الأشياء أو تحسينها أو تركيبها.",
+          "لا يشترط أن تكون خبيراً؛ قيّم رغبتك بالتجربة."
+        ],
+        [
+          "أفضل الحركة والعمل الميداني على الجلوس الطويل.",
+          "قارن ذلك بالجلوس الطويل وراء مكتب."
+        ],
+        [
+          "أهتم بإتقان مهارة عملية يمكن استخدامها مباشرة.",
+          "مثل مهارة مهنية تُمارَس بعد التدريب."
+        ],
+        [
+          "أحب الدورات التي تتضمن تدريباً وممارسة حقيقية.",
+          "هل الممارسة جزء مهم من دراستك المفضلة؟"
+        ]
+      ]
+    },
+    {
+      "key": "entrepreneurial",
+      "title": "الميل المبادر والريادي",
+      "questions": [
+        [
+          "أحب اقتراح أفكار جديدة وتحويلها إلى خطوات.",
+          "المقصود تحويل الفكرة إلى عمل، لا التفكير وحده."
+        ],
+        [
+          "أستطيع إقناع الآخرين بفكرة عندما أؤمن بها.",
+          "قيّم راحتك في عرض فكرتك وإقناع الآخرين بها."
+        ],
+        [
+          "أشعر بالحماس عندما أبدأ مشروعاً أو نشاطاً من الصفر.",
+          "هل تستمتع ببناء شيء لم يكن موجوداً؟"
+        ],
+        [
+          "أفضل العمل الذي يمنحني مساحة للمبادرة واتخاذ القرار.",
+          "فكّر في مقدار الاستقلالية الذي يناسبك."
+        ],
+        [
+          "أحب فهم احتياجات الناس وتقديم حل مناسب لهم.",
+          "هل تبدأ بفهم المشكلة أو الزبون؟"
+        ],
+        [
+          "أستمتع بالتسويق أو العرض أو التحدث أمام الآخرين.",
+          "يشمل ذلك التسويق والعروض والتحدث أمام الآخرين."
+        ],
+        [
+          "لا أخاف من تحمل مسؤولية نتيجة قرار اتخذته بعد تفكير.",
+          "قيّم استعدادك لتحمّل النتائج والتعلّم منها."
+        ],
+        [
+          "أميل إلى قيادة فريق أو تنظيم مبادرة صغيرة.",
+          "هل تحب جمع الناس حول هدف وتنظيم خطواتهم؟"
+        ]
+      ]
+    }
   ];
   const guidanceDirections = {
     social:{title:'الاتجاه الاجتماعي والتربوي',studies:'قد تلائمك التربية، الإرشاد، رعاية الطفولة، أو العمل المجتمعي والخدمات التي تتطلب تواصلاً مع الناس.',advice:'جرّب نشاطاً تطوعياً أو تدريباً قصيراً يتيح لك مساعدة أشخاص مباشرة، ثم قيّم شعورك تجاه التجربة.'},
@@ -1605,24 +1883,21 @@
     const group=guidanceGroups[guidanceStep];
     const body=$('guidanceBody');
     body.replaceChildren();
-    body.append(
-      guidanceElement('p','guidance-progress',`القسم ${guidanceStep+1} من ${guidanceGroups.length}: ${group.title}`),
-      guidanceElement('p','guidance-intro','1 يعني لا ينطبق عليّ أبداً، و10 يعني ينطبق عليّ كثيراً. اضغط على علامة المعلومات بجانب أي عبارة لتوضيحها.')
-    );
+    $('guidanceProgress').textContent=`القسم ${guidanceStep+1} من ${guidanceGroups.length}: ${group.title}`;
     group.questions.forEach(([question,explanation],questionIndex)=>{
       const number=guidanceStep*8+questionIndex+1;
       const id='guidanceQuestion'+number;
       const helpId=id+'Help';
       const wrapper=guidanceElement('div','guidance-question');
       const heading=guidanceElement('div','guidance-question-header');
-      const label=guidanceElement('label','',`${number}. ${question}`);
-      label.htmlFor=id;
+      const label=guidanceElement('span','',`${number}. ${question}`);
+      label.id=id+'Label';
       const info=guidanceElement('button','guidance-info','i');
       info.type='button';
       info.setAttribute('aria-label',`شرح السؤال ${number}`);
       info.setAttribute('aria-controls',helpId);
       info.setAttribute('aria-expanded','false');
-      const help=guidanceElement('p','guidance-help',explanation);
+      const help=guidanceElement('p','guidance-help',`${explanation} فكّر في تصرّفك المعتاد، لا في ما تتمنى فعله مستقبلاً. اختر 1–3 إذا كانت العبارة نادراً ما تصفك، و4–6 إذا كانت تصفك أحياناً، و7–8 إذا كانت تصفك غالباً، و9–10 إذا كانت تصفك في معظم المواقف. إذا لم تكن متأكداً، تذكّر مثالاً حقيقياً من دراستك أو حياتك قبل الاختيار.`);
       help.id=helpId;
       help.hidden=true;
       info.addEventListener('click',()=>{
@@ -1630,25 +1905,41 @@
         info.setAttribute('aria-expanded',String(!help.hidden));
       });
       heading.append(label,info);
-      const select=guidanceElement('select','guidance-select');
-      select.id=id;
-      select.setAttribute('aria-label',`تقييم السؤال ${number} من 1 إلى 10`);
-      select.required=true;
-      const placeholder=guidanceElement('option','','اختر رقماً');
-      placeholder.value='';
-      select.append(placeholder);
+      const ratings=guidanceElement('div','guidance-rating-row');
+      ratings.id=id;
+      ratings.setAttribute('role','radiogroup');
+      ratings.setAttribute('aria-labelledby',label.id);
       for(let score=1;score<=10;score++){
-        const option=guidanceElement('option','',String(score));
-        option.value=String(score);
-        select.append(option);
+        const option=guidanceElement('button','guidance-rating',String(score));
+        option.type='button';
+        option.setAttribute('role','radio');
+        option.setAttribute('aria-label',`${score} من 10`);
+        option.setAttribute('aria-checked',String(guidanceAnswers[guidanceStep][questionIndex]===score));
+        option.tabIndex=guidanceAnswers[guidanceStep][questionIndex]===score||(!guidanceAnswers[guidanceStep][questionIndex]&&score===1)?0:-1;
+        option.addEventListener('click',()=>{
+          guidanceAnswers[guidanceStep][questionIndex]=score;
+          for(const button of ratings.children){
+            button.setAttribute('aria-checked',String(button===option));
+            button.tabIndex=button===option?0:-1;
+          }
+          $('guidanceError').textContent='';
+        });
+        ratings.append(option);
       }
-      select.value=guidanceAnswers[guidanceStep][questionIndex] || '';
-      select.addEventListener('change',()=>{
-        guidanceAnswers[guidanceStep][questionIndex]=Number(select.value)||null;
-        select.classList.remove('is-invalid');
-        $('guidanceError').textContent='';
+      ratings.addEventListener('keydown',event=>{
+        const current=Number(document.activeElement.textContent);
+        const next=event.key==='ArrowLeft'?Math.min(10,current+1):
+          event.key==='ArrowRight'?Math.max(1,current-1):
+          event.key==='Home'?1:event.key==='End'?10:null;
+        if(next===null)return;
+        event.preventDefault();
+        const option=ratings.children[next-1];
+        option.focus();
+        option.click();
       });
-      wrapper.append(heading,help,select);
+      const scale=guidanceElement('div','guidance-scale');
+      scale.append(guidanceElement('span','','1 = لا ينطبق عليّ أبداً'),guidanceElement('span','','10 = ينطبق عليّ تماماً'));
+      wrapper.append(heading,help,ratings,scale);
       body.append(wrapper);
     });
     const error=guidanceElement('p','guidance-error');
@@ -1664,9 +1955,20 @@
     guidanceAnswers=guidanceGroups.map(group=>Array(group.questions.length).fill(null));
     renderGuidanceStep();
     openExtraModal(guidanceModal,$('closeGuidanceBtn'));
+    guidanceStartedAt=Date.now();
+    updateGuidanceTimer();
+    clearInterval(guidanceTimerId);
+    guidanceTimerId=setInterval(updateGuidanceTimer,1000);
   }
   function closeGuidanceWizard(){
+    clearInterval(guidanceTimerId);
+    guidanceTimerId=null;
     closeExtraModal(guidanceModal);
+  }
+  function updateGuidanceTimer(){
+    const seconds=Math.floor((Date.now()-guidanceStartedAt)/1000);
+    const minutes=Math.floor(seconds/60);
+    $('guidanceTimer').textContent=`${String(minutes).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`;
   }
   function renderGuidanceResult(){
     const scores=guidanceGroups.map((group,index)=>({
@@ -1677,6 +1979,7 @@
     const best=guidanceDirections[top.key],next=guidanceDirections[second.key];
     const body=$('guidanceBody');
     body.replaceChildren();
+    $('guidanceProgress').textContent='النتيجة';
     const result=guidanceElement('div','guidance-result');
     result.append(
       guidanceElement('h3','',`النتيجة الأقرب لك: ${best.title}`),
@@ -1701,28 +2004,45 @@
       list.append(row);
     }
     result.append(list,guidanceElement('p','','هذه نتيجة إرشادية أولية. افحص شروط القبول، وجرّب المجال عملياً، وتحدّث مع مستشار قبل اتخاذ قرار الدراسة.'));
-    const source=guidanceElement('p','guidance-source','طريقة التقييم مستوحاة من استبيان جمعية أمل للتوجيه المهني والأكاديمي.');
-    const sourceLink=guidanceElement('a','','الاستبيان الأصلي');
-    sourceLink.href='https://aml-edu.org/ar/stu_help.html';
-    sourceLink.target='_blank';
-    sourceLink.rel='noopener noreferrer';
-    source.append(' ',sourceLink);
-    result.append(source);
     body.append(result);
     $('guidancePrevBtn').hidden=true;
     $('guidanceNextBtn').textContent='إغلاق';
     guidanceStep=guidanceGroups.length;
     body.scrollTop=0;
     addMessage(`نتيجتك الإرشادية: ${best.title} (${top.average.toFixed(1)} من 10).\n${best.studies}\nاتجاه آخر يستحق الانتباه: ${next.title} (${second.average.toFixed(1)} من 10).\n${best.advice}\nهذه النتيجة تساعدك على بدء الاختيار، ولا تحلّ محلّ تجربة المجال أو استشارة المختصّين.`,'bot');
+    showGuidanceCourseMatches(top,second);
+  }
+  function showGuidanceCourseMatches(top,second){
+    const picks=[];
+    const seen=new Set();
+    for(const [direction,limit] of [[top.key,3],[second.key,2]]){
+      for(const [facultyKey,index] of guidanceCourseMatches[direction].slice(0,limit)){
+        const id=facultyKey+':'+index;
+        if(seen.has(id))continue;
+        seen.add(id);
+        picks.push({facultyKey,index,name:facultyCourses[facultyKey].courses[index]});
+      }
+    }
+    const caution=top.average<5?'درجات الميول متقاربة أو منخفضة، لذا خذ الاقتراحات كنقطة بداية للفحص. ':'نتيجتك تشير إلى هذه المجالات، ويمكنك البدء بفحص المساقات التالية. ';
+    const {bubble}=addMessage(`من المساقات التي تدرّسها الكلية، قد تناسبك الخيارات التالية بحسب إجاباتك. ${caution}اضغط على أيّ مساق لتسألني عن محتواه، وتحقّق من شروط القبول مع السكرتارية.`,'bot');
+    const grid=guidanceElement('div','menu-grid');
+    grid.style.marginTop='10px';
+    for(const pick of picks){
+      const button=guidanceElement('button','menu-btn');
+      button.type='button';
+      addButtonContent(button,`${pick.name} — ${facultyLabel(pick.facultyKey)}`,'courses');
+      button.addEventListener('click',()=>askHudaAboutCourse(pick.facultyKey,pick.index));
+      grid.append(button);
+    }
+    bubble.append(grid);
+    scrollBottom();
   }
   function advanceGuidance(){
     if(guidanceStep===guidanceGroups.length){closeGuidanceWizard();return;}
     const missing=guidanceAnswers[guidanceStep].findIndex(value=>!Number.isInteger(value)||value<1||value>10);
     if(missing!==-1){
       $('guidanceError').textContent='اختر رقماً من 1 إلى 10 لكل عبارة قبل المتابعة.';
-      const select=$('guidanceQuestion'+(guidanceStep*8+missing+1));
-      select.classList.add('is-invalid');
-      select.focus();
+      $('guidanceQuestion'+(guidanceStep*8+missing+1)).querySelector('button').focus();
       return;
     }
     if(guidanceStep===guidanceGroups.length-1)renderGuidanceResult();
@@ -1950,7 +2270,7 @@
     if(target==='support_it'||target==='support_contact'){askForSupportMessage('it',label);return;}
     if(target==='support_consultant'||target==='contact_human'){askForSupportMessage('consultant',label);return;}
     if(menus[target]) {showMenu(target);return;}
-    if(target.startsWith('course_')){await sendMessage(`أريد معلومات عن ${label}: مدة الدراسة، شروط القبول، والمحتوى التعليمي`);return;}
+    if(facultyCourses[target]){showFacultyCourses(target,label);return;}
     if(target.startsWith('degree_')){await sendMessage(`أريد معلومات عن مساق ${label} الجامعي: شروط القبول، مدة الدراسة، والشهادة`);return;}
     if(branches[target]){addMessage(label,'user');showBranch(target);return;}
     if(target==='college_about'){showAbout(label);return;}
@@ -1970,7 +2290,7 @@
     };
     await sendMessage(questions[target]||label);
   }
-  async function sendMessage(value=null) {
+  async function sendMessage(value=null,visibleText=null) {
     if (busy || ended) return;
     if(pendingGuidanceConsent){
       if(value!==null){input.focus();return;}
@@ -2006,7 +2326,7 @@
     ensureSession();
     const text=String(value===null?input.value:value).trim();
     if(!text){input.focus();return;}
-    addMessage(text,'user'); if(value===null)input.value='';
+    addMessage(visibleText||text,'user'); if(value===null)input.value='';
     busy=true;sendBtn.disabled=true;input.disabled=true;statusEl.textContent='';
     const typing=addTyping();
     try{
