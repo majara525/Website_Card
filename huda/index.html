@@ -1343,7 +1343,7 @@
   const REPORT_IMAGE_LIMIT = 3;
   const REPORT_IMAGE_BYTES = 5 * 1024 * 1024;
   const REPORT_DESCRIPTION_LIMIT = 4000;
-  const REPORT_UNCERTAIN = 'تعذّر تأكيد حفظ البلاغ. احتفظنا بالنص والصور. اضغط إرسال لإعادة محاولة إرسال البلاغ نفسه.';
+  const REPORT_UNCERTAIN = 'تعذّر تأكيد حفظ البلاغ. احتفظنا بالنص والصور. يمكنك تعديل البلاغ وإعادة المحاولة.';
   const $ = id => document.getElementById(id);
   const chatBox = $('chatBox'), messages = $('messages');
   const input = $('messageInput'), sendBtn = $('sendBtn');
@@ -2392,7 +2392,7 @@
       remove.textContent='×';
       remove.setAttribute('aria-label','إزالة الصورة '+(index+1));
       remove.addEventListener('click',()=>{
-        if(!reporting||busy||reportDraft.uncertain)return;
+        if(!reporting||busy)return;
         reportDraft.files.splice(index,1);
         setStatus();
         renderReportPreviews();
@@ -2405,18 +2405,17 @@
     scrollBottom();
   }
   function updateReportControls(){
-    const locked=busy||Boolean(reportDraft?.uncertain);
-    reportInput.readOnly=locked;
-    attachReportImages.disabled=locked;
-    reportFiles.disabled=locked;
-    for(const button of reportPreviews.querySelectorAll('button'))button.disabled=locked;
+    reportInput.readOnly=busy;
+    attachReportImages.disabled=busy;
+    reportFiles.disabled=busy;
+    for(const button of reportPreviews.querySelectorAll('button'))button.disabled=busy;
   }
   function startReport(label){
     if(busy||ended||support)return;
     if(reporting){reportInput.focus();return;}
     if(!reportDraft){
       ensureSession();
-      reportDraft={sessionId,requestId:null,files:[],uncertain:false};
+      reportDraft={sessionId,requestId:null,files:[],error:'',unconfirmedAttempt:null};
     }
     reportFollowup?.remove();
     reportFollowup=null;
@@ -2426,7 +2425,7 @@
     $('composer').classList.add('is-reporting');
     updateReportLength();
     renderReportPreviews();
-    setStatus(reportDraft.uncertain?REPORT_UNCERTAIN:'',true);
+    setStatus(reportDraft.error,true);
     addMessage(label,'user');
     addMessage('يرجى وصف المشكلة التي واجهتك في البوابة بالتفصيل.\n\nيمكنك كتابة اسمك ورقم هاتفك ضمن نفس الرسالة إذا رغبت بأن نتواصل معك لاحقًا، لكن هذه المعلومات اختيارية تمامًا.\n\nيمكنك أيضًا إرفاق حتى 3 صور توضح المشكلة، بصيغة JPG أو PNG، بحيث لا يتجاوز حجم الصورة الواحدة 5 ميغابايت.\n\nملاحظة: يرجى إرسال بلاغ منفصل لكل مشكلة.','bot');
     reportInput.focus();
@@ -2449,7 +2448,7 @@
   function addReportImages(){
     const picked=[...reportFiles.files];
     reportFiles.value='';
-    if(!reporting||busy||reportDraft.uncertain||!picked.length)return;
+    if(!reporting||busy||!picked.length)return;
     const errors=new Set();
     for(const file of picked){
       if(!['image/jpeg','image/png'].includes(file.type)){
@@ -2465,8 +2464,9 @@
     setStatus([...errors].join(' '),true);
     renderReportPreviews();
   }
-  function showReportConfirmation(ticketId){
-    const {bubble}=addMessage(`تم استلام بلاغك بنجاح. شكرًا لمساعدتنا في تحسين البوابة.\n\nرقم البلاغ: \u2066${ticketId}\u2069\n\nهل ترغب بالإبلاغ عن مشكلة أخرى، أم تود التحدث عن موضوع آخر؟`,'bot');
+  function showReportConfirmation(ticketId,versionUncertain){
+    const note=versionUncertain?'\n\nقد يكون رقم البلاغ مرتبطًا بنسخة سابقة من البلاغ.':'';
+    const {bubble}=addMessage(`تم استلام بلاغك بنجاح. شكرًا لمساعدتنا في تحسين البوابة.\n\nرقم البلاغ: \u2066${ticketId}\u2069${note}\n\nهل ترغب بالإبلاغ عن مشكلة أخرى، أم تود التحدث عن موضوع آخر؟`,'bot');
     const grid=document.createElement('div');
     grid.className='menu menu-grid';
     for(const [label,target] of [['الإبلاغ عن مشكلة أخرى','support_report'],['الحديث عن موضوع آخر','other']]){
@@ -2498,14 +2498,22 @@
     }
     const draft=reportDraft;
     draft.requestId??=randomId();
+    const files=[...draft.files];
+    const previous=draft.unconfirmedAttempt;
+    const versionUncertain=Boolean(previous&&(previous.varied||description!==previous.description||
+      files.length!==previous.files.length||files.some((file,index)=>file!==previous.files[index])));
+    const markUnconfirmed=()=>{
+      draft.unconfirmedAttempt={description,files,varied:versionUncertain};
+      draft.error=REPORT_UNCERTAIN;
+    };
     if(draft.sessionId===sessionId)sessionStorage.setItem('huda_activity_v5',String(Date.now()));
     const fields={action:'report_issue',description,request_id:draft.requestId,session_id:draft.sessionId};
     const controller=new AbortController();
     const request={method:'POST',cache:'no-store',signal:controller.signal};
-    if(draft.files.length){
+    if(files.length){
       const body=new FormData();
       for(const [key,value] of Object.entries(fields))body.append(key,value);
-      draft.files.forEach((file,index)=>body.append('image'+(index+1),file));
+      files.forEach((file,index)=>body.append('image'+(index+1),file));
       request.body=body;
     }else{
       request.headers={'Content-Type':'application/json'};
@@ -2520,29 +2528,33 @@
     let focusTarget=reportInput;
     try{
       const response=await fetch(WORKER_URL,request);
-      const data=await response.json();
+      const data=await response.json().catch(()=>null);
       const ticketId=data?.ticket_id;
       if(response.ok&&data?.success===true&&typeof ticketId==='string'&&/^BR-[A-Za-z0-9][A-Za-z0-9_-]*$/.test(ticketId)){
         typing.remove();
-        const sentText=draft.files.length?`${description}\n\nعدد الصور المرفقة: ${draft.files.length}`:description;
-        addMessage(sentText,'user',{plainText:true});
+        if(!versionUncertain){
+          const sentText=files.length?`${description}\n\nعدد الصور المرفقة: ${files.length}`:description;
+          addMessage(sentText,'user',{plainText:true});
+        }
         leaveReport({discard:true});
-        focusTarget=showReportConfirmation(ticketId);
+        focusTarget=showReportConfirmation(ticketId,versionUncertain);
+      }else if(response.status===415){
+        draft.error=files.length
+          ?'رفض الخادم نوع محتوى البلاغ (415). يمكنك إزالة الصور أو استبدالها ثم إعادة المحاولة.'
+          :'رفض الخادم نوع محتوى البلاغ (415). احتفظنا بالنص لتتمكّن من المحاولة مجددًا.';
       }else if(data?.success===false&&data.stored===false){
-        draft.uncertain=false;
-        setStatus('لم يُحفظ البلاغ. راجع الوصف والصور ثم حاول مجددًا.',true);
+        draft.error='لم يُحفظ البلاغ. راجع الوصف والصور ثم حاول مجددًا.';
       }else{
-        draft.uncertain=true;
-        setStatus(REPORT_UNCERTAIN,true);
+        markUnconfirmed();
       }
     }catch{
-      draft.uncertain=true;
-      setStatus(REPORT_UNCERTAIN,true);
+      markUnconfirmed();
     }finally{
       clearTimeout(timeout);
       typing.remove();
       busy=false;
       sendBtn.disabled=false;
+      if(reporting)setStatus(draft.error,true);
       updateReportControls();
       focusTarget.focus();
     }
