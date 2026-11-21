@@ -2328,7 +2328,10 @@
   }
   async function closeSupport(next='ai'){
     if(!support||busy)return false;
-    if(!confirm('هل تريد إنهاء محادثة الدعم البشري؟'))return false;
+    const prompt=next==='new'
+      ?'هل تريد إنهاء محادثة الدعم البشري وبدء محادثة جديدة؟ سيُمسح أي نص أو بلاغ لم ترسله.'
+      :'هل تريد إنهاء محادثة الدعم البشري؟';
+    if(!confirm(prompt))return false;
     busy=true;
     const current=support;
     stopPolling();
@@ -2337,9 +2340,10 @@
         action:'support_close',session_id:current.sessionId,support_token:current.token
       });
       if((!response.ok||data?.status==='error')&&!isSupportExpired(response,data))throw new Error('support_close_failed');
-      clearSupport('انتهت محادثة الدعم. يمكنك متابعة الحديث مع هُدى.');
+      clearSupport(next==='new'?null:'انتهت محادثة الدعم. يمكنك متابعة الحديث مع هُدى.');
       busy=false;
-      if(next==='new'||next==='leave'||next==='end')openRating(next);
+      if(next==='new')resetChat();
+      else if(next==='leave'||next==='end')openRating(next);
       else showMenu('main');
       return true;
     }catch{
@@ -2687,6 +2691,7 @@
     pendingGuidanceConsent=false;
     setComposerRecipient();
     selectedRating=0;
+    input.value='';
     input.disabled=false;
     sendBtn.disabled=false;
     $('homeMenuBtn').disabled=false;
@@ -2712,7 +2717,7 @@
       window.location.assign(pendingLeaveUrl);
       return;
     }
-    if(action==='new'||submitted){
+    if(submitted){
       resetChat();
     }else{
       leaveReport({discard:true});
@@ -2801,8 +2806,11 @@
     else openRating('leave');
   });
   $('newChatBtn').addEventListener('click',async()=>{
-    if(support)await closeSupport('new');
-    else openRating('new');
+    if(busy)return;
+    if(support){await closeSupport('new');return;}
+    const hasDraft=input.value||reportInput.value||reportDraft?.files.length;
+    if(hasDraft&&!confirm('هل تريد بدء محادثة جديدة ومسح المسودة غير المرسلة؟'))return;
+    resetChat();
   });
   $('endChatBtn').addEventListener('click',async()=>{
     if(support)await closeSupport('end');
