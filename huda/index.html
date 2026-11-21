@@ -233,6 +233,10 @@
       color:#fff;
       border-bottom-left-radius:5px
     }
+    .bot .bubble.error-bubble {
+      background:var(--white);
+      color:var(--red-dark)
+    }
     .user .bubble {
       background:var(--gray);
       color:var(--black);
@@ -248,6 +252,10 @@
       left:-8px;
       border-bottom-color:var(--red);
       border-right-color:var(--red)
+    }
+    .bot .bubble.error-bubble::after {
+      border-bottom-color:var(--white);
+      border-right-color:var(--white)
     }
     .user .bubble::after {
       right:-8px;
@@ -655,8 +663,15 @@
       margin-top:2px;
       text-align:center
     }
+    .status.is-error {
+      color:var(--red-dark)
+    }
     .status:empty {
       display:none
+    }
+    .composer-area > :not(.composer), .report-controls {
+      -webkit-user-select:none;
+      user-select:none
     }
     .disclaimer {
       font-size:calc(10px + var(--font-bump));
@@ -1437,6 +1452,7 @@
     const row=document.createElement('div'); row.className='message '+sender;
     if (options.menuKey) row.dataset.menuKey=options.menuKey;
     const bubble=document.createElement('div'); bubble.className='bubble';
+    if(options.error)bubble.classList.add('error-bubble');
     if(options.plainText)bubble.textContent=text;
     else appendTextWithLinks(bubble,text);
     if(options.time && (sender==='user'||sender==='agent')){
@@ -1461,6 +1477,10 @@
       row.append(feedback);
     }
     messages.append(row); scrollBottom(); return {row,bubble};
+  }
+  function setStatus(text='',error=false){
+    statusEl.classList.toggle('is-error',error&&Boolean(text));
+    statusEl.textContent=text;
   }
   function addTyping() {
     const row=document.createElement('div'); row.className='message bot'; row.id='typingIndicator';
@@ -2227,7 +2247,7 @@
       firstRow.remove();
       transferRow.remove();
       input.value=firstMessage;
-      addMessage('تعذّر إرسال رسالتك إلى القسم. ما زالت رسالتك في حقل الكتابة؛ حاول مجدداً.','bot');
+      addMessage('تعذّر إرسال رسالتك إلى القسم. ما زالت رسالتك في حقل الكتابة؛ حاول مجدداً.','bot',{error:true});
     }finally{
       busy=false;
       sendBtn.disabled=false;
@@ -2252,7 +2272,7 @@
       if(!response.ok||data?.status==='error')throw new Error('support_message_failed');
     }catch{
       input.value=text;
-      addMessage('تعذّر تأكيد إرسال رسالتك إلى الدعم. يمكنك إعادة المحاولة.','bot');
+      addMessage('تعذّر تأكيد إرسال رسالتك إلى الدعم. يمكنك إعادة المحاولة.','bot',{error:true});
     }finally{
       busy=false;
       sendBtn.disabled=false;
@@ -2277,7 +2297,7 @@
       if(support!==current||busy)return;
       if(isSupportExpired(response,data)){supportExpired();return;}
       if(!response.ok||data?.status==='error')throw new Error('support_poll_failed');
-      statusEl.textContent='';
+      setStatus();
       const replies=Array.isArray(data?.messages)?data.messages:[];
       for(const message of replies){
         if(support!==current)break;
@@ -2300,7 +2320,7 @@
         }catch{break;}
       }
     }catch{
-      if(support===current)statusEl.textContent='تعذّر تحديث ردود الدعم مؤقتاً. ستتمّ إعادة المحاولة.';
+      if(support===current)setStatus('تعذّر تحديث ردود الدعم مؤقتاً. ستتمّ إعادة المحاولة.',true);
     }finally{
       polling=false;
       if(support)schedulePoll();
@@ -2323,7 +2343,7 @@
       else showMenu('main');
       return true;
     }catch{
-      statusEl.textContent='تعذّر إغلاق جلسة الدعم. يُرجى المحاولة مرة أخرى.';
+      setStatus('تعذّر إغلاق جلسة الدعم. يُرجى المحاولة مرة أخرى.',true);
       schedulePoll();
       return false;
     }finally{busy=false;}
@@ -2374,7 +2394,7 @@
       remove.addEventListener('click',()=>{
         if(!reporting||busy||reportDraft.uncertain)return;
         reportDraft.files.splice(index,1);
-        statusEl.textContent='';
+        setStatus();
         renderReportPreviews();
         (reportPreviews.querySelectorAll('button')[index]||attachReportImages).focus();
       });
@@ -2406,7 +2426,7 @@
     $('composer').classList.add('is-reporting');
     updateReportLength();
     renderReportPreviews();
-    statusEl.textContent=reportDraft.uncertain?REPORT_UNCERTAIN:'';
+    setStatus(reportDraft.uncertain?REPORT_UNCERTAIN:'',true);
     addMessage(label,'user');
     addMessage('يرجى وصف المشكلة التي واجهتك في البوابة بالتفصيل.\n\nيمكنك كتابة اسمك ورقم هاتفك ضمن نفس الرسالة إذا رغبت بأن نتواصل معك لاحقًا، لكن هذه المعلومات اختيارية تمامًا.\n\nيمكنك أيضًا إرفاق حتى 3 صور توضح المشكلة، بصيغة JPG أو PNG، بحيث لا يتجاوز حجم الصورة الواحدة 5 ميغابايت.\n\nملاحظة: يرجى إرسال بلاغ منفصل لكل مشكلة.','bot');
     reportInput.focus();
@@ -2423,7 +2443,7 @@
     $('reportComposer').hidden=true;
     $('composer').classList.remove('is-reporting');
     input.hidden=false;
-    statusEl.textContent='';
+    setStatus();
     renderReportPreviews();
   }
   function addReportImages(){
@@ -2442,7 +2462,7 @@
         reportDraft.files.push(file);
       }
     }
-    statusEl.textContent=[...errors].join(' ');
+    setStatus([...errors].join(' '),true);
     renderReportPreviews();
   }
   function showReportConfirmation(ticketId){
@@ -2472,7 +2492,7 @@
     const count=updateReportLength();
     if(count>REPORT_DESCRIPTION_LIMIT||[...description].length<3||!/[\p{L}\p{N}]/u.test(description)){
       reportInput.setAttribute('aria-invalid','true');
-      statusEl.textContent='يرجى كتابة وصف واضح للمشكلة من 3 إلى 4000 حرف.';
+      setStatus('يرجى كتابة وصف واضح للمشكلة من 3 إلى 4000 حرف.',true);
       reportInput.focus();
       return;
     }
@@ -2493,7 +2513,7 @@
     }
     busy=true;
     sendBtn.disabled=true;
-    statusEl.textContent='';
+    setStatus();
     updateReportControls();
     const typing=addTyping();
     const timeout=setTimeout(()=>controller.abort(),90000);
@@ -2510,14 +2530,14 @@
         focusTarget=showReportConfirmation(ticketId);
       }else if(data?.success===false&&data.stored===false){
         draft.uncertain=false;
-        statusEl.textContent='لم يُحفظ البلاغ. راجع الوصف والصور ثم حاول مجددًا.';
+        setStatus('لم يُحفظ البلاغ. راجع الوصف والصور ثم حاول مجددًا.',true);
       }else{
         draft.uncertain=true;
-        statusEl.textContent=REPORT_UNCERTAIN;
+        setStatus(REPORT_UNCERTAIN,true);
       }
     }catch{
       draft.uncertain=true;
-      statusEl.textContent=REPORT_UNCERTAIN;
+      setStatus(REPORT_UNCERTAIN,true);
     }finally{
       clearTimeout(timeout);
       typing.remove();
@@ -2599,7 +2619,7 @@
     const text=String(value===null?input.value:value).trim();
     if(!text){input.focus();return;}
     addMessage(visibleText||text,'user'); if(value===null)input.value='';
-    busy=true;sendBtn.disabled=true;input.disabled=true;statusEl.textContent='';
+    busy=true;sendBtn.disabled=true;input.disabled=true;setStatus();
     const typing=addTyping();
     try{
       // Keep the Worker request identical to the working chat.html contract.
@@ -2607,10 +2627,11 @@
       const response=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),cache:'no-store'});
       const data=await response.json();
       typing.remove();
-      const answer=typeof data?.answer==='string' && data.answer.trim()?data.answer.trim():
+      const reply=typeof data?.answer==='string'?data.answer.trim():'';
+      const answer=reply?reply:
         !response.ok && typeof data?.message==='string' && data.message.trim()?data.message.trim():
         response.ok?'لم يُستلم ردّ صالح من الخادم.':'تعذّر الحصول على ردّ حالياً. يُرجى المحاولة لاحقاً.';
-      const {bubble}=addMessage(answer,'bot');
+      const {bubble}=addMessage(answer,'bot',{error:!response.ok||data?.status==='error'||!reply});
       // Show only explicit backend actions; never make up a successful handoff.
       const suggestions=Array.isArray(data?.suggestions)?data.suggestions.slice(0,6):[];
       const actions=suggestions.filter(x=>typeof x==='string'||(x&&typeof x.label==='string'));
@@ -2627,10 +2648,10 @@
       if(data?.handoff && !suggestions.length){
         const btn=document.createElement('button');btn.type='button';btn.className='menu-btn';btn.style.marginTop='9px';addButtonContent(btn,'فتح إستمارة التواصل','registration');btn.addEventListener('click',openForm);bubble.append(btn);
       }
-      if(!response.ok)statusEl.textContent='تعذّر إتمام الطلب.';
+      if(!response.ok)setStatus('تعذّر إتمام الطلب.',true);
     }catch(error){
-      typing.remove();addMessage('تعذّر الاتصال بهُدى حالياً. حاول مرة ثانية.','bot');
-      statusEl.textContent='مشكلة مؤقتة في الاتصال.';
+      typing.remove();addMessage('تعذّر الاتصال بهُدى حالياً. حاول مرة ثانية.','bot',{error:true});
+      setStatus('مشكلة مؤقتة في الاتصال.',true);
       console.warn('Huda request failed (details omitted).');
     }finally{
       busy=false;sendBtn.disabled=false;input.disabled=false;input.focus();
@@ -2661,7 +2682,7 @@
     $('ratingComment').value='';
     for(const star of $('stars').children)star.classList.remove('selected');
     messages.replaceChildren();
-    statusEl.textContent='';
+    setStatus();
     showWelcome();
     input.focus();
   }
@@ -2688,7 +2709,7 @@
       sendBtn.disabled=true;
       $('homeMenuBtn').disabled=true;
       $('endChatBtn').disabled=true;
-      statusEl.textContent='انتهت المحادثة. ابدأ محادثة جديدة للمتابعة.';
+      setStatus('انتهت المحادثة. ابدأ محادثة جديدة للمتابعة.');
       $('newChatBtn').focus();
     }
   }
@@ -2702,7 +2723,7 @@
   reportFiles.addEventListener('change',addReportImages);
   reportInput.addEventListener('input',()=>{
     const count=updateReportLength();
-    statusEl.textContent=count>REPORT_DESCRIPTION_LIMIT?'الحدّ الأقصى لوصف المشكلة هو 4000 حرف.':'';
+    setStatus(count>REPORT_DESCRIPTION_LIMIT?'الحدّ الأقصى لوصف المشكلة هو 4000 حرف.':'',true);
   });
   reportInput.addEventListener('keydown',event=>{
     if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){
