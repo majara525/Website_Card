@@ -2109,6 +2109,20 @@
       list.append(row);
     }
     result.append(list,guidanceElement('p','','هذه نتيجة إرشادية أولية. افحص شروط القبول، وجرّب المجال عملياً، وتحدّث مع مستشار قبل اتخاذ قرار الدراسة.'));
+    const shareButton=guidanceElement('button','menu-btn','شاركي نتيجتي مع هُدى لتساعدني');
+    shareButton.type='button';
+    shareButton.addEventListener('click',()=>{
+      const labels=[
+        ['social','اجتماعي'],['research','تحليلي'],['technical','تقني'],
+        ['administrative','إداري'],['practical','عملي'],['entrepreneurial','ريادي']
+      ];
+      const summary='نتيجة استبيان الميول: '+labels.map(([key,word])=>
+        `${word} ${scores.find(score=>score.key===key).average.toFixed(1)}`
+      ).join('، ');
+      closeGuidanceWizard();
+      sendMessage(summary,'شاركتُ نتيجة استبيان الميول مع هُدى','guidance_result');
+    });
+    result.append(shareButton);
     body.append(result);
     $('guidancePrevBtn').hidden=true;
     $('guidanceNextBtn').textContent='إغلاق';
@@ -2563,6 +2577,15 @@
       focusTarget.focus();
     }
   }
+  // A Huda suggestion may name a page feature ({label, action}) or a link ({label, url}); plain strings behave as before.
+  const HUDA_PAGE_TARGET=/^(branches|branch_(nazareth|shefaram|ummfahm|daliyat|other)|courses|course_[a-z_]+|degrees|degree_[a-z_]+|college|college_about|social_links|guidance|open_form|registration|support|support_(secretary|consultant|it|report)|contact_human|secretary)$/;
+  function openHudaSuggestion(item,label){
+    if(item&&typeof item==='object'){
+      if(typeof item.url==='string'&&isSafeUrl(item.url)){window.open(item.url,'_blank','noopener,noreferrer');return;}
+      if(typeof item.action==='string'&&HUDA_PAGE_TARGET.test(item.action)){handleMenu(item.action,label);return;}
+    }
+    sendMessage(label);
+  }
   async function handleMenu(target,label) {
     if (busy || ended || support) return;
     pendingSupportType=null;
@@ -2593,7 +2616,7 @@
     };
     await sendMessage(questions[target]||label);
   }
-  async function sendMessage(value=null,visibleText=null) {
+  async function sendMessage(value=null,visibleText=null,action=null) {
     if (busy || ended) return;
     if(reporting){
       if(value===null)await submitReport();
@@ -2638,8 +2661,9 @@
     busy=true;sendBtn.disabled=true;input.disabled=true;setStatus();
     const typing=addTyping();
     try{
-      // Keep the Worker request identical to the working chat.html contract.
+      // Keep ordinary requests identical to the working chat.html contract.
       const body={question:text,user_type:'student',session_id:sessionId};
+      if(action)body.action=action;
       const response=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),cache:'no-store'});
       const data=await response.json();
       typing.remove();
@@ -2657,7 +2681,7 @@
           const label=typeof item==='string'?item:item.label;
           const btn=document.createElement('button');btn.className='menu-btn';btn.type='button';
           addButtonContent(btn,label,item.action||item.id||'other');
-          btn.addEventListener('click',()=>sendMessage(label));grid.append(btn);
+          btn.addEventListener('click',()=>openHudaSuggestion(item,label));grid.append(btn);
         }
         bubble.append(grid);
       }
