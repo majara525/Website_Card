@@ -1561,18 +1561,31 @@
   function addButtonContent(button,label,target) {
     const content=document.createElement('span');
     content.className='menu-btn-content';
-    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-    svg.setAttribute('viewBox','0 0 24 24');
-    svg.setAttribute('aria-hidden','true');
-    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
-    const iconName=target?.startsWith('branch_') ? 'branches' :
-      target?.startsWith('course_') || target?.startsWith('degree_') || ['courses','degrees'].includes(target) ? 'education' :
-      target?.startsWith('support_') ? 'support' : target;
-    path.setAttribute('d',menuPaths[iconName] || menuPaths.other);
-    svg.append(path);
+    const network=['facebook','instagram','tiktok','youtube','website'].includes(target)
+      ? socialLinks.find(item=>item.icon.toLowerCase()===target+'.png')
+      : null;
+    if(network){
+      const logo=document.createElement('img');
+      logo.src='../Icons/'+network.icon;
+      logo.alt='';
+      logo.width=17;
+      logo.height=17;
+      content.append(logo);
+    }else{
+      const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      svg.setAttribute('viewBox','0 0 24 24');
+      svg.setAttribute('aria-hidden','true');
+      const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+      const iconName=target?.startsWith('branch_') ? 'branches' :
+        target?.startsWith('course_') || target?.startsWith('degree_') || ['courses','degrees'].includes(target) ? 'education' :
+        target?.startsWith('support_') ? 'support' : target;
+      path.setAttribute('d',menuPaths[iconName] || menuPaths.other);
+      svg.append(path);
+      content.append(svg);
+    }
     const text=document.createElement('span');
     text.textContent=label;
-    content.append(svg,text);
+    content.append(text);
     button.append(content);
   }
   function showBranch(target) {
